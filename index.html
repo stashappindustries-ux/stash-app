@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>stash — Are you in?</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#110D0A;--bg2:#1C1510;--bg3:#241912;--bg4:#2E2016;
+  --accent:#E8501A;--accent-dim:rgba(232,80,26,0.10);--accent-mid:rgba(232,80,26,0.22);
+  --purple:#8B5CF6;--purple-dim:rgba(139,92,246,0.12);
+  --text:#F5ECD7;--text2:rgba(245,236,215,0.50);--text3:rgba(245,236,215,0.28);
+  --red:#FF4B4B;--red-dim:rgba(255,75,75,0.12);
+  --amber:#FFB347;--amber-dim:rgba(255,179,71,0.12);
+  --blue:#5B8EF0;--border:rgba(245,236,215,0.07);--brace:#8B3A1A;--sand:#F5ECD7;
+  --r:16px;--rs:10px;
+}
+html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:0}
+.phone{width:100%;max-width:390px;min-height:100vh;position:relative;overflow-x:hidden;margin:0 auto}
+
+/* SCREENS */
+.screen{display:none;flex-direction:column;min-height:100vh;padding:0 18px;animation:fadeIn .22s ease}
+.screen.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{0%{transform:scale(.85);opacity:0}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* HEADER */
+.header{display:flex;align-items:center;justify-content:space-between;padding:52px 0 18px}
+.logo{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:22px;letter-spacing:-1.5px;line-height:1;display:inline-flex;align-items:baseline;gap:0}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--text2);cursor:pointer;background:none;border:none;font-family:inherit;padding:4px 0;transition:color .2s}
+.back-btn:hover{color:var(--text)}
+.back-btn svg{width:16px;height:16px}
+
+/* AVATAR */
+.av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;border:1.5px solid var(--border)}
+.av-sm{width:28px;height:28px;font-size:11px}
+.av-lg{width:72px;height:72px;font-size:26px;font-weight:800}
+.av-marco{background:var(--accent);color:#110D0A;border-color:rgba(232,80,26,0.4)}
+.av-alex{background:var(--purple);color:#fff}
+.av-gray{background:var(--bg3);color:var(--text2)}
+
+/* SECTION LABEL */
+.sl{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;margin-top:6px}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;transition:border-color .2s,background .2s}
+.card-tap{cursor:pointer}
+.card-tap:hover{border-color:var(--accent-mid);background:var(--bg3)}
+.card-accent{border-color:var(--accent)!important}
+.card-amber{border-color:var(--amber)!important}
+
+/* GROUP CARD */
+.gc-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.gc-icon{width:44px;height:44px;border-radius:12px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.gc-info{flex:1;min-width:0}
+.gc-name{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:15px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gc-meta{font-size:12px;color:var(--text2)}
+.gc-badge{background:var(--accent);color:#110D0A;font-size:11px;font-weight:700;border-radius:20px;padding:3px 10px;white-space:nowrap}
+.gc-bot{display:flex;align-items:center;justify-content:space-between}
+.av-stack{display:flex;align-items:center}
+.av-stack .av{margin-right:-8px;border:2px solid var(--bg2)}
+.av-stack .av:last-child{margin-right:0}
+.pot{font-size:12px;color:var(--accent);font-weight:600;background:var(--accent-dim);padding:4px 10px;border-radius:20px}
+
+/* CHALLENGE CARD */
+.cc-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.cc-title{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:16px;line-height:1.3;flex:1}
+.badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.badge-open{background:var(--accent-dim);color:var(--accent)}
+.badge-vote{background:var(--amber-dim);color:var(--amber)}
+.badge-done{background:var(--bg3);color:var(--text2)}
+.badge-live{background:var(--red-dim);color:var(--red)}
+.badge-expired{background:var(--bg3);color:var(--text3)}
+.cc-players{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cc-player{display:flex;align-items:center;gap:8px}
+.cc-player-name{font-size:13px;font-weight:500}
+.vs{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:800;color:var(--text3);letter-spacing:1px}
+
+/* ESCROW BAR */
+.ebar{background:var(--bg3);border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
+.ebar-label{font-size:11px;color:var(--text2);margin-bottom:2px}
+.ebar-amount{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:18px;color:var(--accent)}
+.ebar-right{text-align:right}
+.timer-txt{font-size:13px;font-weight:600}
+.timer-ok{color:var(--text2)}
+.timer-warn{color:var(--amber)}
+.timer-crit{color:var(--red);animation:pulse 1s ease-in-out infinite}
+
+/* BUTTONS */
+.btn-primary{width:100%;background:var(--accent);color:#110D0A;border:none;border-radius:var(--r);padding:16px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:16px;cursor:pointer;transition:opacity .2s,transform .1s;letter-spacing:.3px}
+.btn-primary:hover{background:var(--brace)}
+.btn-primary:active{transform:scale(.98)}
+.btn-primary:disabled{opacity:.28;cursor:not-allowed;transform:none}
+.btn-secondary{width:100%;background:none;color:var(--text2);border:1.5px solid var(--border);border-radius:var(--r);padding:14px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:border-color .2s,color .2s;margin-top:10px}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn-danger{width:100%;background:none;color:var(--red);border:1.5px solid var(--red-dim);border-radius:var(--r);padding:14px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:15px;cursor:pointer;margin-top:10px}
+.btn-icon{display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-half{width:calc(50% - 5px);padding:13px;border-radius:var(--rs);border:1.5px solid var(--border);background:none;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text)}
+.btn-half:hover{border-color:var(--accent);background:var(--accent-dim)}
+.btn-half.sel{border-color:var(--accent);background:var(--accent-dim);color:var(--accent)}
+.btn-half.win-btn{border-color:var(--accent);background:var(--accent);color:#110D0A}
+.btn-half.lose-btn{opacity:.35}
+.btn-half-sub{font-size:11px;color:var(--text2);font-weight:400}
+.btn-half.sel .btn-half-sub,.btn-half.win-btn .btn-half-sub{color:inherit;opacity:.75}
+.btn-row{display:flex;gap:10px}
+
+/* DASHED NEW BTN */
+.btn-new{border:1.5px dashed var(--border);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;color:var(--text2);font-size:14px;background:none;width:100%;font-family:inherit;transition:border-color .2s,color .2s;margin-bottom:12px}
+.btn-new:hover{border-color:var(--accent);color:var(--accent)}
+.btn-new-ic{width:44px;height:44px;border-radius:12px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+
+/* FORM */
+.form-sec{margin-bottom:20px}
+.form-lbl{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;display:block;letter-spacing:.3px}
+.form-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:14px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.form-input:focus{border-color:var(--accent)}
+.form-input::placeholder{color:var(--text3)}
+textarea.form-input{resize:none;height:88px}
+.amt-wrap{position:relative}
+.amt-pre{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;color:var(--accent);font-size:20px;pointer-events:none}
+.amt-wrap .form-input{padding-left:36px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:26px}
+.chips{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.chip{flex:1;min-width:60px;padding:9px 6px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:13px;cursor:pointer;text-align:center;transition:all .2s;white-space:nowrap}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.sel{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.char-count{font-size:11px;color:var(--text3);text-align:right;margin-top:4px}
+.member-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.member-row:last-child{border-bottom:none}
+.member-name{font-size:14px;flex:1}
+.check{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;font-size:12px;color:transparent}
+.check.on{background:var(--accent);border-color:var(--accent);color:#110D0A;font-weight:800}
+
+/* INFO BOX */
+.info-box{border-radius:var(--rs);padding:12px 14px;margin-top:10px;font-size:13px;line-height:1.6}
+.info-accent{background:var(--accent-dim);border:1px solid var(--accent-mid);color:var(--text2)}
+.info-gray{background:var(--bg3);border:1px solid var(--border);color:var(--text2)}
+.info-amber{background:var(--amber-dim);border:1px solid rgba(255,179,71,.25);color:var(--text2)}
+.info-red{background:var(--red-dim);border:1px solid rgba(255,75,75,.25);color:var(--text)}
+
+/* SUMMARY BOX */
+.summary{background:var(--bg3);border-radius:var(--rs);padding:14px;margin-top:8px}
+.summary-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0}
+.summary-row span:last-child{font-weight:600;color:var(--accent)}
+.summary-total{border-top:1px solid var(--border);margin-top:8px;padding-top:8px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:15px;display:flex;justify-content:space-between}
+.summary-total span:last-child{color:var(--accent)}
+
+/* PROGRESS BAR */
+.prog-wrap{background:var(--bg3);border-radius:20px;height:6px;margin:12px 0}
+.prog-bar{background:var(--accent);border-radius:20px;height:6px;transition:width .5s ease}
+
+/* BOTTOM NAV */
+.bnav{display:flex;border-top:1px solid var(--border);padding:10px 0 22px;margin-top:auto;background:var(--bg)}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--text3);font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;transition:color .2s;padding:4px 0}
+.bnav-item.on{color:var(--accent)}
+.bnav-icon{font-size:20px;line-height:1}
+.bnav-disabled{opacity:.3;cursor:default}
+
+/* NOTIFICATION BANNER */
+.notif-banner{background:var(--accent-dim);border:1px solid var(--accent-mid);border-radius:var(--rs);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;animation:slideDown .3s ease;cursor:pointer}
+.notif-banner:hover{background:var(--accent-mid)}
+.notif-text{flex:1;font-size:13px;line-height:1.4}
+.notif-cta{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:12px;color:var(--accent);white-space:nowrap}
+
+/* SHARE BTN */
+.share-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.share-btn{font-size:12px;color:var(--text2);background:none;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:5px}
+.share-btn:hover{border-color:var(--accent);color:var(--accent)}
+.share-btn.copied{color:var(--accent);border-color:var(--accent)}
+
+/* DEMO BADGE */
+.demo-badge{background:var(--amber-dim);color:var(--amber);font-size:10px;font-weight:700;border-radius:6px;padding:2px 7px;letter-spacing:.5px;vertical-align:middle;margin-left:6px}
+
+/* WALLET CARD */
+.wallet-hero{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:12px;text-align:center}
+.wallet-label{font-size:12px;color:var(--text2);margin-bottom:8px}
+.wallet-amount{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:44px;color:var(--accent);line-height:1}
+.wallet-locked{font-size:12px;color:var(--text3);margin-top:6px}
+.wallet-actions{display:flex;gap:10px;margin-bottom:12px}
+.wallet-act-btn{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:14px;cursor:pointer;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:14px;color:var(--text);transition:all .2s;text-align:center}
+.wallet-act-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* TX ROW */
+.tx-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.tx-row:last-child{border-bottom:none}
+.tx-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.tx-info{flex:1;min-width:0}
+.tx-title{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-meta{font-size:12px;color:var(--text2)}
+.tx-amt{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:15px;white-space:nowrap}
+.tx-pos{color:var(--accent)}
+.tx-neg{color:var(--red)}
+.tx-neu{color:var(--text2)}
+
+/* STATS BAR */
+.stats-bar{display:flex;gap:8px;margin-bottom:18px}
+.stat-item{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:12px 8px;text-align:center}
+.stat-val{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:20px;color:var(--accent);line-height:1;margin-bottom:4px}
+.stat-lbl{font-size:11px;color:var(--text2)}
+
+/* HISTORY CARD */
+.hcard{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.hcard:last-child{border-bottom:none}
+.hcard-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.hcard-info{flex:1;min-width:0}
+.hcard-title{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hcard-meta{font-size:12px;color:var(--text2)}
+.hcard-amt{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:15px;white-space:nowrap}
+
+/* PROFILE */
+.profile-header{text-align:center;padding:24px 0 20px}
+.profile-name{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:20px;margin:12px 0 4px}
+.profile-user{font-size:13px;color:var(--text2)}
+.profile-opt{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:color .2s}
+.profile-opt:last-child{border-bottom:none}
+.profile-opt:hover .profile-opt-label{color:var(--accent)}
+.profile-opt-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0}
+.profile-opt-label{font-size:15px;flex:1}
+.profile-opt-val{font-size:13px;color:var(--text2)}
+
+/* TOGGLE */
+.tog{position:relative;width:44px;height:24px;background:var(--bg3);border-radius:12px;cursor:pointer;border:1px solid var(--border);transition:background .2s;flex-shrink:0}
+.tog.on{background:var(--accent)}
+.tog-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .2s}
+.tog.on .tog-knob{transform:translateX(20px)}
+
+/* ONBOARDING */
+.ob-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 0;text-align:center}
+.ob-slide{display:none;flex-direction:column;align-items:center;animation:fadeInUp .3s ease}
+.ob-slide.active{display:flex}
+.ob-icon{font-size:64px;margin-bottom:24px;animation:pop .4s ease}
+.ob-title{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:26px;margin-bottom:12px;line-height:1.2}
+.ob-sub{font-size:16px;color:var(--text2);line-height:1.6;max-width:280px}
+.ob-dots{display:flex;gap:8px;margin:28px auto}
+.ob-dot{width:8px;height:8px;border-radius:50%;background:#2E2016;transition:all .3s}
+.ob-dot.on{background:var(--accent);width:24px;border-radius:4px}
+.ob-logo{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:26px;color:var(--accent);margin-bottom:28px}
+.ob-logo span{color:var(--text)}
+
+/* SUCCESS SCREEN */
+.success-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 0}
+.success-icon{width:80px;height:80px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 24px;animation:pop .4s ease}
+.success-title{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:26px;margin-bottom:10px}
+.success-sub{font-size:15px;color:var(--text2);line-height:1.6;margin-bottom:24px}
+.escrow-hero{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:24px;width:100%}
+.escrow-hero-label{font-size:12px;color:var(--text2);margin-bottom:6px}
+.escrow-hero-amount{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:38px;color:var(--accent)}
+.escrow-hero-sub{font-size:12px;color:var(--text3);margin-top:4px}
+
+/* WINNER SCREEN */
+.winner-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 0}
+.winner-emoji{font-size:64px;margin-bottom:18px;animation:pop .4s ease}
+.winner-title{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:28px;margin-bottom:8px}
+.winner-sub{font-size:15px;color:var(--text2);line-height:1.5;margin-bottom:24px}
+.winner-amount{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:54px;color:var(--accent);margin-bottom:4px}
+.winner-lbl{font-size:13px;color:var(--text2);margin-bottom:24px}
+.vote-result-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;width:100%;margin-bottom:28px}
+.vr-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
+.vr-left{display:flex;align-items:center;gap:10px}
+.vr-badge{font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px}
+.vr-win{background:var(--accent);color:#110D0A}
+.vr-lose{background:var(--bg3);color:var(--text2)}
+
+/* DECLARATION BOXES */
+.decl-section{background:var(--bg3);border-radius:var(--rs);padding:14px;margin-bottom:12px}
+.decl-title{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:14px;margin-bottom:4px}
+.decl-sub{font-size:12px;color:var(--text2);margin-bottom:14px}
+.decl-waiting{font-size:13px;color:var(--text3);font-style:italic;padding:10px 0}
+.decl-done{font-size:13px;color:var(--text);padding:8px 12px;background:#2E2016;border-radius:8px;margin-top:4px}
+
+/* MISC */
+.spacer{height:80px}
+.spacer-sm{height:24px}
+.divider{height:1px;background:var(--border);margin:8px 0 18px}
+.center{text-align:center}
+.row{display:flex;align-items:center;justify-content:space-between}
+.muted{color:var(--text2);font-size:13px}
+.emoji-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
+.emoji-item{aspect-ratio:1;background:var(--bg3);border:2px solid var(--border);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;transition:all .2s}
+.emoji-item:hover,.emoji-item.sel{border-color:var(--accent);background:var(--accent-dim)}
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;display:inline-block}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:100;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease}
+.modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;padding:24px 20px 36px;width:100%;max-width:390px}
+.modal-handle{width:36px;height:4px;background:#2E2016;border-radius:2px;margin:0 auto 20px}
+.modal-title{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:18px;margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.5}
+.modal-link-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:12px 14px;margin-bottom:14px}
+.modal-link-url{font-size:12px;color:var(--accent);word-break:break-all;line-height:1.6;display:block;margin-bottom:8px}
+.modal-close{display:block;width:100%;background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;margin-top:14px;font-family:inherit;padding:6px}
+.tag-demo{font-size:10px;font-weight:700;background:rgba(232,80,26,0.12);color:var(--accent);padding:2px 8px;border-radius:6px;display:inline-flex;align-items:center;gap:4px}
+</style>
+</head>
+<body>
+
+<div class="phone" id="app">
+
+<!-- ===== WELCOME ===== -->
+<div class="screen active" id="s-welcome">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 18px;text-align:center">
+    <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:52px;letter-spacing:-3px;line-height:1;margin-bottom:12px;display:flex;align-items:baseline;justify-content:center">
+      <span style="color:transparent;-webkit-text-stroke:2.5px #E8501A">s</span><span style="color:#F5ECD7">tas</span><span style="color:#E8501A">h</span>
+    </div>
+    <div style="font-size:16px;font-style:italic;color:rgba(245,236,215,0.45);letter-spacing:0.08em;margin-bottom:40px">Are you in?</div>
+    <div style="width:100%;max-width:320px">
+      <div style="background:rgba(232,80,26,0.10);border:1px solid rgba(232,80,26,0.22);border-radius:10px;padding:12px 14px;margin-bottom:24px;text-align:left;font-size:13px;color:rgba(245,236,215,0.7)">
+        🎮 <strong style="color:#F5ECD7">Demo beta</strong> — ricevi €100 di credito gratuito e sfida i tuoi amici in tempo reale.
+      </div>
+      <div style="font-size:12px;font-weight:600;color:rgba(245,236,215,0.5);margin-bottom:8px;text-align:left;letter-spacing:0.3px">Come ti chiami?</div>
+      <input id="welcome-name" type="text" placeholder="Il tuo nome" maxlength="20"
+        oninput="var b=document.getElementById('welcome-btn');b.style.opacity=this.value.trim().length>=2?'1':'0.3'"
+        style="width:100%;background:#1C1510;border:1px solid rgba(245,236,215,0.07);border-radius:10px;padding:14px 16px;color:#F5ECD7;font-family:'DM Sans',sans-serif;font-size:18px;text-align:center;outline:none;margin-bottom:16px;-webkit-appearance:none;box-sizing:border-box">
+      <button id="welcome-btn" type="button" onclick="submitWelcome()"
+        style="width:100%;background:#E8501A;color:#110D0A;border:none;border-radius:16px;padding:16px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:16px;cursor:pointer;letter-spacing:0.3px;-webkit-appearance:none;display:block;opacity:0.3">
+        Entra — €100 di credito gratis
+      </button>
+      <script>
+      // Isolated script — runs independently of main script
+      document.getElementById('welcome-name').oninput = function() {
+        document.getElementById('welcome-btn').style.opacity = this.value.trim().length >= 2 ? '1' : '0.3';
+      };
+      function submitWelcome() {
+        var nm = document.getElementById('welcome-name').value.trim();
+        if (nm.length < 2) return;
+        localStorage.setItem('stash_name_v3', nm);
+        if(typeof MY_NAME!=='undefined')MY_NAME=nm;
+        // Trigger main app if loaded, otherwise reload
+        if (typeof initFirebase === 'function') {
+          window._pendingName = nm;
+          var uid = localStorage.getItem('stash_uid_v3');
+          if (!uid) { uid = 'u' + Math.random().toString(36).substr(2,8); localStorage.setItem('stash_uid_v3', uid); }
+          initFirebase(function() {
+            if (typeof fbSet === 'function') { fbSet('users/'+uid, { name: nm, balance: 100, escrow: 0, lastSeen: Date.now() }); }
+            if (typeof setupHome === 'function') setupHome();
+            if (typeof go === 'function') go('s-terms');
+          });
+        } else {
+          // Main script not loaded yet — reload, localStorage will carry name
+          location.reload();
+        }
+      }
+      </script>
+      <div style="font-size:12px;color:rgba(245,236,215,0.28);margin-top:14px">Nessun dato reale. Solo credito demo.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HOME ===== -->
+<div class="screen" id="s-home">
+  <div class="header">
+    <div class="logo" style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:22px;letter-spacing:-1.5px;line-height:1;display:inline-flex;align-items:baseline">
+      <span style="color:transparent;-webkit-text-stroke:1.8px #E8501A">s</span><span style="color:#F5ECD7">tas</span><span style="color:#E8501A">h</span>
+    </div>
+    <div class="av" id="home-av" style="cursor:pointer" onclick="go('s-profile')"></div>
+  </div>
+  <div id="notif-banner" style="display:none"></div>
+  <div class="share-row">
+    <div class="sl" style="margin:0">Gruppi</div>
+    <button class="share-btn" id="share-btn" onclick="shareLink()">🔥 Sfida i tuoi amici</button>
+  </div>
+  <!-- Live challenge card injected here -->
+  <div id="live-challenge" style="display:none"></div>
+  <div class="pot" id="home-escrow-label" style="display:none">€0</div>
+
+  <div class="card card-tap" id="new-group-card" style="display:none;background:var(--accent-dim);border-color:var(--accent)" onclick="go('s-group-custom')">
+    <div class="gc-top">
+      <div class="gc-icon" id="new-group-icon">🎮</div>
+      <div class="gc-info"><div class="gc-name" id="new-group-name">Nuovo Gruppo</div><div class="gc-meta" id="new-group-meta">1 membro · nessuna sfida</div></div>
+      <div class="gc-badge">Nuovo</div>
+    </div>
+  </div>
+
+  <div id="groups-container"></div>
+  <div id="home-empty-groups" class="info-box info-gray" style="margin-bottom:16px;text-align:center">
+    Nessun gruppo ancora. <br>Creane uno o aspetta che un amico ti aggiunga.
+  </div>
+  <button class="btn-new" onclick="go('s-create-group')"><div class="btn-new-ic">+</div><span>Crea un gruppo</span></button>
+  <div class="spacer"></div>
+  <div class="bnav">
+    <div class="bnav-item on"><div class="bnav-icon">👥</div>Gruppi</div>
+    <div class="bnav-item" onclick="go('s-amici')"><div class="bnav-icon">🤝</div>Amici</div>
+    <div class="bnav-item" onclick="go('s-wallet')"><div class="bnav-icon">👛</div>Wallet</div>
+    <div class="bnav-item" onclick="go('s-history')"><div class="bnav-icon">📋</div>Storico</div>
+    <div class="bnav-item" onclick="go('s-profile')"><div class="bnav-icon">👤</div>Profilo</div>
+  </div>
+</div>
+
+
+<!-- ===== TERMS ===== -->
+<div class="screen" id="s-terms">
+  <div style="flex:1;display:flex;flex-direction:column;padding:52px 0 24px">
+    <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:22px;margin-bottom:6px">Prima di iniziare</div>
+    <div class="muted" style="margin-bottom:28px">stash è una piattaforma tra amici. Usala bene.</div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:12px;margin-bottom:28px">
+      <div class="card" style="display:flex;align-items:flex-start;gap:12px">
+        <div style="font-size:24px;flex-shrink:0">🚫</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;margin-bottom:4px">Niente sfide pericolose</div>
+          <div class="muted" style="font-size:13px;line-height:1.5">Non lanciare sfide che possano mettere a rischio la tua incolumità o quella degli altri.</div>
+        </div>
+      </div>
+      <div class="card" style="display:flex;align-items:flex-start;gap:12px">
+        <div style="font-size:24px;flex-shrink:0">🤝</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;margin-bottom:4px">Rispetto reciproco</div>
+          <div class="muted" style="font-size:13px;line-height:1.5">Niente linguaggio offensivo, discriminatorio o inappropriato nelle sfide.</div>
+        </div>
+      </div>
+      <div class="card" style="display:flex;align-items:flex-start;gap:12px">
+        <div style="font-size:24px;flex-shrink:0">⚖️</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;margin-bottom:4px">Vota onestamente</div>
+          <div class="muted" style="font-size:13px;line-height:1.5">Il voto è anonimo ma l'onestà è la base del gioco. Chi bluffa sul risultato perde la fiducia del gruppo.</div>
+        </div>
+      </div>
+      <div class="card" style="display:flex;align-items:flex-start;gap:12px">
+        <div style="font-size:24px;flex-shrink:0">🔞</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;margin-bottom:4px">Solo maggiorenni</div>
+          <div class="muted" style="font-size:13px;line-height:1.5">stash è riservato agli utenti con almeno 18 anni. Dichiari di avere l'età richiesta.</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;padding:14px;background:var(--bg3);border-radius:var(--rs)">
+      <div class="check" id="terms-check" onclick="toggleTerms()"></div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.5;cursor:pointer" onclick="toggleTerms()">
+        Dichiaro di aver letto e accettare le regole di stash. Confermo di avere almeno 18 anni e di non usare la piattaforma per sfide pericolose o inappropriate.
+      </div>
+    </div>
+    <button class="btn-primary" id="terms-btn" onclick="acceptTerms()" disabled>Are you in? →</button>
+  </div>
+</div>
+<!-- ===== CREATE GROUP ===== -->
+<div class="screen" id="s-create-group">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Gruppi</button>
+  </div>
+  <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px;margin-bottom:4px">Nuovo gruppo</div>
+  <div class="muted" style="margin-bottom:24px">Crea il tuo cerchio di sfide private</div>
+  <div class="form-sec">
+    <label class="form-lbl">Nome del gruppo</label>
+    <input class="form-input" id="cg-name" placeholder="Es. Sunday League Crew" oninput="checkCG()">
+  </div>
+  <div class="form-sec">
+    <label class="form-lbl">Icona del gruppo</label>
+    <div class="emoji-grid">
+      <div class="emoji-item sel" data-e="&#x26BD;" onclick="selEmoji(this)">⚽</div>
+      <div class="emoji-item" data-e="&#x1F3AE;" onclick="selEmoji(this)">🎮</div>
+      <div class="emoji-item" data-e="&#x1F3C0;" onclick="selEmoji(this)">🏀</div>
+      <div class="emoji-item" data-e="&#x1F3B2;" onclick="selEmoji(this)">🎲</div>
+      <div class="emoji-item" data-e="&#x1F355;" onclick="selEmoji(this)">🍕</div>
+      <div class="emoji-item" data-e="&#x1F3CB;" onclick="selEmoji(this)">🏋️</div>
+      <div class="emoji-item" data-e="&#x1F3AF;" onclick="selEmoji(this)">🎯</div>
+      <div class="emoji-item" data-e="&#x1F0CF;" onclick="selEmoji(this)">🃏</div>
+    </div>
+  </div>
+  <div class="form-sec">
+    <label class="form-lbl">Aggiungi membri</label>
+    <div id="cg-members-list" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:4px 14px">
+      <div class="muted" style="padding:12px 0;font-size:13px">Caricamento utenti...</div>
+    </div>
+  </div>
+  <button class="btn-primary" id="cg-btn" onclick="createGroup()" disabled>Crea il gruppo</button>
+  <div class="spacer-sm"></div>
+</div>
+
+<!-- ===== CREATE CHALLENGE ===== -->
+<div class="screen" id="s-create-challenge">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Gruppi</button>
+  </div>
+  <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px;margin-bottom:4px">Nuova sfida</div>
+  <div class="muted" style="margin-bottom:22px">Metti qualcosa in palio. Il gruppo ricorda tutto.</div>
+  <div class="form-sec">
+    <label class="form-lbl">La sfida 🎯</label>
+    <textarea class="form-input" id="ch-text" placeholder="Es. Lo fai per X€? Corri fino al bar in meno di 2 minuti" oninput="checkChallenge();updateCounter();clearChallengeErr()"></textarea>
+    <div class="char-count"><span id="ch-count">0</span>/200</div>
+  </div>
+  <div class="form-sec">
+    <label class="form-lbl">Importo in palio 💶</label>
+    <div class="amt-wrap"><span class="amt-pre">€</span><input class="form-input" type="number" id="ch-amount" placeholder="0" min="1" max="100" oninput="checkChallenge();syncChips(this.value)"></div>
+    <div class="chips"><div class="chip" onclick="setAmt(5)">€5</div><div class="chip" onclick="setAmt(10)">€10</div><div class="chip" onclick="setAmt(20)">€20</div><div class="chip" onclick="setAmt(50)">€50</div></div>
+    <div class="info-box info-gray" style="margin-top:10px;font-size:12px">Il tuo credito demo: <strong id="bal-display" style="color:var(--accent)">€100</strong></div>
+  </div>
+  <div class="form-sec">
+    <label class="form-lbl">Chi sfidi? 🎯</label>
+    <div id="ch-members-list" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:4px 14px">
+      <div class="muted" style="padding:12px 0;font-size:13px">Caricamento utenti...</div>
+    </div>
+    <div id="ch-mode-info" class="info-box info-gray" style="margin-top:10px;font-size:13px">Seleziona almeno un avversario</div>
+  </div>
+  <div class="form-sec">
+    <label class="form-lbl">Timeout accettazione ⏱</label>
+    <div class="chips" id="timeout-chips">
+      <div class="chip sel" data-t="3600" onclick="selTimeout(this)">⏱ 1 ora</div>
+      <div class="chip" data-t="43200" onclick="selTimeout(this)">⏱ 12 ore</div>
+      <div class="chip" data-t="86400" onclick="selTimeout(this)">⏱ 24 ore</div>
+    </div>
+    <div class="muted" style="font-size:12px;margin-top:8px">Se non accettata in tempo, i fondi tornano nel wallet</div>
+  </div>
+  <div id="ch-summary" style="display:none">
+    <div class="sl">Riepilogo escrow</div>
+    <div class="summary">
+      <div class="summary-row"><span id="sum-you-lbl">Tu blocchi</span><span id="sum-you">€0</span></div>
+      <div class="summary-row"><span id="sum-them-lbl">Avversario blocca</span><span id="sum-them">€0</span></div>
+      <div class="summary-row"><span>Timeout</span><span id="sum-timeout">1 ora</span></div>
+      <div class="summary-total"><span>Totale in pot</span><span id="sum-total">€0</span></div>
+    </div>
+  </div>
+  <div style="height:20px"></div>
+  <button class="btn-primary" id="ch-btn" onclick="launchChallenge()">🔒 Blocca la quota e lancia</button>
+  <button class="btn-secondary" onclick="go('s-group-custom')">Annulla</button>
+  <div style="height:36px"></div>
+</div>
+
+<!-- ===== SUCCESS ===== -->
+<div class="screen" id="s-success">
+  <div class="success-wrap">
+    <div class="success-icon">🔒</div>
+    <div class="success-title">Sfida lanciata!</div>
+    <div class="success-sub">La quota è bloccata in escrow.<br><strong id="suc-other">L'avversario</strong> riceverà una notifica entro <strong id="suc-timeout">1 ora</strong>.</div>
+    <div class="escrow-hero">
+      <div class="escrow-hero-label">💶 Bloccato in escrow</div>
+      <div class="escrow-hero-amount" id="suc-amount">€20</div>
+      <div class="escrow-hero-sub">Il gruppo decide. Tu intanto aspetti.</div>
+    </div>
+    <div id="suc-notif" style="display:none;width:100%;margin-bottom:20px">
+      <div class="notif-banner" style="cursor:default"><div>📲</div><div class="notif-text"><strong id="suc-other2">L'avversario</strong> ha ricevuto la notifica</div></div>
+    </div>
+    <button class="btn-primary" onclick="go('s-group-custom')">Torna al gruppo</button>
+  </div>
+</div>
+
+<!-- ===== ACCEPT ===== -->
+<div class="screen" id="s-accept">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-group-custom')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Indietro</button>
+  </div>
+  <div style="text-align:center;padding:16px 0 24px">
+    <div style="font-size:52px;margin-bottom:16px">🌶️</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:6px"><strong id="acc-from">Qualcuno</strong> ti sfida</div>
+    <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:18px;margin-bottom:20px;line-height:1.3" id="acc-title">"..."</div>
+    <div class="escrow-hero" style="text-align:left">
+      <div class="escrow-hero-label">💶 In palio</div>
+      <div class="escrow-hero-amount" id="acc-amount">€20</div>
+      <div class="escrow-hero-sub" id="acc-escrow-sub">Se accetti, i fondi vengono bloccati in escrow</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="muted" style="margin-bottom:10px;font-size:13px">Come funziona</div>
+    <div style="font-size:14px;line-height:1.8" id="acc-how">1️⃣ Accetti → fondi bloccati in escrow<br>2️⃣ Fai la sfida<br>3️⃣ Dichiarate chi ha vinto<br>4️⃣ I fondi vanno al vincitore</div>
+  </div>
+  <div class="info-box info-amber" style="margin-bottom:20px"><strong id="acc-timer-lbl">⏱ Scade tra 47:23</strong></div>
+  <button class="btn-primary" id="acc-btn" onclick="acceptChallenge()">✅ Accetto la sfida</button>
+  <button class="btn-danger" onclick="go('s-group-custom')">Rifiuto</button>
+  <div style="height:36px"></div>
+</div>
+
+<!-- ===== VOTE 1V1 ===== -->
+<div class="screen" id="s-vote1v1">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-group-custom')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Indietro</button>
+  </div>
+  <div style="margin-bottom:20px">
+    <div class="sl">Sfida 1vs1 — dichiara l'esito</div>
+    <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:19px;line-height:1.3;margin-bottom:14px" id="v1-title">"Fai 20 squat consecutivi ora, davanti a tutti"</div>
+    <div class="ebar"><div><div class="ebar-label">🔒 In escrow</div><div class="ebar-amount" id="v1-amount">€25</div></div><div class="ebar-right"><div class="ebar-label">Modalità</div><div style="font-size:13px;font-weight:600;color:var(--text)">Dichiarazione 1vs1</div></div></div>
+  </div>
+  <div class="decl-section">
+    <div class="decl-title">La tua dichiarazione 🗣</div>
+    <div class="decl-sub">Dichiarate entrambi lo stesso vincitore per sbloccare i fondi. Disaccordo? Decide il gruppo.</div>
+    <div id="v1-my-decl">
+      <div class="btn-row">
+        <button class="btn-half" id="v1-btn-me" onclick="declare('self')"><span style="font-size:18px">🏆</span><span>Ho vinto io</span><span class="btn-half-sub" id="v1-me-name">Tu</span></button>
+        <button class="btn-half" id="v1-btn-other" onclick="declare('other')"><span style="font-size:18px">👏</span><span>Ha vinto</span><span class="btn-half-sub" id="v1-other-name">L'avversario</span></button>
+      </div>
+    </div>
+    <div id="v1-my-voted" style="display:none">
+      <div class="decl-done" id="v1-my-voted-txt">Hai dichiarato</div>
+    </div>
+  </div>
+  <div class="decl-section">
+    <div class="decl-title">Dichiarazione di <span id="v1-other-lbl">avversario</span></div>
+    <div id="v1-other-wait"><div class="decl-waiting">In attesa...</div></div>
+    <div id="v1-other-voted" style="display:none"><div class="decl-done" id="v1-other-voted-txt"></div></div>
+  </div>
+  <div id="v1-conflict" style="display:none">
+    <div class="info-box info-red" style="margin-bottom:14px"><strong>🚨 Dichiarazioni in conflitto!</strong><br><span id="v1-conflict-txt" style="font-size:13px;color:var(--text2)"></span></div>
+    <button class="btn-primary" onclick="go('s-vote-group')">Chiedi al gruppo di decidere</button>
+  </div>
+  <div id="v1-agree" style="display:none">
+    <div class="info-box info-accent" style="margin-bottom:14px">✅ <strong>Accordo raggiunto!</strong> Fondi sbloccati automaticamente.</div>
+    <button class="btn-primary" onclick="resolveChallenge()">Vedi il risultato →</button>
+  </div>
+  <div style="height:36px"></div>
+</div>
+
+<!-- ===== VOTE GROUP ===== -->
+<div class="screen" id="s-vote-group">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-group-custom')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Indietro</button>
+  </div>
+  <div style="margin-bottom:20px">
+    <div class="sl">Voto del gruppo</div>
+    <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:19px;line-height:1.3;margin-bottom:14px" id="vg-title">"Fai 20 squat consecutivi ora, davanti a tutti"</div>
+    <div class="ebar" id="vg-escrow-bar"><div><div class="ebar-label">🔒 In escrow</div><div class="ebar-amount" id="vg-amount">€25</div></div><div class="ebar-right"><div class="ebar-label">Votanti</div><div style="font-size:14px;font-weight:600" id="vg-vote-count">0 voti</div></div></div>
+    <div class="prog-wrap"><div class="prog-bar" id="vg-prog-bar" style="width:0%"></div></div>
+  </div>
+  <!-- Voting section - shown before voting -->
+  <div class="card" id="vg-vote-section">
+    <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:15px;margin-bottom:4px">Chi ha vinto? 🏆</div>
+    <div class="muted" style="font-size:12px;margin-bottom:14px">Voto anonimo — una volta solo. Con la maggioranza i fondi si sbloccano.</div>
+    <div class="btn-row" id="vg-btn-row">
+      <button class="btn-half" id="vg-btn-challenger" onclick="groupVote('challenger')"><span style="font-size:18px">💪</span><span id="vg-challenger-name">Sfidante</span><span class="btn-half-sub">Ha vinto</span></button>
+      <button class="btn-half" id="vg-btn-challenged" onclick="groupVote('challenged')"><span style="font-size:18px">🏆</span><span id="vg-challenged-name">Sfidato</span><span class="btn-half-sub">Ha vinto</span></button>
+    </div>
+  </div>
+  <!-- After voting -->
+  <div id="vg-voted" style="display:none">
+    <div class="info-box info-accent" style="margin-bottom:16px">✅ Hai votato! In attesa degli altri...</div>
+  </div>
+  <!-- Already voted notice -->
+  <div id="vg-already-voted" style="display:none">
+    <div class="info-box info-gray" style="margin-bottom:16px">Hai già votato per questa sfida.</div>
+  </div>
+  <!-- Simulate button for demo -->
+  <button class="btn-secondary" onclick="simulateGroupVote()" style="margin-top:16px">Simula: tutti hanno votato →</button>
+  <div style="height:36px"></div>
+</div>
+
+<!-- ===== WINNER ===== -->
+<div class="screen" id="s-winner">
+  <div class="winner-wrap">
+    <div class="winner-emoji" id="w-emoji">🏆</div>
+    <div class="winner-title" id="w-title">Ha vinto!</div>
+    <div class="winner-sub" id="w-sub">I fondi si sono sbloccati automaticamente.</div>
+    <div class="winner-amount" id="w-amount">€0</div>
+    <div class="winner-lbl" id="w-lbl">trasferiti al vincitore</div>
+    <div class="vote-result-box">
+      <div class="muted" style="font-size:12px;margin-bottom:10px">Risultato</div>
+      <div class="vr-row"><div class="vr-left"><div class="av av-sm" id="w-winner-av"></div><span style="font-size:14px;font-weight:600" id="w-winner-name">-</span></div><div class="vr-badge vr-win" id="w-winner-badge">🏆 Vincitore</div></div>
+      <div class="vr-row"><div class="vr-left"><div class="av av-sm" id="w-loser-av"></div><span style="font-size:14px;font-weight:600" id="w-loser-name">-</span></div><div class="vr-badge vr-lose">Sconfitto</div></div>
+    </div>
+    <button class="btn-primary" onclick="go('s-home')">Torna ai gruppi</button>
+    <button class="btn-secondary" onclick="go('s-create-challenge')">Rivincita! 🔥</button>
+  </div>
+</div>
+
+<!-- ===== WALLET ===== -->
+<div class="screen" id="s-wallet">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Profilo</button>
+    <span style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:16px">Wallet</span>
+  </div>
+  <div class="wallet-hero">
+    <div class="wallet-label">Saldo disponibile <span class="tag-demo">🎮 DEMO</span></div>
+    <div class="wallet-amount" id="wal-balance">€100.00</div>
+    <div class="wallet-locked" id="wal-locked">Nessun importo bloccato</div>
+    <div class="muted" style="font-size:11px;margin-top:8px">Credito demo — nessun denaro reale</div>
+  </div>
+  <div id="wal-escrow-card" style="display:none">
+    <div class="card card-amber" style="margin-bottom:12px">
+      <div class="row"><div><div class="muted" style="font-size:12px;margin-bottom:4px">🔒 Fondi bloccati</div><div style="font-size:15px;font-weight:600" id="wal-escrow-detail">Sfida attiva</div></div><div class="ebar-amount" id="wal-escrow-amount">€0</div></div>
+    </div>
+  </div>
+  <div class="wallet-actions">
+    <button class="wallet-act-btn" onclick="go('s-deposit')">+ Deposita</button>
+    <button class="wallet-act-btn" onclick="go('s-withdraw')">↑ Preleva</button>
+  </div>
+  <div class="sl">Ultime transazioni</div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:4px 14px;margin-bottom:12px" id="wal-txs">
+    <div class="muted" style="text-align:center;padding:12px 0;font-size:13px">Caricamento...</div>
+  </div>
+  <div class="info-box info-gray" style="margin-bottom:12px;font-size:12px;text-align:center">🔒 Pagamenti gestiti da <strong>Mangopay</strong> · Istituto EU regolamentato</div>
+</div>
+
+<!-- ===== DEPOSIT ===== -->
+<div class="screen" id="s-deposit">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-wallet')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Wallet</button>
+  </div>
+  <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px;margin-bottom:4px">Deposita fondi</div>
+  <div class="muted" style="margin-bottom:24px">Gestito da Mangopay, istituto regolamentato EU</div>
+  <div class="form-sec">
+    <label class="form-lbl">Importo</label>
+    <div class="amt-wrap"><span class="amt-pre">€</span><input class="form-input" type="number" id="dep-amount" placeholder="0" min="1" oninput="checkDep()"></div>
+    <div class="chips"><div class="chip" onclick="setDep(10)">€10</div><div class="chip" onclick="setDep(20)">€20</div><div class="chip" onclick="setDep(50)">€50</div><div class="chip" onclick="setDep(100)">€100</div></div>
+  </div>
+  <div class="form-sec">
+    <label class="form-lbl">Metodo di pagamento</label>
+    <div style="display:flex;gap:10px;margin-bottom:10px">
+      <button onclick="selectPayment(this,'apple')" id="pay-apple" style="flex:1;background:#000;color:#fff;border:2px solid transparent;border-radius:var(--rs);padding:13px 10px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        Apple Pay
+      </button>
+      <button onclick="selectPayment(this,'google')" id="pay-google" style="flex:1;background:#fff;color:#333;border:2px solid transparent;border-radius:var(--rs);padding:13px 10px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Google Pay
+      </button>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);overflow:hidden">
+      <div id="pay-card-row" style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;cursor:pointer" onclick="selectPayment(this,'card')">
+        <span style="font-size:18px">💳</span>
+        <div style="flex:1"><div style="font-size:14px;font-weight:500">Carta di credito/debito</div><div style="font-size:12px;color:var(--text2)">Visa •••• 4242</div></div>
+        <div id="pay-card-check" style="width:16px;height:16px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;color:#110D0A;font-weight:800">✓</div>
+      </div>
+      <div style="padding:14px 16px;display:flex;align-items:center;gap:10px;opacity:.5">
+        <span style="font-size:18px">🏦</span>
+        <div><div style="font-size:14px;font-weight:500">Bonifico bancario</div><div style="font-size:12px;color:var(--text2)">2-3 giorni lavorativi</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="info-box info-amber" style="margin-bottom:20px">🎮 Demo — nessun addebito reale</div>
+  <button class="btn-primary" id="dep-btn" onclick="confirmDeposit()" disabled>Deposita €0</button>
+  <div style="height:36px"></div>
+</div>
+
+<!-- ===== WITHDRAW ===== -->
+<div class="screen" id="s-withdraw">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-wallet')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Wallet</button>
+  </div>
+  <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px;margin-bottom:4px">Preleva fondi</div>
+  <div class="muted" style="margin-bottom:24px">Disponibile: <strong id="wd-avail" style="color:var(--accent)">€100.00</strong></div>
+  <div class="form-sec">
+    <label class="form-lbl">Importo</label>
+    <div class="amt-wrap"><span class="amt-pre">€</span><input class="form-input" type="number" id="wd-amount" placeholder="0" oninput="checkWD()"></div>
+    <div style="text-align:right;margin-top:8px"><span style="font-size:13px;color:var(--accent);cursor:pointer" onclick="setWD()">Preleva tutto →</span></div>
+  </div>
+  <div class="form-sec">
+    <label class="form-lbl">IBAN di destinazione</label>
+    <div class="card" style="margin:0;display:flex;align-items:center;gap:10px">
+      <span style="font-size:20px">🏦</span>
+      <div style="flex:1"><div style="font-size:14px;font-weight:500">IT60 •••• •••• •••• 1234</div><div style="font-size:12px;color:var(--text2)">Conto principale</div></div>
+      <span style="font-size:12px;color:var(--accent);cursor:pointer">Cambia</span>
+    </div>
+  </div>
+  <div class="info-box info-gray" style="margin-bottom:16px">⏱ Fondi entro 1-2 giorni lavorativi</div>
+  <div class="info-box info-amber" style="margin-bottom:20px">🎮 Demo — nessun prelievo reale</div>
+  <button class="btn-primary" id="wd-btn" onclick="confirmWithdraw()" disabled>Richiedi prelievo</button>
+  <div style="height:36px"></div>
+</div>
+
+<!-- ===== HISTORY ===== -->
+<div class="screen" id="s-history">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Home</button>
+    <span style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:16px">Le tue sfide</span>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-val" id="stat-total">0</div><div class="stat-lbl">Sfide</div></div>
+    <div class="stat-item"><div class="stat-val" id="stat-wins">0</div><div class="stat-lbl">Vinte</div></div>
+    <div class="stat-item"><div class="stat-val" id="stat-wr">0%</div><div class="stat-lbl">Win rate</div></div>
+    <div class="stat-item"><div class="stat-val" id="stat-net" style="color:var(--accent)">€0</div><div class="stat-lbl">Netto</div></div>
+  </div>
+  <div class="chips" id="hist-filter" style="margin-bottom:16px">
+    <div class="chip sel" data-f="all" onclick="filterHist(this)">Tutte</div>
+    <div class="chip" data-f="win" onclick="filterHist(this)">Vinte</div>
+    <div class="chip" data-f="lose" onclick="filterHist(this)">Perse</div>
+    <div class="chip" data-f="live" onclick="filterHist(this)">In corso</div>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px" id="hist-list">
+    <div class="muted" style="text-align:center;font-size:13px">Nessuna sfida ancora. Lanciane una!</div>
+  </div>
+  <div class="spacer-sm"></div>
+</div>
+
+<!-- ===== PROFILE ===== -->
+<div class="screen" id="s-profile">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Home</button>
+  </div>
+  <div class="profile-header">
+    <div class="av av-lg" id="prof-av" style="margin:0 auto;background:var(--accent);color:#110D0A"></div>
+    <div class="profile-name" id="prof-name">-</div>
+    <div class="profile-user" id="prof-user">stash beta</div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-val" id="prof-stat-total">0</div><div class="stat-lbl">Sfide</div></div>
+    <div class="stat-item"><div class="stat-val" id="prof-stat-wins">0</div><div class="stat-lbl">Vinte</div></div>
+    <div class="stat-item"><div class="stat-val" id="prof-stat-wr">0%</div><div class="stat-lbl">Win rate</div></div>
+    <div class="stat-item"><div class="stat-val" id="prof-stat-net" style="color:var(--accent)">€0</div><div class="stat-lbl">Netto</div></div>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:4px 16px;margin-bottom:16px">
+    <div class="profile-opt" onclick="go('s-wallet')"><div class="profile-opt-icon">👛</div><div class="profile-opt-label">Wallet</div><div class="profile-opt-val" id="prof-balance">€100 <span class="tag-demo">DEMO</span></div></div>
+    <div class="profile-opt" onclick="go('s-history')"><div class="profile-opt-icon">📋</div><div class="profile-opt-label">Storico sfide</div><div class="profile-opt-val" id="prof-sfide-count">0 →</div></div>
+    <div class="profile-opt" onclick="go('s-home')"><div class="profile-opt-icon">👥</div><div class="profile-opt-label">I miei gruppi</div><div class="profile-opt-val" id="prof-groups-count">0 →</div></div>
+    <div class="profile-opt" onclick="toggleNotif()"><div class="profile-opt-icon">🔔</div><div class="profile-opt-label">Notifiche</div><div class="tog on" id="notif-tog"><div class="tog-knob"></div></div></div>
+  </div>
+  <div class="center muted" style="font-size:12px;padding-bottom:24px">stash · Beta · 2026<br><span style="color:var(--text3)">"Metti qualcosa in palio." · Mangopay 🔒</span></div>
+  <div class="bnav">
+    <div class="bnav-item" onclick="go('s-home')"><div class="bnav-icon">👥</div>Gruppi</div>
+    <div class="bnav-item" onclick="go('s-amici')"><div class="bnav-icon">🤝</div>Amici</div>
+    <div class="bnav-item" onclick="go('s-wallet')"><div class="bnav-icon">👛</div>Wallet</div>
+    <div class="bnav-item" onclick="go('s-history')"><div class="bnav-icon">📋</div>Storico</div>
+    <div class="bnav-item on"><div class="bnav-icon">👤</div>Profilo</div>
+  </div>
+</div>
+
+
+
+<!-- ===== AMICI ===== -->
+<div class="screen" id="s-amici">
+  <div class="header">
+    <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:22px">Amici</div>
+    <button class="share-btn" onclick="shareLink()">🔥 Invita</button>
+  </div>
+  <div class="muted" style="margin-bottom:20px;font-size:13px">Persone con cui hai giocato o che hai invitato su stash.</div>
+  <div id="amici-list">
+    <div class="info-box info-gray" style="text-align:center">
+      Nessun amico ancora.<br>Condividi il link per invitarli!
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <div class="bnav">
+    <div class="bnav-item" onclick="go('s-home')"><div class="bnav-icon">👥</div>Gruppi</div>
+    <div class="bnav-item on"><div class="bnav-icon">🤝</div>Amici</div>
+    <div class="bnav-item" onclick="go('s-wallet')"><div class="bnav-icon">👛</div>Wallet</div>
+    <div class="bnav-item" onclick="go('s-history')"><div class="bnav-icon">📋</div>Storico</div>
+    <div class="bnav-item" onclick="go('s-profile')"><div class="bnav-icon">👤</div>Profilo</div>
+  </div>
+</div>
+
+<!-- ===== CUSTOM GROUP ===== -->
+<div class="screen" id="s-group-custom">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Gruppi</button>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="font-size:22px" id="cg-detail-icon">🎮</div>
+      <button onclick="toggleGroupMenu()" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:22px;padding:4px;line-height:1" id="group-menu-btn">⋯</button>
+    </div>
+  </div>
+  <!-- Group dropdown menu -->
+  <div id="group-menu" style="display:none;position:relative;z-index:50;margin-top:-8px;margin-bottom:12px">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.4)">
+      <div id="gm-rename" class="profile-opt" style="padding:14px 16px" onclick="groupMenuAction('rename')"><div class="profile-opt-icon">✏️</div><div class="profile-opt-label">Modifica nome gruppo</div><div class="profile-opt-val" id="gm-rename-note" style="font-size:11px"></div></div>
+      <div id="gm-add" class="profile-opt" style="padding:14px 16px" onclick="groupMenuAction('add')"><div class="profile-opt-icon">➕</div><div class="profile-opt-label">Aggiungi membro</div></div>
+      <div id="gm-remove" class="profile-opt" style="padding:14px 16px" onclick="groupMenuAction('remove')"><div class="profile-opt-icon">➖</div><div class="profile-opt-label">Rimuovi membro</div><div class="profile-opt-val" id="gm-remove-note" style="font-size:11px"></div></div>
+      <div class="profile-opt" style="padding:14px 16px;color:var(--red)" onclick="groupMenuAction('leave')"><div style="width:28px;text-align:center;font-size:20px">🚪</div><div class="profile-opt-label" style="color:var(--red)">Esci ed elimina gruppo</div></div>
+    </div>
+  </div>
+  <div style="margin-bottom:20px">
+    <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px;margin-bottom:4px" id="cg-detail-name">Nuovo Gruppo</div>
+    <div class="muted">Il tuo gruppo · Nessuna fee</div>
+  </div>
+  <div class="sl">Sfide attive</div>
+  <div id="cg-live-challenge" style="display:none"></div>
+  <div class="info-box info-gray" id="cg-empty-state">
+    <strong>Nessuna sfida attiva.</strong><br>
+    Lancia la prima sfida del gruppo!
+  </div>
+  <div class="sl" style="margin-top:16px">Membri</div>
+  <div id="cg-members-display" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:4px 14px;margin-bottom:20px"></div>
+  <div style="padding-bottom:24px">
+    <button class="btn-primary" onclick="go('s-create-challenge')">+ Lancia una sfida</button>
+  </div>
+</div>
+</div><!-- /phone -->
+<div id="share-modal" style="display:none"></div>
+
+<!-- GROUP MODALS -->
+<div id="group-action-modal" style="display:none">
+  <div class="modal-overlay" onclick="closeGroupModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="gam-title">Modifica nome</div>
+      <div id="gam-rename-content" style="display:none">
+        <label class="form-lbl">Nuovo nome del gruppo</label>
+        <input class="form-input" id="gam-new-name" style="margin-bottom:16px">
+        <button class="btn-primary" onclick="confirmRename()">Salva</button>
+      </div>
+      <div id="gam-add-content" style="display:none">
+        <div class="muted" style="margin-bottom:14px;font-size:13px">Seleziona chi aggiungere</div>
+        <div id="gam-add-list"></div>
+        <button class="btn-primary" style="margin-top:16px" onclick="closeGroupModal()">Chiudi</button>
+      </div>
+      <div id="gam-remove-content" style="display:none">
+        <div class="muted" style="margin-bottom:14px;font-size:13px">Seleziona chi rimuovere</div>
+        <div id="gam-remove-list"></div>
+        <button class="btn-primary" style="margin-top:16px" onclick="closeGroupModal()">Chiudi</button>
+      </div>
+      <div id="gam-leave-content" style="display:none">
+        <div class="info-box info-red" style="margin-bottom:16px">Questa azione eliminerà il gruppo per tutti i membri.</div>
+        <button class="btn-primary" style="background:var(--red)" onclick="confirmLeaveGroup()">Sì, esci ed elimina</button>
+        <button class="btn-secondary" onclick="closeGroupModal()">Annulla</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-database-compat.min.js"></script>
+<script>
+// stash v12 — main script
+
+// ===== IDENTITY =====
+var MY_UID  = localStorage.getItem('stash_uid_v3');
+var MY_NAME = localStorage.getItem('stash_name_v3');
+if (!MY_UID) {
+  MY_UID = 'u' + Math.random().toString(36).substr(2,8);
+  localStorage.setItem('stash_uid_v3', MY_UID);
+}
+
+// ===== FIREBASE =====
+// ===== FIREBASE SDK =====
+var db = null;
+var ROOT = 'demo_v3';
+var fbReady = false;
+
+function fbRef(path) {
+  if (!db) return { set:function(){}, remove:function(){}, get:function(){return{then:function(){return{catch:function(){}};}} }, on:function(){} };
+  return db.ref(ROOT + (path ? '/' + path : ''));
+}
+
+function fbSet(path, val) { fbRef(path).set(val); }
+function fbRemove(path)   { fbRef(path).remove(); }
+function fbGet(path, cb)  {
+  fbRef(path).get().then(function(s){ if(cb)cb(s); }).catch(function(){if(cb)cb({val:function(){return null;}});});
+}
+
+function waitForFirebase(cb) {
+  if (typeof firebase !== 'undefined') { cb(); return; }
+  var t = 0;
+  var iv = setInterval(function() {
+    t += 200;
+    if (typeof firebase !== 'undefined') { clearInterval(iv); cb(); }
+    else if (t > 15000) { clearInterval(iv); console.warn('Firebase SDK not available'); cb(); }
+  }, 200);
+}
+
+function initFirebase(cb) {
+  if (fbReady) { if(cb)cb(); return; }
+  waitForFirebase(function() {
+    if (typeof firebase === 'undefined') { 
+      console.warn('Firebase SDK not available — offline mode');
+      if(cb)cb(); 
+      addFallbackUser(); 
+      return; 
+    }
+    try {
+      if (!firebase.apps.length) firebase.initializeApp({
+        apiKey: "AIzaSyBzDjcagzmo00ewzIB5guW3mhLhO_G-Cb8",
+        authDomain: "stash-8ab2a.firebaseapp.com",
+        databaseURL: "https://stash-8ab2a-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "stash-8ab2a",
+        storageBucket: "stash-8ab2a.firebasestorage.app",
+        messagingSenderId: "572148153547",
+        appId: "1:572148153547:web:6c93de96b37f5acd8f6f4e"
+      });
+      db = firebase.database();
+      fbReady = true;
+      db.ref(ROOT).on('value', function(snap) {
+        var d = snap.val() || {};
+        STATE.users     = d.users     || {};
+        STATE.challenge = d.challenge || null;
+        STATE.groups    = d.groups    || {};
+        if (countKeys(STATE.users) <= 1) {
+          setTimeout(function() {
+            if (countKeys(STATE.users) <= 1) addFallbackUser();
+          }, 5000);
+        }
+        onStateChange();
+      });
+    } catch(e) { 
+      console.error('Firebase init:', e); 
+      addFallbackUser();
+    }
+    if(cb) cb();
+  });
+}
+
+// Adds a local test user when Firebase is unavailable or empty
+function addFallbackUser() {
+  var testUid = 'test_user_demo';
+  if (STATE.users[testUid]) return; // already added
+  STATE.users[testUid] = { 
+    name: 'Demo Friend', 
+    balance: 100, 
+    escrow: 0, 
+    lastSeen: Date.now(),
+    isDemo: true
+  };
+  var cur = document.querySelector('.screen.active');
+  if (cur) onStateChange();
+  // Show info banner
+  var banner = document.createElement('div');
+  banner.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#241912;border:1px solid rgba(232,80,26,0.3);border-radius:10px;padding:10px 16px;font-size:12px;color:rgba(245,236,215,0.6);z-index:99;max-width:340px;text-align:center';
+  banner.textContent = 'Modalità demo locale — Firebase non connesso. Condividi il link per testare in multiplayer.';
+  document.body.appendChild(banner);
+  setTimeout(function(){ if(banner.parentNode) banner.parentNode.removeChild(banner); }, 6000);
+}
+
+// ===== STATE =====
+var STATE = { users:{}, challenge:null, groups:{} };
+var SEL_CHALLENGED = null;
+var SELECTED_UIDS = {};
+var CH_TIMEOUT = 3600;
+var MY_DECLARED = false;
+var PIZZA_SEC = 47*60+23;
+var PIZZA_INT = null;
+var GROUP_CREATOR = null;
+var BLOCKED = ['morte','morire','muori','ammazzati','uccidi','cazzo','fanculo','vaffanculo','stronzo','stronza','puttana','troia','bastardo','bastarda','coglione','cogliona','merda','minchia','porco dio','porca madonna','porcodio','affanculo','figlio di'];
+
+function countKeys(obj){var n=0;for(var k in obj){if(obj.hasOwnProperty(k))n++;}return n;}
+function myBal() { var u=STATE.users[MY_UID]; return (u&&u.balance!==undefined)?u.balance:100; }
+function myEsc() { var u=STATE.users[MY_UID]; return (u&&u.escrow!==undefined)?u.escrow:0; }
+function setBal(uid,v) { fbSet('users/'+uid+'/balance', v); }
+function setEsc(uid,v) { fbSet('users/'+uid+'/escrow', v); }
+function getBal(uid)   { var u=STATE.users[uid]; return (u&&u.balance!==undefined)?u.balance:100; }
+
+// ===== NAVIGATION =====
+function go(id) {
+  var all = document.querySelectorAll('.screen');
+  for (var i=0;i<all.length;i++) all[i].classList.remove('active');
+  var t = document.getElementById(id);
+  if (t) t.classList.add('active');
+  window.scrollTo(0,0);
+  if (id==='s-home')             drawHome();
+  if (id==='s-wallet')           drawWallet();
+  if (id==='s-profile')          drawProfile();
+  if (id==='s-history')          drawHistory();
+  if (id==='s-amici')            drawAmici();
+  if (id==='s-create-challenge') { SELECTED_UIDS={}; SEL_CHALLENGED=null; drawChallengeUsers(); updateBal(); }
+  if (id==='s-create-group')     drawGroupUsers();
+  if (id==='s-group-custom')     drawCustomGroup();
+  if (id==='s-vote1v1')          initVote1v1();
+  if (id==='s-vote-group')       drawGroupVote();
+  if (id==='s-withdraw')         setText('wd-avail','€'+myBal().toFixed(2));
+  if (id==='s-success')          setTimeout(function(){ show('suc-notif'); },1500);
+}
+
+function onStateChange() {
+  var cur = document.querySelector('.screen.active');
+  if (!cur) return;
+  var id = cur.id;
+  if (id==='s-home')         drawHome();
+  if (id==='s-wallet')       drawWallet();
+  if (id==='s-profile')      drawProfile();
+  if (id==='s-history')      drawHistory();
+  if (id==='s-amici')        drawAmici();
+  if (id==='s-vote1v1')      drawVote1v1Live();
+  if (id==='s-vote-group')   drawGroupVote();
+  if (id==='s-create-challenge') { updateBal(); }
+  var ch = STATE.challenge;
+  if (ch && ch.status==='resolved' && ch.winner && (id==='s-vote1v1'||id==='s-vote-group')) {
+    drawWinnerScreen(ch);
+    go('s-winner');
+  }
+  // Global notification — shows on ANY screen
+  updateGlobalNotif();
+}
+
+var _lastChStatus = null;
+function updateGlobalNotif() {
+  var gn = el('global-notif');
+  if (!gn) return;
+  var ch = STATE.challenge;
+  // Show notification if I'm involved and haven't seen it yet
+  if (ch && ch.status==='pending' && ch.challengedUid===MY_UID) {
+    gn.style.display = 'flex';
+    setText('gn-icon', '⚡');
+    setText('gn-text', ch.challengerName+' ti sfida: "'+ch.title.substr(0,30)+'" — €'+ch.amount);
+    // Auto-navigate to accept screen if just arrived
+    if (_lastChStatus !== 'pending_for_me') {
+      _lastChStatus = 'pending_for_me';
+      var cur = document.querySelector('.screen.active');
+      if (cur && cur.id !== 's-accept' && cur.id !== 's-welcome' && cur.id !== 's-terms') {
+        fillAcceptScreen(ch);
+        setTimeout(function(){ go('s-accept'); }, 800);
+      }
+    }
+  } else if (ch && ch.status==='accepted' && (ch.challengerUid===MY_UID||ch.challengedUid===MY_UID)) {
+    gn.style.display = 'flex';
+    setText('gn-icon', '🔴');
+    setText('gn-text', 'Sfida live — "'+ch.title.substr(0,25)+'..." — dichiara l'esito');
+    _lastChStatus = 'accepted';
+  } else {
+    gn.style.display = 'none';
+    _lastChStatus = null;
+  }
+}
+
+function handleGlobalNotif() {
+  var ch = STATE.challenge;
+  if (!ch) return;
+  if (ch.status==='pending' && ch.challengedUid===MY_UID) {
+    fillAcceptScreen(ch);
+    go('s-accept');
+  } else if (ch.status==='accepted') {
+    go('s-vote1v1');
+  }
+}
+
+// ===== HELPERS =====
+function el(id) { return document.getElementById(id); }
+function setText(id,v) { var e=el(id); if(e)e.textContent=v; }
+function setHTML(id,v) { var e=el(id); if(e)e.innerHTML=v; }
+function show(id)  { var e=el(id); if(e)e.style.display='block'; }
+function hide(id)  { var e=el(id); if(e)e.style.display='none'; }
+function initial(name) { return (name||'?').charAt(0).toUpperCase(); }
+function timeSince(ts) {
+  var s=Math.floor((Date.now()-ts)/1000);
+  if(s<60) return 'adesso';
+  if(s<3600) return Math.floor(s/60)+'m fa';
+  if(s<86400) return Math.floor(s/3600)+'h fa';
+  return Math.floor(s/86400)+'g fa';
+}
+function getRem(ch) {
+  if(!ch||!ch.timerStart||!ch.timeout) return '--:--';
+  var rem=Math.max(0,ch.timeout-Math.floor((Date.now()-ch.timerStart)/1000));
+  if(rem>=3600) return Math.floor(rem/3600)+'h '+Math.floor((rem%3600)/60)+'m';
+  var m=Math.floor(rem/60),s=rem%60;
+  return (m<10?'0'+m:m)+':'+(s<10?'0'+s:s);
+}
+function hasBlocked(txt) {
+  var low=txt.toLowerCase();
+  for(var i=0;i<BLOCKED.length;i++) if(low.indexOf(BLOCKED[i])!==-1) return true;
+  return false;
+}
+function chId(ch) { return (ch.challengerUid||'')+'_'+(ch.challengedUid||'')+'_'+(ch.timerStart||0); }
+
+// ===== SETUP HOME =====
+function setupHome() {
+  var init = initial(MY_NAME);
+  var av = el('home-av'); if(av){av.textContent=init; av.className='av av-marco';}
+  var pa = el('prof-av'); if(pa){pa.textContent=init; pa.className='av av-lg av-marco';}
+  setText('prof-name', MY_NAME||'-');
+  startPizzaTimer();
+}
+
+// ===== HOME =====
+function drawHome() {
+  var init = initial(MY_NAME);
+  var av = el('home-av'); if(av) av.textContent=init;
+  var esc=myEsc(),bal=myBal();
+  setText('home-escrow-label', esc>0 ? '€'+esc+' in escrow' : '€'+bal.toFixed(0)+' disponibili');
+  var ch = STATE.challenge;
+  var liveEl = el('live-challenge');
+  if (ch && (ch.status==='pending'||ch.status==='accepted') && (ch.challengerUid===MY_UID||ch.challengedUid===MY_UID)) {
+    if (liveEl) { liveEl.innerHTML=''; liveEl.appendChild(liveChallengeHTML(ch)); liveEl.style.display='block'; }
+  } else {
+    if (liveEl) liveEl.style.display='none';
+  }
+  var banner = el('notif-banner');
+  if (!banner) return;
+  if (ch && ch.status==='pending' && ch.challengedUid===MY_UID) {
+    banner.style.display='block';
+    banner.innerHTML = notifHTML(ch.challengerName, ch.title, ch.amount);
+    fillAcceptScreen(ch);
+  } else if (ch && ch.status==='accepted' && (ch.challengerUid===MY_UID||ch.challengedUid===MY_UID)) {
+    banner.style.display='block';
+    banner.innerHTML = '<div class="notif-banner" style="cursor:default"><div>&#x1F534;</div><div class="notif-text">Sfida live &mdash; &euro;'+ch.amount+' in palio</div><div class="notif-cta" onclick="go(\'s-vote1v1\')">Dichiara &rarr;</div></div>';
+  } else {
+    banner.style.display='none';
+  }
+  // Render Firebase groups
+  drawGroups();
+}
+
+function drawGroups() {
+  var container = el('groups-container');
+  if (!container) return;
+  var myGroups = [];
+  for (var gid in STATE.groups) {
+    var g = STATE.groups[gid];
+    if (g && g.members && g.members[MY_UID]) myGroups.push(g);
+  }
+  myGroups.sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);});
+  var emptyEl = el('home-empty-groups');
+  if (myGroups.length === 0) {
+    container.innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+  var html = '';
+  for (var i=0; i<myGroups.length; i++) {
+    var g2 = myGroups[i];
+    var memberNames = [];
+    for (var uid in g2.members) memberNames.push(g2.members[uid]);
+    var mCount = memberNames.length;
+    var ch = STATE.challenge;
+    var hasLive = ch && (ch.status==='pending'||ch.status==='accepted') &&
+      g2.members[ch.challengerUid] && g2.members[ch.challengedUid];
+    html += '<div class="card card-tap" style="margin-bottom:10px" onclick="openGroupById(''+g2.id+'',''+g2.name+'',''+g2.icon+'')">'
+      + '<div class="gc-top">'
+      + '<div class="gc-icon">'+g2.icon+'</div>'
+      + '<div class="gc-info"><div class="gc-name">'+g2.name+'</div>'
+      + '<div class="gc-meta">'+mCount+' membr'+(mCount===1?'o':'i')+(hasLive?' · 1 sfida attiva':'')+'</div></div>'
+      + (hasLive?'<div class="gc-badge">1 attiva</div>':'')
+      + '</div></div>';
+  }
+  container.innerHTML = html;
+}
+
+function notifHTML(from,title,amt) {
+  return '<div class="notif-banner" onclick="go(\'s-accept\')">'
+    +'<div>&#x26A1;</div>'
+    +'<div class="notif-text"><strong>'+from+'</strong> ti ha sfidato &mdash; &euro;'+amt+'</div>'
+    +'<div class="notif-cta">Vedi &rarr;</div></div>';
+}
+
+function fillAcceptScreen(ch) {
+  setText('acc-from', ch.challengerName||'Qualcuno');
+  setText('acc-title', '"'+ch.title+'"');
+  setText('acc-amount', '€'+ch.amount);
+  setText('acc-timer-lbl', '&#x23F1; Scade tra '+getRem(ch));
+  var btn=el('acc-btn'); if(btn) btn.textContent='Accetto — blocca €'+ch.amount;
+}
+
+function liveChallengeHTML(ch) {
+  var isMine=ch.challengerUid===MY_UID;
+  var other=isMine?ch.challengedName:ch.challengerName;
+  var badge = ch.status==='pending' ? '<div class="badge badge-open">&#x23F3; In attesa</div>' : '<div class="badge badge-live">&#x1F534; Live</div>';
+  var action = ch.status==='accepted' ? '<div style="font-size:13px;color:var(--accent);font-weight:600;cursor:pointer" onclick="go(\'s-vote1v1\')">Dichiara &rarr;</div>' : '<div style="font-size:13px;color:var(--amber);font-weight:600">Aspettando '+other+'...</div>';
+  return '<div class="card card-accent card-tap" onclick="'+(ch.status==='accepted'?"go('s-vote1v1')":'')+'">'
+    +'<div class="cc-top"><div class="cc-title">&ldquo;'+ch.title+'&rdquo;</div>'+badge+'</div>'
+    +'<div class="cc-players"><div class="cc-player"><div class="av av-sm av-marco">'+initial(MY_NAME)+'</div><div class="cc-player-name">Tu</div></div>'
+    +'<div class="vs">VS</div>'
+    +'<div class="cc-player" style="flex-direction:row-reverse"><div class="av av-sm av-alex">'+initial(other)+'</div><div class="cc-player-name">'+other+'</div></div></div>'
+    +'<div class="ebar"><div><div class="ebar-label">&#x1F512; In escrow</div><div class="ebar-amount">€'+ch.amount+'</div></div>'
+    +'<div class="ebar-right"><div class="ebar-label">&#x23F1; Scade tra</div>'+action+'</div></div></div>';
+}
+
+// ===== SHARE =====
+function shareLink() {
+  var link = location.href.split('?')[0];
+  var modal = el('share-modal');
+  if (!modal) return;
+  modal.style.display='block';
+  modal.innerHTML = '<div class="modal-overlay" onclick="closeShareModal(event)">'
+    +'<div class="modal-box" onclick="event.stopPropagation()">'
+    +'<div class="modal-handle"></div>'
+    +'<div class="modal-title">Sfida qualcuno &#x1F525;</div>'
+    +'<div class="modal-sub">Chiunque apre questo link inserisce il suo nome e riceve <strong>€100 di credito demo</strong>.</div>'
+    +'<button onclick="modalCopy()" style="width:100%;background:var(--accent);color:#110D0A;border:none;border-radius:var(--r);padding:18px;font-family:\'Arial Black\',Arial,sans-serif;font-weight:900;font-size:18px;cursor:pointer;margin-bottom:12px" id="copy-btn">&#x1F4CB; Copia link</button>'
+    +'<a href="'+link+'" target="_blank" style="display:block;text-align:center;text-decoration:none;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:var(--r);padding:14px;font-family:\'Arial Black\',Arial,sans-serif;font-weight:700;font-size:15px;margin-bottom:14px">&#x1F517; Apri in nuova tab</a>'
+    +'<div style="background:var(--bg3);border-radius:var(--rs);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--text2);word-break:break-all">'+link+'</div>'
+    +'<button class="modal-close" onclick="closeShareModal()">Chiudi</button>'
+    +'</div></div>';
+  window._shareLink = link;
+}
+function closeShareModal(e) { if(!e||e.target.classList.contains('modal-overlay')){var m=el('share-modal');if(m)m.style.display='none';} }
+function modalCopy() {
+  var ta=document.createElement('textarea'); ta.value=window._shareLink||location.href;
+  ta.style.cssText='position:fixed;top:-9999px;left:-9999px';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try{document.execCommand('copy');}catch(e){}
+  document.body.removeChild(ta);
+  var btn=el('copy-btn'); if(btn){btn.textContent='&#x2705; Copiato!';setTimeout(function(){btn.innerHTML='&#x1F4CB; Copia link';},2000);}
+}
+
+// ===== TERMS =====
+function toggleTerms() {
+  var ch=el('terms-check'),btn=el('terms-btn');
+  ch.classList.toggle('on');
+  ch.textContent=ch.classList.contains('on')?'✓':'';
+  if(btn) btn.disabled=!ch.classList.contains('on');
+}
+function acceptTerms() { localStorage.setItem('stash_terms_v3','1'); go('s-home'); }
+
+// ===== CREATE GROUP =====
+function drawGroupUsers() {
+  var list=el('cg-members-list'); if(!list) return;
+  var html='';
+  for(var uid in STATE.users) {
+    if(uid!==MY_UID) {
+      var nm=STATE.users[uid].name;
+      html+='<div class="member-row"><div class="av av-sm av-alex">'+initial(nm)+'</div>'
+        +'<div class="member-name">'+nm+'</div>'
+        +'<div class="check" id="cgm-'+uid+'" onclick="this.classList.toggle(\'on\');this.textContent=this.classList.contains(\'on\')?\'✓\':\'\';checkCG()"></div></div>';
+    }
+  }
+  list.innerHTML=html||'<div class="muted" style="padding:12px 0;font-size:13px">Nessun utente online. Condividi il link!</div>';
+}
+function selEmoji(e) { var all=document.querySelectorAll('.emoji-item');for(var i=0;i<all.length;i++)all[i].classList.remove('sel');e.classList.add('sel');window._selEmoji=e.dataset.e; }
+function checkCG() { var nm=(el('cg-name')||{}).value||''; var btn=el('cg-btn');if(btn)btn.disabled=!nm.trim(); }
+function createGroup() {
+  var nm=((el('cg-name')||{}).value||'').trim();
+  if (!nm) return;
+  var icon=window._selEmoji||'⚽';
+  // Collect selected members
+  var members={};
+  members[MY_UID]=MY_NAME||'Tu';
+  var checks=document.querySelectorAll('[id^="cgm-"].on');
+  for(var i=0;i<checks.length;i++){
+    var uid=checks[i].id.replace('cgm-','');
+    if(STATE.users[uid]) members[uid]=STATE.users[uid].name;
+  }
+  // Save to Firebase
+  var gid='g'+Date.now();
+  var groupData={id:gid,name:nm,icon:icon,creatorUid:MY_UID,members:members,createdAt:Date.now()};
+  fbSet('groups/'+gid, groupData);
+  GROUP_CREATOR=MY_UID;
+  var emp=el('home-empty-groups'); if(emp)emp.style.display='none';
+  go('s-home');
+}
+
+// ===== CREATE CHALLENGE =====
+function drawChallengeUsers() {
+  var list=el('ch-members-list'); if(!list) return;
+  // Preserve existing selections — DON'T reset SEL_CHALLENGED
+  var html='';
+  var hasUsers = false;
+  for(var uid in STATE.users) {
+    if(uid!==MY_UID) {
+      hasUsers = true;
+      var nm=STATE.users[uid].name;
+      var isSelected = SELECTED_UIDS[uid] ? true : false;
+      html+='<div class="member-row"><div class="av av-sm av-alex">'+initial(nm)+'</div>'
+        +'<div class="member-name">'+nm+'</div>'
+        +'<div class="check'+(isSelected?' on':'')+'" id="chm-'+uid+'" data-uid="'+uid+'" data-name="'+nm+'" onclick="toggleOpp(this)">'+(isSelected?'&#x2713;':'')+'</div></div>';
+    }
+  }
+  list.innerHTML=html||'<div class="muted" style="padding:12px 0;font-size:13px">Nessun utente online. Condividi il link!</div>';
+}
+function toggleOpp(btn2) {
+  var uid=btn2.dataset.uid, nm=btn2.dataset.name;
+  if(SELECTED_UIDS[uid]) {
+    delete SELECTED_UIDS[uid];
+    btn2.classList.remove('on');
+    btn2.textContent='';
+  } else {
+    SELECTED_UIDS[uid]=nm;
+    btn2.classList.add('on');
+    btn2.textContent='&#x2713;';
+  }
+  // ES5-safe: count keys and collect names without Object.values
+  var count=0, names=[], firstUid=null, firstNm=null;
+  for(var k in SELECTED_UIDS){
+    if(SELECTED_UIDS.hasOwnProperty(k)){
+      count++;
+      names.push(SELECTED_UIDS[k]);
+      if(!firstUid){firstUid=k;firstNm=SELECTED_UIDS[k];}
+    }
+  }
+  if(count===0){
+    SEL_CHALLENGED=null;
+    setHTML('ch-mode-info','Seleziona almeno un avversario');
+  } else if(count===1){
+    SEL_CHALLENGED={uid:firstUid,name:firstNm};
+    setHTML('ch-mode-info','&#x1F465; <strong>Sfida 1vs1</strong> con '+firstNm);
+  } else {
+    SEL_CHALLENGED={uid:firstUid,name:names.join(', ')};
+    setHTML('ch-mode-info','&#x1F465; <strong>Sfida di gruppo</strong> con '+names.join(', '));
+  }
+  checkChal();
+}
+function selectOpp(btn2){toggleOpp(btn2);}
+function updateCounter() { var t=el('ch-text'),c=el('ch-count'); if(!t||!c)return; if(t.value.length>200)t.value=t.value.substr(0,200); c.textContent=t.value.length; checkChal(); }
+function setAmt(v) { var i=el('ch-amount');if(i)i.value=v; syncChips(v); checkChal(); }
+function syncChips(v) { var chips=document.querySelectorAll('#s-create-challenge .chips .chip');for(var i=0;i<chips.length;i++)chips[i].classList.toggle('sel',parseInt(chips[i].textContent.replace('€',''))===parseInt(v)); }
+function selTimeout(e2) { var chips=document.querySelectorAll('#timeout-chips .chip');for(var i=0;i<chips.length;i++)chips[i].classList.remove('sel');e2.classList.add('sel');CH_TIMEOUT=parseInt(e2.dataset.t);checkChal(); }
+function updateBal() { var e2=el('bal-display');if(e2)e2.textContent='€'+myBal().toFixed(2); }
+function checkChallenge(){checkChal();}
+function clearChallengeErr(){var e=el("ch-text");if(e)e.style.borderColor="";}
+function checkChal() {
+  var txt=((el('ch-text')||{}).value||'').trim();
+  var amt=parseInt((el('ch-amount')||{}).value)||0;
+  if(txt.length>3&&amt>0&&SEL_CHALLENGED!==null) drawSummary(txt,amt);
+  else hide('ch-summary');
+  updateBal();
+}
+function drawSummary(txt,amt) {
+  if(!txt||!amt||!SEL_CHALLENGED){hide('ch-summary');return;}
+  show('ch-summary');
+  setText('sum-you-lbl',(MY_NAME||'Tu')+' blocchi');
+  setText('sum-them-lbl',SEL_CHALLENGED.name+' blocca');
+  setText('sum-you','€'+amt); setText('sum-them','€'+amt);
+  setText('sum-timeout',CH_TIMEOUT===3600?'1 ora':CH_TIMEOUT===43200?'12 ore':'24 ore');
+  setText('sum-total','€'+(amt*2));
+}
+function launchChallenge() {
+  var txtEl=el('ch-text'),amtEl=el('ch-amount');
+  var txt=txtEl?txtEl.value.trim():'';
+  var amt=parseInt(amtEl?amtEl.value:0)||0;
+  if(!SEL_CHALLENGED){alert('Seleziona un avversario.');return;}
+  if(!txt||txt.length<4){alert('Scrivi la sfida.');return;}
+  if(!amt){alert('Inserisci un importo.');return;}
+  if(amt>myBal()){alert('Credito insufficiente.');return;}
+  if(hasBlocked(txt)){if(txtEl)txtEl.style.borderColor='var(--red)';alert('Contenuto non consentito.');return;}
+  var toLabel=CH_TIMEOUT===3600?'1 ora':CH_TIMEOUT===43200?'12 ore':'24 ore';
+  var newBal=myBal()-amt,newEsc=myEsc()+amt;
+  setBal(MY_UID,newBal);setEsc(MY_UID,newEsc);
+  if(STATE.users[MY_UID]){STATE.users[MY_UID].balance=newBal;STATE.users[MY_UID].escrow=newEsc;}
+  // Handle group challenge: create one challenge per opponent
+  var uidsToChallenge=[]; for(var _k in SELECTED_UIDS){if(SELECTED_UIDS.hasOwnProperty(_k))uidsToChallenge.push(_k);}
+  if(uidsToChallenge.length === 0){alert('Seleziona almeno un avversario.');return;}
+  // For simplicity, use first selected as primary (1vs1 model)
+  var firstUid = uidsToChallenge[0];
+  var firstNm = SELECTED_UIDS[firstUid];
+  var ch={title:txt,amount:amt,challengerUid:MY_UID,challengerName:MY_NAME||'Anonimo',challengedUid:firstUid,challengedName:firstNm,timeout:CH_TIMEOUT,timerStart:Date.now(),status:'pending'};
+  fbSet('challenge', ch);
+  setText('suc-amount','€'+amt);
+  setText('suc-timeout',toLabel);
+  setText('suc-other',SEL_CHALLENGED.name);
+  setText('suc-other2',SEL_CHALLENGED.name);
+  go('s-success');
+}
+
+// ===== ACCEPT =====
+function acceptChallenge() {
+  var ch=STATE.challenge;if(!ch)return;
+  setBal(MY_UID,myBal()-ch.amount); setEsc(MY_UID,myEsc()+ch.amount);
+  fbSet('challenge/status', 'accepted');
+  var btn=el('acc-btn');if(btn){btn.textContent='✅ Accettata!';btn.style.background='var(--bg3)';btn.style.color='var(--accent)';btn.disabled=true;}
+  setTimeout(function(){go('s-home');},1000);
+}
+
+// ===== VOTE 1V1 =====
+function initVote1v1() {
+  MY_DECLARED=false;
+  var ch=STATE.challenge;
+  var other=ch?(ch.challengerUid===MY_UID?ch.challengedName:ch.challengerName):'Avversario';
+  setText('v1-title',ch?'"'+ch.title+'"':'"Sfida in corso"');
+  setText('v1-amount',ch?'€'+ch.amount:'€0');
+  setText('v1-other-name',other); setText('v1-other-lbl',other);
+  setText('v1-me-name',MY_NAME||'Tu');
+  var bOther=el('v1-btn-other');if(bOther){var s=bOther.querySelector('.btn-half-sub');if(s)s.textContent=other;}
+  var bMe=el('v1-btn-me');if(bMe){var s2=bMe.querySelector('.btn-half-sub');if(s2)s2.textContent=MY_NAME||'Tu';}
+  show('v1-my-decl'); show('v1-other-wait');
+  hide('v1-my-voted'); hide('v1-other-voted'); hide('v1-conflict'); hide('v1-agree');
+}
+function drawVote1v1Live() {
+  var ch=STATE.challenge;
+  setText('v1-title',ch?'"'+ch.title+'"':'"Sfida in corso"');
+  setText('v1-amount',ch?'€'+ch.amount:'€0');
+  if(!MY_DECLARED||!ch||!ch.declarations) return;
+  var otherUid=ch.challengerUid===MY_UID?ch.challengedUid:ch.challengerUid;
+  var theirDecl=ch.declarations[otherUid];
+  if(theirDecl) {
+    var otherName=ch.challengerUid===MY_UID?ch.challengedName:ch.challengerName;
+    hide('v1-other-wait'); show('v1-other-voted');
+    setText('v1-other-voted-txt',otherName+' ha dichiarato: ha vinto '+(theirDecl===MY_UID?MY_NAME:otherName));
+    checkDeclAuto();
+  }
+}
+function declare(who) {
+  var ch=STATE.challenge;if(!ch)return;
+  var otherUid=ch.challengerUid===MY_UID?ch.challengedUid:ch.challengerUid;
+  var wUid=who==='self'?MY_UID:otherUid;
+  fbSet('challenge/declarations/'+MY_UID, wUid);
+  MY_DECLARED=true;
+  hide('v1-my-decl'); show('v1-my-voted');
+  setText('v1-my-voted-txt',who==='self'?'✅ Hai dichiarato: hai vinto tu':'✅ Hai dichiarato: ha vinto '+(ch.challengerUid===MY_UID?ch.challengedName:ch.challengerName));
+}
+function checkDeclAuto() {
+  if(!MY_DECLARED)return;
+  var ch=STATE.challenge;if(!ch||!ch.declarations)return;
+  var otherUid=ch.challengerUid===MY_UID?ch.challengedUid:ch.challengerUid;
+  var md=ch.declarations[MY_UID],td=ch.declarations[otherUid];
+  if(!md||!td)return;
+  if(md===td) {
+    show('v1-agree');hide('v1-conflict');
+    fbSet('challenge/winner', md);fbSet('challenge/status', 'resolved');
+  } else {
+    show('v1-conflict');hide('v1-agree');
+    var otherName=ch.challengerUid===MY_UID?ch.challengedName:ch.challengerName;
+    setText('v1-conflict-txt',(MY_NAME||'Tu')+' vs '+otherName+' — in disaccordo');
+  }
+}
+function resolveChallenge() { var ch=STATE.challenge;if(!ch||!ch.winner)return;drawWinnerScreen(ch);go('s-winner'); }
+
+// ===== VOTE GROUP =====
+function drawGroupVote() {
+  var ch=STATE.challenge;if(!ch)return;
+  setText('vg-title','"'+ch.title+'"'); setText('vg-amount','€'+ch.amount);
+  setText('vg-challenger-name',ch.challengerName); setText('vg-challenged-name',ch.challengedName);
+  var votes=ch.votes||{},total=0;
+  for(var u in votes)if(votes[u])total++;
+  setText('vg-vote-count',total+' voti');
+  var prog=el('vg-prog-bar');if(prog)prog.style.width=(total>0?Math.min(100,total*33):0)+'%';
+  var myVote=votes[MY_UID];
+  if(myVote){hide('vg-vote-section');show('vg-voted');}
+  else{show('vg-vote-section');hide('vg-voted');hide('vg-already-voted');var b1=el('vg-btn-challenger'),b2=el('vg-btn-challenged');if(b1)b1.disabled=false;if(b2)b2.disabled=false;}
+}
+function groupVote(side) {
+  var ch=STATE.challenge;if(!ch)return;
+  if((ch.votes||{})[MY_UID]){hide('vg-vote-section');show('vg-already-voted');return;}
+  var wUid=side==='challenger'?ch.challengerUid:ch.challengedUid;
+  var b1=el('vg-btn-challenger'),b2=el('vg-btn-challenged');
+  if(b1)b1.disabled=true;if(b2)b2.disabled=true;
+  fbSet('challenge/votes/'+MY_UID, wUid);
+  setTimeout(function(){hide('vg-vote-section');show('vg-voted');},300);
+}
+function simulateGroupVote() {
+  var ch=STATE.challenge;if(!ch)return;
+  fbSet('challenge/votes/sim1', ch.challengerUid);
+  fbSet('challenge/votes/sim2', ch.challengerUid);
+  fbSet('challenge/winner', ch.challengerUid);
+  fbSet('challenge/status', 'resolved');
+}
+
+// ===== WINNER =====
+function drawWinnerScreen(ch) {
+  var wName=ch.challengerUid===ch.winner?ch.challengerName:ch.challengedName;
+  var lUid=ch.challengerUid===ch.winner?ch.challengedUid:ch.challengerUid;
+  var lName=ch.challengerUid===ch.winner?ch.challengedName:ch.challengerName;
+  var isMe=ch.winner===MY_UID;
+  setText('w-emoji',isMe?'🏆':'😤');
+  setText('w-title',wName+(isMe?' ha vinto! 🏆':' ha vinto'));
+  setText('w-sub',isMe?'I fondi sono tuoi!':'I fondi vanno a '+wName+'.');
+  setText('w-amount','€'+(ch.amount*2)); setText('w-lbl','al wallet di '+wName);
+  setText('w-winner-name',wName); setText('w-loser-name',lName);
+  var wav=el('w-winner-av');if(wav){wav.textContent=initial(wName);wav.className='av av-sm av-marco';}
+  var lav=el('w-loser-av');if(lav){lav.textContent=initial(lName);lav.className='av av-sm av-alex';}
+  setBal(ch.winner,getBal(ch.winner)+(ch.amount*2));
+  setEsc(MY_UID,0);setEsc(lUid,0);
+  saveHistory(ch);
+}
+
+// ===== HISTORY =====
+function saveHistory(ch) {
+  if(!ch||!ch.title)return;
+  fbSet('history/'+chId(ch), {title:ch.title,amount:ch.amount,status:ch.status,winnerUid:ch.winner||null,challengerUid:ch.challengerUid,challengerName:ch.challengerName,challengedUid:ch.challengedUid,challengedName:ch.challengedName,ts:ch.timerStart||Date.now()});
+}
+function drawHistory() {
+  var list=el('hist-list');if(!list)return;
+  list.innerHTML='<div class="muted" style="text-align:center;padding:12px 0;font-size:13px">Caricamento...</div>';
+  fbGet('history', function(snap) {
+    var data=snap.val()||{},items=[],wins=0,net=0;
+    for(var k in data){if(data[k]&&(data[k].challengerUid===MY_UID||data[k].challengedUid===MY_UID))items.push(data[k]);}
+    items.sort(function(a,b){return(b.ts||0)-(a.ts||0);});
+    if(!items.length){list.innerHTML='<div class="muted" style="text-align:center;padding:12px 0;font-size:13px">Nessuna sfida ancora.</div>';return;}
+    var html='';
+    for(var i=0;i<items.length;i++){
+      var it=items[i],isW=it.winnerUid===MY_UID,isL=it.status==='accepted'||it.status==='pending';
+      if(isW){wins++;net+=it.amount;}else if(!isL&&it.winnerUid)net-=it.amount;
+      var ic=isL?'🔒':isW?'✅':'❌',bg=isL?'var(--amber-dim)':isW?'var(--accent-dim)':'var(--red-dim)';
+      var amt=isL?'€'+it.amount:isW?'+€'+(it.amount*2):'-€'+it.amount;
+      var cls=isL?'tx-neu':isW?'tx-pos':'tx-neg';
+      var vs=it.challengerUid===MY_UID?it.challengedName:it.challengerName;
+      html+='<div class="hcard" data-f="'+(isL?'live':isW?'win':'lose')+'">'
+        +'<div class="hcard-ic" style="background:'+bg+'">'+ic+'</div>'
+        +'<div class="hcard-info"><div class="hcard-title">"'+it.title+'"</div><div class="hcard-meta">vs '+vs+'</div></div>'
+        +'<div class="hcard-amt '+cls+'">'+amt+'</div></div>';
+    }
+    list.innerHTML=html;
+    var tot=items.length,wr=tot>0?Math.round(wins/tot*100):0;
+    setText('stat-total',tot);setText('stat-wins',wins);setText('stat-wr',wr+'%');
+    setHTML('stat-net',(net>=0?'+':'')+'€'+Math.abs(net));
+    setText('prof-stat-total',tot);setText('prof-stat-wins',wins);setText('prof-stat-wr',wr+'%');
+    setHTML('prof-stat-net',(net>=0?'+':'')+'€'+Math.abs(net));
+    setText('prof-sfide-count',tot+' →');
+  });
+}
+
+// ===== AMICI =====
+var REMOVED_FRIENDS = JSON.parse(localStorage.getItem('stash_removed')||'{}');
+
+function drawAmici() {
+  var list=el('amici-list');if(!list)return;
+  var ch=STATE.challenge;
+  list.innerHTML='';
+  var count=0;
+  for(var uid in STATE.users){
+    if(uid===MY_UID)continue;
+    count++;
+    var u=STATE.users[uid];
+    var card=document.createElement('div');
+    card.className='card';card.id='amico-'+uid;card.style.marginBottom='10px';
+    var topRow=document.createElement('div');
+    topRow.style.cssText='display:flex;align-items:center;gap:12px';
+    var av=document.createElement('div');
+    av.className='av';av.style.cssText='width:48px;height:48px;font-size:18px;background:var(--purple);color:#fff;flex-shrink:0';
+    av.textContent=initial(u.name);topRow.appendChild(av);
+    var info=document.createElement('div');info.style.cssText='flex:1;min-width:0';
+    info.innerHTML='<div style="font-weight:900;font-size:16px">'+u.name+'</div><div class="muted" style="font-size:12px">Visto '+timeSince(u.lastSeen||Date.now())+'</div>';
+    topRow.appendChild(info);
+    var btns=document.createElement('div');btns.style.cssText='display:flex;flex-direction:column;gap:6px';
+    var sfBtn=document.createElement('button');
+    sfBtn.style.cssText='background:var(--accent);color:#110D0A;border:none;border-radius:var(--rs);padding:7px 12px;font-weight:900;font-size:12px;cursor:pointer';
+    sfBtn.textContent='Sfida';
+    sfBtn.setAttribute('data-sf-uid', uid);
+    sfBtn.setAttribute('data-sf-name', u.name);
+    sfBtn.onclick=function(){sfidaDiretto(this.getAttribute('data-sf-uid'),this.getAttribute('data-sf-name'));};
+    var rmBtn=document.createElement('button');
+    rmBtn.style.cssText='background:none;color:var(--red);border:1px solid var(--red-dim);border-radius:var(--rs);padding:5px 12px;font-size:11px;cursor:pointer';
+    rmBtn.textContent='Rimuovi';
+    rmBtn.setAttribute('data-remove-uid', uid);
+    rmBtn.onclick=function(){removeAmico(this.getAttribute('data-remove-uid'));};
+    btns.appendChild(sfBtn);btns.appendChild(rmBtn);topRow.appendChild(btns);card.appendChild(topRow);
+    if(ch&&(ch.status==='pending'||ch.status==='accepted')&&
+       ((ch.challengerUid===MY_UID&&ch.challengedUid===uid)||(ch.challengedUid===MY_UID&&ch.challengerUid===uid))){
+      var badge=document.createElement('div');
+      badge.style.cssText='background:var(--bg3);border-radius:var(--rs);padding:8px 10px;margin-top:8px;font-size:12px;display:flex;justify-content:space-between;align-items:center';
+      var sl2=ch.status==='pending'?'In attesa':'Live';
+      var sc3=ch.status==='pending'?'var(--amber)':'var(--red)';
+      badge.innerHTML='<span><span style="color:'+sc3+';font-weight:700">'+sl2+'</span> — '+ch.title.substr(0,20)+'... EUR'+ch.amount+'</span>';
+      var vBtn=document.createElement('span');
+      vBtn.textContent='Vedi';vBtn.style.cssText='color:var(--accent);cursor:pointer;margin-left:8px';
+      var dest=ch.status==='accepted'?'s-vote1v1':'s-accept';
+      (function(d){vBtn.onclick=function(){go(d);};})(dest);
+      badge.appendChild(vBtn);card.appendChild(badge);
+    }
+    list.appendChild(card);
+  }
+  if(!count)list.innerHTML='<div class="info-box info-gray" style="text-align:center">Nessun amico ancora. Condividi il link!</div>';
+}
+function removeAmico(uid){
+  var RF=JSON.parse(localStorage.getItem('stash_removed')||'{}');
+  RF[uid]=true;localStorage.setItem('stash_removed',JSON.stringify(RF));
+  REMOVED_FRIENDS=RF;drawAmici();
+}
+
+function sfidaDiretto(uid,name) { SEL_CHALLENGED={uid:uid,name:name};go('s-create-challenge'); }
+
+// ===== WALLET =====
+function drawWallet() {
+  var bal=myBal(),esc=myEsc();
+  setText('wal-balance','€'+bal.toFixed(2));
+  setText('wal-locked',esc>0?'€'+esc.toFixed(2)+' bloccati in sfide':'Nessun importo bloccato');
+  var ec=el('wal-escrow-card');
+  if(ec){
+    if(esc>0){ec.style.display='block';setText('wal-escrow-amount','€'+esc.toFixed(2));var ch=STATE.challenge;setText('wal-escrow-detail',ch?ch.title.substr(0,25)+'...':'Sfida attiva');}
+    else ec.style.display='none';
+  }
+  var txEl=el('wal-txs');if(!txEl)return;
+  var baseRow='<div class="tx-row"><div class="tx-icon" style="background:var(--bg3)">💸</div><div class="tx-info"><div class="tx-title">Credito demo</div><div class="tx-meta">Alla registrazione</div></div><div class="tx-amt tx-pos">+€100</div></div>';
+  fbGet('history', function(snap){
+    var data=snap.val()||{},items=[];
+    for(var k in data){if(data[k]&&(data[k].challengerUid===MY_UID||data[k].challengedUid===MY_UID))items.push(data[k]);}
+    items.sort(function(a,b){return(b.ts||0)-(a.ts||0);});
+    var rows=baseRow;
+    for(var i=0;i<Math.min(items.length,5);i++){
+      var it=items[i],isW=it.winnerUid===MY_UID,isL=it.status==='accepted'||it.status==='pending';
+      var ic=isL?'🔒':isW?'✅':'❌';
+      var bg=isL?'var(--amber-dim)':isW?'var(--accent-dim)':'var(--red-dim)';
+      var amt=isL?'€'+it.amount:isW?'+€'+(it.amount*2):'-€'+it.amount;
+      var cls=isL?'tx-neu':isW?'tx-pos':'tx-neg';
+      var vs=it.challengerUid===MY_UID?it.challengedName:it.challengerName;
+      rows+='<div class="tx-row"><div class="tx-icon" style="background:'+bg+'">'+ic+'</div>'
+        +'<div class="tx-info"><div class="tx-title">'+it.title.substr(0,25)+'</div><div class="tx-meta">vs '+vs+'</div></div>'
+        +'<div class="tx-amt '+cls+'">'+amt+'</div></div>';
+    }
+    txEl.innerHTML=rows;
+  });
+}
+function setDep(v){var i=el('dep-amount');if(i)i.value=v;checkDep();}
+function checkDep(){var v=parseInt((el('dep-amount')||{}).value)||0;var btn=el('dep-btn');if(btn){btn.disabled=!v;btn.textContent=v?'Deposita €'+v:'Deposita €0';}}
+function confirmDeposit(){var v=parseInt((el('dep-amount')||{}).value)||0;setBal(MY_UID,myBal()+v);var btn=el('dep-btn');if(btn){btn.textContent='✅ €'+v+' aggiunti!';btn.style.background='var(--bg3)';btn.style.color='var(--accent)';btn.disabled=true;}setTimeout(function(){go('s-wallet');},1500);}
+function setWD(){var i=el('wd-amount');if(i)i.value=myBal().toFixed(2);checkWD();}
+function checkWD(){var v=parseFloat((el('wd-amount')||{}).value)||0;var btn=el('wd-btn');if(btn){btn.disabled=!v;btn.textContent=v?'Richiedi prelievo di €'+v.toFixed(2):'Richiedi prelievo';}}
+function confirmWithdraw(){var btn=el('wd-btn');if(btn){btn.textContent='✅ Richiesta inviata';btn.style.background='var(--bg3)';btn.style.color='var(--accent)';btn.disabled=true;}setTimeout(function(){go('s-wallet');},2000);}
+
+// ===== PROFILE =====
+function drawProfile() {
+  var init=initial(MY_NAME);
+  var pa=el('prof-av');if(pa){pa.textContent=init;pa.className='av av-lg av-marco';}
+  setText('prof-name',MY_NAME||'-');
+  setText('prof-balance','€'+myBal().toFixed(2));
+  drawHistory();
+}
+
+// ===== PIZZA TIMER =====
+function startPizzaTimer() {
+  if(PIZZA_INT)clearInterval(PIZZA_INT);
+  PIZZA_INT=setInterval(function(){
+    PIZZA_SEC=Math.max(0,PIZZA_SEC-1);
+    var e2=el('pizza-timer');if(!e2)return;
+    var m=Math.floor(PIZZA_SEC/60),s=PIZZA_SEC%60;
+    e2.textContent=(m<10?'0'+m:m)+':'+(s<10?'0'+s:s);
+    var pct=PIZZA_SEC/(47*60+23);
+    e2.className=pct<0.1?'timer-txt timer-crit':pct<0.5?'timer-txt timer-warn':'timer-txt timer-ok';
+  },1000);
+}
+
+// ===== CUSTOM GROUP =====
+function openGroupById(gid, name, icon) {
+  var g = STATE.groups[gid];
+  if (!g) return;
+  window._activeGroup = g;
+  GROUP_CREATOR = g.creatorUid;
+  setText('cg-detail-name', name);
+  setText('cg-detail-icon', icon);
+  setText('new-group-name', name);
+  go('s-group-custom');
+}
+
+function drawCustomGroup() {
+  var icon=el('new-group-icon'),nm=el('new-group-name');
+  var di=el('cg-detail-icon'),dn=el('cg-detail-name');
+  if(icon&&di)di.textContent=icon.textContent;
+  if(nm&&dn)dn.textContent=nm.textContent;
+  var ch=STATE.challenge,live=el('cg-live-challenge'),empty=el('cg-empty-state');
+  if(ch&&(ch.status==='pending'||ch.status==='accepted')&&(ch.challengerUid===MY_UID||ch.challengedUid===MY_UID)){
+    if(live){live.innerHTML='';live.appendChild(liveChallengeHTML(ch));live.style.display='block';}
+    if(empty)empty.style.display='none';
+  }else{if(live)live.style.display='none';if(empty)empty.style.display='block';}
+  var mEl=el('cg-members-display');
+  if(mEl){
+    var html='<div class="member-row"><div class="av av-sm av-marco">'+initial(MY_NAME)+'</div><div class="member-name">'+(MY_NAME||'Tu')+' (tu)</div></div>';
+    for(var uid in STATE.users){if(uid!==MY_UID){html+='<div class="member-row"><div class="av av-sm av-alex">'+initial(STATE.users[uid].name)+'</div><div class="member-name">'+STATE.users[uid].name+'</div></div>';}}
+    mEl.innerHTML=html;
+  }
+}
+function toggleGroupMenu(){var m=el('group-menu');if(m)m.style.display=m.style.display==='none'?'block':'none';}
+function groupMenuAction(action){
+  var m=el('group-menu');if(m)m.style.display='none';
+  var modal=el('group-action-modal');if(!modal)return;
+  var ids=['gam-rename-content','gam-add-content','gam-remove-content','gam-leave-content'];
+  for(var i=0;i<ids.length;i++){var c=el(ids[i]);if(c)c.style.display='none';}
+  modal.style.display='block';
+  if(action==='rename'){if(GROUP_CREATOR!==MY_UID){alert('Solo il creatore può modificare il nome.');modal.style.display='none';return;}setText('gam-title','Modifica nome');show('gam-rename-content');var inp=el('gam-new-name');var dn=el('cg-detail-name');if(inp&&dn)inp.value=dn.textContent;}
+  if(action==='add'){setText('gam-title','Aggiungi membro');show('gam-add-content');var al=el('gam-add-list');if(al){var h='';for(var uid in STATE.users){if(uid!==MY_UID)h+='<div class="member-row"><div class="av av-sm av-alex">'+initial(STATE.users[uid].name)+'</div><div class="member-name">'+STATE.users[uid].name+'</div><div style="font-size:12px;color:var(--accent)">Aggiunto ✓</div></div>';}al.innerHTML=h||'<div class="muted" style="padding:10px 0;font-size:13px">Nessun utente.</div>';}}
+  if(action==='remove'){if(GROUP_CREATOR!==MY_UID){alert('Solo il creatore può rimuovere membri.');modal.style.display='none';return;}setText('gam-title','Rimuovi membro');show('gam-remove-content');var rl=el('gam-remove-list');if(rl){var rh='';for(var ruid in STATE.users){if(ruid!==MY_UID)rh+='<div class="member-row"><div class="av av-sm av-alex">'+initial(STATE.users[ruid].name)+'</div><div class="member-name">'+STATE.users[ruid].name+'</div><button onclick="alert(\'Rimosso (demo).\');closeGroupModal()" style="background:var(--red);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer">Rimuovi</button></div>';}rl.innerHTML=rh||'<div class="muted" style="padding:10px 0">Nessun membro.</div>';}}
+  if(action==='leave'){setText('gam-title','Esci dal gruppo');show('gam-leave-content');}
+}
+function closeGroupModal(){var m=el('group-action-modal');if(m)m.style.display='none';}
+function confirmRename(){var nm=(el('gam-new-name')||{}).value||'';if(nm.trim().length<2)return;setText('cg-detail-name',nm.trim());setText('new-group-name',nm.trim());closeGroupModal();}
+function confirmLeaveGroup(){var c=el('new-group-card');if(c)c.style.display='none';closeGroupModal();go('s-home');}
+
+// ===== PAYMENT =====
+function selectPayment(e2,type){
+  var ab=el('pay-apple'),gb=el('pay-google'),cc=el('pay-card-check');
+  if(ab)ab.style.border='2px solid transparent';
+  if(gb)gb.style.border='2px solid transparent';
+  if(cc)cc.style.display='none';
+  if(type==='apple'&&ab)ab.style.border='2px solid var(--accent)';
+  if(type==='google'&&gb)gb.style.border='2px solid var(--accent)';
+  if(type==='card'&&cc)cc.style.display='flex';
+}
+
+// ===== FILTER =====
+function filterHist(e2){
+  var chips=document.querySelectorAll('#hist-filter .chip');
+  for(var i=0;i<chips.length;i++)chips[i].classList.remove('sel');
+  e2.classList.add('sel');
+  var f=e2.dataset.f;
+  var cards=document.querySelectorAll('.hcard');
+  for(var j=0;j<cards.length;j++)cards[j].style.display=(f==='all'||cards[j].dataset.f===f)?'flex':'none';
+}
+
+// ===== MISC =====
+function toggleNotif(){var t=el('notif-tog');if(t)t.classList.toggle('on');}
+
+// ===== START =====
+(function(){
+  if(MY_NAME){
+    initFirebase(function(){
+      fbSet('users/'+MY_UID+'/lastSeen', Date.now());
+      setupHome();
+      go(localStorage.getItem('stash_terms_v3')?'s-home':'s-terms');
+    });
+  }
+})();
+</script>
+</body>
+</html>

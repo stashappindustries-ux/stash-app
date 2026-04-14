@@ -1280,7 +1280,7 @@ function updateGlobalNotif() {
   } else if (ch && ch.status==='accepted' && (ch.challengerUid===MY_UID||ch.challengedUid===MY_UID)) {
     gn.style.display = 'flex';
     setText('gn-icon', '🔴');
-    setText('gn-text', 'Sfida live — "'+ch.title.substr(0,25)+'..." — dichiara l'esito');
+    setText('gn-text', 'Sfida live - ' + ch.title.substr(0,25) + '... - dichiara il tuo esito');
     _lastChStatus = 'accepted';
   } else {
     gn.style.display = 'none';

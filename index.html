@@ -785,8 +785,7 @@ document.getElementById('signup-btn').onclick = function() {
 <!-- ===== WALLET ===== -->
 <div class="screen" id="s-wallet">
   <div class="header">
-    <button class="back-btn" onclick="go('s-profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Profilo</button>
-    <span style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:16px">Wallet</span>
+    <span style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px">Wallet</span>
   </div>
   <div class="wallet-hero">
     <div class="wallet-label">Saldo disponibile <span class="tag-demo">🎮 DEMO</span></div>
@@ -808,6 +807,13 @@ document.getElementById('signup-btn').onclick = function() {
     <div class="muted" style="text-align:center;padding:12px 0;font-size:13px">Caricamento...</div>
   </div>
   <div class="info-box info-gray" style="margin-bottom:12px;font-size:12px;text-align:center">🔒 Pagamenti gestiti da <strong>Mangopay</strong> · Istituto EU regolamentato</div>
+  <div class="bnav">
+    <div class="bnav-item" onclick="go('s-home')"><div class="bnav-icon">👥</div>Gruppi</div>
+    <div class="bnav-item" onclick="go('s-amici')"><div class="bnav-icon">🤝</div>Amici</div>
+    <div class="bnav-item on"><div class="bnav-icon">👛</div>Wallet</div>
+    <div class="bnav-item" onclick="go('s-history')"><div class="bnav-icon">📋</div>Storico</div>
+    <div class="bnav-item" onclick="go('s-profile')"><div class="bnav-icon">👤</div>Profilo</div>
+  </div>
 </div>
 
 <!-- ===== DEPOSIT ===== -->
@@ -880,8 +886,7 @@ document.getElementById('signup-btn').onclick = function() {
 <!-- ===== HISTORY ===== -->
 <div class="screen" id="s-history">
   <div class="header">
-    <button class="back-btn" onclick="go('s-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Home</button>
-    <span style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:16px">Le tue sfide</span>
+    <span style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px">Storico</span>
   </div>
   <div class="stats-bar">
     <div class="stat-item"><div class="stat-val" id="stat-total">0</div><div class="stat-lbl">Sfide</div></div>
@@ -899,6 +904,13 @@ document.getElementById('signup-btn').onclick = function() {
     <div class="muted" style="text-align:center;font-size:13px">Nessuna sfida ancora. Lanciane una!</div>
   </div>
   <div class="spacer-sm"></div>
+  <div class="bnav">
+    <div class="bnav-item" onclick="go('s-home')"><div class="bnav-icon">👥</div>Gruppi</div>
+    <div class="bnav-item" onclick="go('s-amici')"><div class="bnav-icon">🤝</div>Amici</div>
+    <div class="bnav-item" onclick="go('s-wallet')"><div class="bnav-icon">👛</div>Wallet</div>
+    <div class="bnav-item on"><div class="bnav-icon">📋</div>Storico</div>
+    <div class="bnav-item" onclick="go('s-profile')"><div class="bnav-icon">👤</div>Profilo</div>
+  </div>
 </div>
 
 <!-- ===== PROFILE ===== -->

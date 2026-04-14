@@ -549,6 +549,7 @@ document.getElementById('signup-btn').onclick = function() {
   <div class="spacer"></div>
   <div class="bnav">
     <div class="bnav-item on"><div class="bnav-icon">👥</div>Gruppi</div>
+    <div class="bnav-item" onclick="go('s-amici')"><div class="bnav-icon">🤝</div>Amici</div>
     <div class="bnav-item" onclick="go('s-wallet')"><div class="bnav-icon">👛</div>Wallet</div>
     <div class="bnav-item" onclick="go('s-history')"><div class="bnav-icon">📋</div>Storico</div>
     <div class="bnav-item" onclick="go('s-profile')"><div class="bnav-icon">👤</div>Profilo</div>
@@ -1210,6 +1211,7 @@ function getBal(uid)   { var u=STATE.users[uid]; return (u&&u.balance!==undefine
 
 // ===== NAVIGATION =====
 function go(id) {
+  window._realGo = go;
   var all = document.querySelectorAll('.screen');
   for (var i=0;i<all.length;i++) all[i].classList.remove('active');
   var t = document.getElementById(id);
@@ -1474,6 +1476,26 @@ function doLogout(){
   }
   // else: stays on s-welcome (auth screen)
 })();
+</script>
+<script>
+// Navigation shim — works even before main script loads
+if (typeof go === 'undefined') {
+  window.go = function(id) {
+    var screens = document.querySelectorAll('.screen');
+    for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
+    var t = document.getElementById(id);
+    if (t) { t.classList.add('active'); window.scrollTo(0,0); }
+    // Queue real go() functions once main script loads
+    window._pendingGo = id;
+  };
+  // Once main script defines real go(), run any pending navigation
+  var _goCheck = setInterval(function() {
+    if (typeof window._realGo === 'function') {
+      clearInterval(_goCheck);
+      if (window._pendingGo) { window._realGo(window._pendingGo); window._pendingGo = null; }
+    }
+  }, 100);
+}
 </script>
 </body>
 </html>

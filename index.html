@@ -386,11 +386,18 @@ function authErr(id, msg) {
 }
 
 function authGoScreen(dest) {
-  var all = document.querySelectorAll('.screen');
-  for(var i=0;i<all.length;i++) all[i].classList.remove('active');
-  var t = document.getElementById(dest);
-  if(t) t.classList.add('active');
-  window.scrollTo(0,0);
+  // Use main script go() if available, else do basic navigation
+  if (typeof go === 'function') {
+    if (typeof setupHome === 'function') setupHome();
+    if (typeof initFirebase === 'function') initFirebase(function(){});
+    go(dest);
+  } else {
+    var all = document.querySelectorAll('.screen');
+    for(var i=0;i<all.length;i++) all[i].classList.remove('active');
+    var t = document.getElementById(dest);
+    if(t) t.classList.add('active');
+    window.scrollTo(0,0);
+  }
 }
 
 document.getElementById('login-btn').onclick = function() {
@@ -1211,7 +1218,6 @@ function getBal(uid)   { var u=STATE.users[uid]; return (u&&u.balance!==undefine
 
 // ===== NAVIGATION =====
 function go(id) {
-  window._realGo = go;
   var all = document.querySelectorAll('.screen');
   for (var i=0;i<all.length;i++) all[i].classList.remove('active');
   var t = document.getElementById(id);
@@ -1466,36 +1472,13 @@ function doLogout(){
 // ===== START =====
 (function(){
   if(MY_NAME && MY_UID){
-    // Go to app immediately — don't wait for Firebase
     setupHome();
     go(localStorage.getItem('stash_terms_v3')?'s-home':'s-terms');
-    // Init Firebase in background
     initFirebase(function(){
       supaPatch('users','uid=eq.'+MY_UID,{last_seen:Date.now()});
     });
   }
-  // else: stays on s-welcome (auth screen)
 })();
-</script>
-<script>
-// Navigation shim — works even before main script loads
-if (typeof go === 'undefined') {
-  window.go = function(id) {
-    var screens = document.querySelectorAll('.screen');
-    for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
-    var t = document.getElementById(id);
-    if (t) { t.classList.add('active'); window.scrollTo(0,0); }
-    // Queue real go() functions once main script loads
-    window._pendingGo = id;
-  };
-  // Once main script defines real go(), run any pending navigation
-  var _goCheck = setInterval(function() {
-    if (typeof window._realGo === 'function') {
-      clearInterval(_goCheck);
-      if (window._pendingGo) { window._realGo(window._pendingGo); window._pendingGo = null; }
-    }
-  }, 100);
-}
 </script>
 </body>
 </html>

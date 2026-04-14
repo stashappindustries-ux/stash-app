@@ -360,18 +360,24 @@ textarea.form-input{resize:none;height:88px}
 
 <script>
 // ===== AUTH — self-contained, no main script dependency =====
-var AUTH_DB = 'https://stash-8ab2a-default-rtdb.europe-west1.firebasedatabase.app/demo_v3';
+var SUPA_URL_AUTH = 'https://fipgbniotxinkuzgcsgr.supabase.co';
+var SUPA_KEY_AUTH = 'sb_publishable_DYhiN6RFKIrQdzHUBkvMiA_lsZm5wIB';
 
-function authFetch(path, method, body, cb) {
-  var url = AUTH_DB + '/' + path + '.json';
-  var opts = {method: method, headers: {'Content-Type':'application/json'}};
-  if (body !== undefined && body !== null) opts.body = JSON.stringify(body);
+function authHeaders() {
+  return {'apikey':SUPA_KEY_AUTH,'Authorization':'Bearer '+SUPA_KEY_AUTH,'Content-Type':'application/json'};
+}
+
+function authFetch(table, filter, method, body, cb) {
+  var url = SUPA_URL_AUTH + '/rest/v1/' + table + (filter ? '?' + filter : '');
+  var opts = {method: method||'GET', headers: authHeaders()};
+  if(method==='POST'||method==='PATCH') opts.headers['Prefer']='resolution=merge-duplicates,return=representation';
+  if(body) opts.body = JSON.stringify(body);
   var done = false;
   var timer = setTimeout(function(){ if(!done){done=true; if(cb)cb('timeout',null);} }, 8000);
   fetch(url, opts)
     .then(function(r){ return r.json(); })
     .then(function(d){ if(!done){done=true;clearTimeout(timer); if(cb)cb(null,d);} })
-    .catch(function(e){ if(!done){done=true;clearTimeout(timer); if(cb)cb(e.message||'errore',null);} });
+    .catch(function(e){ if(!done){done=true;clearTimeout(timer); if(cb)cb(e.message,null);} });
 }
 
 function authErr(id, msg) {
@@ -394,17 +400,18 @@ document.getElementById('login-btn').onclick = function() {
   if(!user||!pass){ authErr('login-err','Compila tutti i campi.'); return; }
   var btn = this;
   btn.textContent='Accesso...'; btn.disabled=true;
-  authFetch('usernames/'+user, 'GET', null, function(err, data) {
+  authFetch('users', 'username=eq.'+user+'&select=uid,name,password', 'GET', null, function(err, data) {
     btn.textContent='Accedi'; btn.disabled=false;
     if(err){ authErr('login-err','Errore: '+err); return; }
-    if(!data){ authErr('login-err','Username non trovato.'); return; }
-    if(data.password !== pass){ authErr('login-err','Password errata.'); return; }
-    localStorage.setItem('stash_uid_v3', data.uid);
-    localStorage.setItem('stash_name_v3', data.name);
+    if(!data||!data.length){ authErr('login-err','Username non trovato.'); return; }
+    var u = data[0];
+    if(u.password !== pass){ authErr('login-err','Password errata.'); return; }
+    localStorage.setItem('stash_uid_v3', u.uid);
+    localStorage.setItem('stash_name_v3', u.name);
     localStorage.setItem('stash_user_v3', user);
-    if(typeof MY_UID!=='undefined') MY_UID=data.uid;
-    if(typeof MY_NAME!=='undefined') MY_NAME=data.name;
-    authFetch('users/'+data.uid+'/lastSeen','PUT',Date.now(),null);
+    if(typeof MY_UID!=='undefined') MY_UID=u.uid;
+    if(typeof MY_NAME!=='undefined') MY_NAME=u.name;
+    authFetch('users', 'uid=eq.'+u.uid, 'PATCH', {last_seen:Date.now()}, null);
     var dest=localStorage.getItem('stash_terms_v3')?'s-home':'s-terms';
     authGoScreen(dest);
     if(typeof setupHome==='function') setupHome();
@@ -422,23 +429,22 @@ document.getElementById('signup-btn').onclick = function() {
   if(!pass||pass.length<6){ authErr('su-err','Password min. 6 caratteri.'); return; }
   var btn = this;
   btn.textContent='Verifica...'; btn.disabled=true;
-  authFetch('usernames/'+user,'GET',null,function(err,data){
+  authFetch('users','username=eq.'+user+'&select=uid','GET',null,function(err,data){
     btn.textContent='Crea account'; btn.disabled=false;
     if(err){ authErr('su-err','Errore: '+err); return; }
-    if(data){ authErr('su-err','Username gia in uso.'); return; }
+    if(data&&data.length){ authErr('su-err','Username gia in uso.'); return; }
     var uid='u'+Math.random().toString(36).substr(2,8);
     btn.textContent='Creazione...'; btn.disabled=true;
-    authFetch('users/'+uid,'PUT',{name:name,username:user,balance:100,escrow:0,lastSeen:Date.now()},function(){
-      authFetch('usernames/'+user,'PUT',{uid:uid,name:name,password:pass},function(){
-        localStorage.setItem('stash_uid_v3',uid);
-        localStorage.setItem('stash_name_v3',name);
-        localStorage.setItem('stash_user_v3',user);
-        if(typeof MY_UID!=='undefined') MY_UID=uid;
-        if(typeof MY_NAME!=='undefined') MY_NAME=name;
-        authGoScreen('s-terms');
-        if(typeof setupHome==='function') setupHome();
-        if(typeof initFirebase==='function') initFirebase(function(){});
-      });
+    authFetch('users','','POST',{uid:uid,name:name,username:user,password:pass,balance:100,escrow:0,last_seen:Date.now()},function(err2){
+      if(err2){ btn.textContent='Crea account'; btn.disabled=false; authErr('su-err','Errore creazione: '+err2); return; }
+      localStorage.setItem('stash_uid_v3',uid);
+      localStorage.setItem('stash_name_v3',name);
+      localStorage.setItem('stash_user_v3',user);
+      if(typeof MY_UID!=='undefined') MY_UID=uid;
+      if(typeof MY_NAME!=='undefined') MY_NAME=name;
+      authGoScreen('s-terms');
+      if(typeof setupHome==='function') setupHome();
+      if(typeof initFirebase==='function') initFirebase(function(){});
     });
   });
 };
@@ -1014,8 +1020,6 @@ document.getElementById('signup-btn').onclick = function() {
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-database-compat.min.js"></script>
 <script>
 // stash v12 — main script
 
@@ -1028,93 +1032,98 @@ if (!MY_UID) {
 }
 
 // ===== FIREBASE =====
-// ===== FIREBASE SDK =====
-var db = null;
-var ROOT = 'demo_v3';
+// ===== SUPABASE REST API =====
+var SUPA_URL = 'https://fipgbniotxinkuzgcsgr.supabase.co';
+var SUPA_KEY = 'sb_publishable_DYhiN6RFKIrQdzHUBkvMiA_lsZm5wIB';
+var pollInterval = null;
 var fbReady = false;
 
-function fbRef(path) {
-  if (!db) return { set:function(){}, remove:function(){}, get:function(){return{then:function(){return{catch:function(){}};}} }, on:function(){} };
-  return db.ref(ROOT + (path ? '/' + path : ''));
+function supaFetch(path, method, body, prefer) {
+  var headers = {'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json'};
+  if(prefer) headers['Prefer'] = prefer;
+  var opts = {method:method||'GET', headers:headers};
+  if(body) opts.body = JSON.stringify(body);
+  return fetch(SUPA_URL+'/rest/v1/'+path, opts);
+}
+function supaGet(table,filter){return supaFetch(table+(filter?'?'+filter:''),'GET').then(function(r){return r.json();});}
+function supaUpsert(table,data){return supaFetch(table,'POST',data,'resolution=merge-duplicates,return=minimal');}
+function supaPatch(table,filter,data){return supaFetch(table+'?'+filter,'PATCH',data,'return=minimal');}
+function supaDelete(table,filter){return supaFetch(table+'?'+filter,'DELETE',null,null);}
+
+function fbSet(path,val){
+  if(!path)return;
+  var parts=path.split('/');
+  if(parts[0]==='users'&&parts[1]){
+    var uid=parts[1];
+    if(parts[2]){var upd={};upd[parts[2]==='lastSeen'?'last_seen':parts[2]]=val;supaPatch('users','uid=eq.'+uid,upd);}
+    else{supaUpsert('users',{uid:uid,name:val.name,username:val.username||'',password:val.password||'',balance:val.balance||100,escrow:val.escrow||0,last_seen:val.lastSeen||Date.now()});}
+  }else if(parts[0]==='challenge'){
+    if(parts.length===1){supaUpsert('challenges',{id:'current',title:val.title,amount:val.amount,challenger_uid:val.challengerUid,challenger_name:val.challengerName,challenged_uid:val.challengedUid,challenged_name:val.challengedName,status:val.status||'pending',timer_start:val.timerStart||Date.now(),timeout:val.timeout||3600,created_at:Date.now(),winner_uid:null});}
+    else if(parts[1]==='status'){supaPatch('challenges','id=eq.current',{status:val});}
+    else if(parts[1]==='winner'){supaPatch('challenges','id=eq.current',{winner_uid:val});}
+    else if((parts[1]==='declarations'||parts[1]==='votes')&&parts[2]){supaUpsert('challenge_votes',{challenge_id:'current',voter_uid:parts[2],winner_uid:val});}
+  }else if(parts[0]==='groups'&&parts[1]){
+    var gid=parts[1];
+    supaUpsert('groups',{id:gid,name:val.name,icon:val.icon||'x',creator_uid:val.creatorUid,created_at:val.createdAt||Date.now()});
+    if(val.members){for(var m in val.members)supaUpsert('group_members',{group_id:gid,uid:m,name:val.members[m]});}
+  }else if(parts[0]==='history'&&parts[1]){
+    supaUpsert('history',{id:parts[1],title:val.title,amount:val.amount,challenger_uid:val.challengerUid,challenger_name:val.challengerName,challenged_uid:val.challengedUid,challenged_name:val.challengedName,winner_uid:val.winnerUid||null,status:val.status,created_at:val.ts||Date.now()});
+  }
 }
 
-function fbSet(path, val) { fbRef(path).set(val); }
-function fbRemove(path)   { fbRef(path).remove(); }
-function fbGet(path, cb)  {
-  fbRef(path).get().then(function(s){ if(cb)cb(s); }).catch(function(){if(cb)cb({val:function(){return null;}});});
+function fbRemove(path){
+  if(!path)return;
+  if(path.indexOf('challenge/declarations')===0||path.indexOf('challenge/votes')===0)supaDelete('challenge_votes','challenge_id=eq.current');
 }
 
-function waitForFirebase(cb) {
-  if (typeof firebase !== 'undefined') { cb(); return; }
-  var t = 0;
-  var iv = setInterval(function() {
-    t += 200;
-    if (typeof firebase !== 'undefined') { clearInterval(iv); cb(); }
-    else if (t > 15000) { clearInterval(iv); console.warn('Firebase SDK not available'); cb(); }
-  }, 200);
+function fbGet(path,cb){
+  supaGet('history','order=created_at.desc').then(function(rows){
+    var obj={};
+    if(Array.isArray(rows))rows.forEach(function(r){obj[r.id]={title:r.title,amount:r.amount,challengerUid:r.challenger_uid,challengerName:r.challenger_name,challengedUid:r.challenged_uid,challengedName:r.challenged_name,winnerUid:r.winner_uid,status:r.status,ts:r.created_at};});
+    if(cb)cb({val:function(){return Object.keys(obj).length?obj:null;}});
+  }).catch(function(){if(cb)cb({val:function(){return null;}});});
 }
 
-function initFirebase(cb) {
-  if (fbReady) { if(cb)cb(); return; }
-  waitForFirebase(function() {
-    if (typeof firebase === 'undefined') { 
-      console.warn('Firebase SDK not available — offline mode');
-      if(cb)cb(); 
-      addFallbackUser(); 
-      return; 
-    }
-    try {
-      if (!firebase.apps.length) firebase.initializeApp({
-        apiKey: "AIzaSyBzDjcagzmo00ewzIB5guW3mhLhO_G-Cb8",
-        authDomain: "stash-8ab2a.firebaseapp.com",
-        databaseURL: "https://stash-8ab2a-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "stash-8ab2a",
-        storageBucket: "stash-8ab2a.firebasestorage.app",
-        messagingSenderId: "572148153547",
-        appId: "1:572148153547:web:6c93de96b37f5acd8f6f4e"
+function pollSupabase(){
+  supaGet('users','select=uid,name,balance,escrow,last_seen').then(function(rows){
+    if(!Array.isArray(rows))return;
+    var users={};
+    rows.forEach(function(r){users[r.uid]={name:r.name,balance:r.balance,escrow:r.escrow,lastSeen:r.last_seen};});
+    STATE.users=users;
+  });
+  supaGet('challenges','id=eq.current').then(function(rows){
+    if(!Array.isArray(rows)||!rows.length){STATE.challenge=null;onStateChange();return;}
+    var r=rows[0];
+    var ch={title:r.title,amount:r.amount,challengerUid:r.challenger_uid,challengerName:r.challenger_name,challengedUid:r.challenged_uid,challengedName:r.challenged_name,status:r.status,winner:r.winner_uid,timerStart:r.timer_start,timeout:r.timeout};
+    supaGet('challenge_votes','challenge_id=eq.current').then(function(vrows){
+      ch.votes={};ch.declarations={};
+      if(Array.isArray(vrows))vrows.forEach(function(v){ch.votes[v.voter_uid]=v.winner_uid;ch.declarations[v.voter_uid]=v.winner_uid;});
+      STATE.challenge=ch;onStateChange();
+    });
+  });
+  supaGet('groups','select=id,name,icon,creator_uid,created_at').then(function(grows){
+    if(!Array.isArray(grows)||!grows.length){STATE.groups={};return;}
+    var groups={},pending=grows.length;
+    grows.forEach(function(g){
+      supaGet('group_members','group_id=eq.'+g.id).then(function(mrows){
+        var members={};
+        if(Array.isArray(mrows))mrows.forEach(function(m){members[m.uid]=m.name;});
+        groups[g.id]={id:g.id,name:g.name,icon:g.icon,creatorUid:g.creator_uid,createdAt:g.created_at,members:members};
+        pending--;if(pending===0)STATE.groups=groups;
       });
-      db = firebase.database();
-      fbReady = true;
-      db.ref(ROOT).on('value', function(snap) {
-        var d = snap.val() || {};
-        STATE.users     = d.users     || {};
-        STATE.challenge = d.challenge || null;
-        STATE.groups    = d.groups    || {};
-        if (countKeys(STATE.users) <= 1) {
-          setTimeout(function() {
-            if (countKeys(STATE.users) <= 1) addFallbackUser();
-          }, 5000);
-        }
-        onStateChange();
-      });
-    } catch(e) { 
-      console.error('Firebase init:', e); 
-      addFallbackUser();
-    }
-    if(cb) cb();
+    });
   });
 }
 
-// Adds a local test user when Firebase is unavailable or empty
-function addFallbackUser() {
-  var testUid = 'test_user_demo';
-  if (STATE.users[testUid]) return; // already added
-  STATE.users[testUid] = { 
-    name: 'Demo Friend', 
-    balance: 100, 
-    escrow: 0, 
-    lastSeen: Date.now(),
-    isDemo: true
-  };
-  var cur = document.querySelector('.screen.active');
-  if (cur) onStateChange();
-  // Show info banner
-  var banner = document.createElement('div');
-  banner.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#241912;border:1px solid rgba(232,80,26,0.3);border-radius:10px;padding:10px 16px;font-size:12px;color:rgba(245,236,215,0.6);z-index:99;max-width:340px;text-align:center';
-  banner.textContent = 'Modalità demo locale — Firebase non connesso. Condividi il link per testare in multiplayer.';
-  document.body.appendChild(banner);
-  setTimeout(function(){ if(banner.parentNode) banner.parentNode.removeChild(banner); }, 6000);
+function initFirebase(cb){
+  if(fbReady){if(cb)cb();return;}
+  fbReady=true;
+  pollSupabase();
+  if(!pollInterval)pollInterval=setInterval(pollSupabase,3000);
+  if(cb)cb();
 }
+
+function addFallbackUser(){}
 
 // ===== STATE =====
 var STATE = { users:{}, challenge:null, groups:{} };
@@ -1195,8 +1204,8 @@ var BLOCKED = ['morte','morire','muori','ammazzati','uccidi','cazzo','fanculo','
 function countKeys(obj){var n=0;for(var k in obj){if(obj.hasOwnProperty(k))n++;}return n;}
 function myBal() { var u=STATE.users[MY_UID]; return (u&&u.balance!==undefined)?u.balance:100; }
 function myEsc() { var u=STATE.users[MY_UID]; return (u&&u.escrow!==undefined)?u.escrow:0; }
-function setBal(uid,v) { fbSet('users/'+uid+'/balance', v); }
-function setEsc(uid,v) { fbSet('users/'+uid+'/escrow', v); }
+function setBal(uid,v) { supaPatch('users','uid=eq.'+uid,{balance:v}); if(STATE.users[uid])STATE.users[uid].balance=v; }
+function setEsc(uid,v) { supaPatch('users','uid=eq.'+uid,{escrow:v}); if(STATE.users[uid])STATE.users[uid].escrow=v; }
 function getBal(uid)   { var u=STATE.users[uid]; return (u&&u.balance!==undefined)?u.balance:100; }
 
 // ===== NAVIGATION =====
@@ -1460,7 +1469,7 @@ function doLogout(){
     go(localStorage.getItem('stash_terms_v3')?'s-home':'s-terms');
     // Init Firebase in background
     initFirebase(function(){
-      fbSet('users/'+MY_UID+'/lastSeen', Date.now());
+      supaPatch('users','uid=eq.'+MY_UID,{last_seen:Date.now()});
     });
   }
   // else: stays on s-welcome (auth screen)

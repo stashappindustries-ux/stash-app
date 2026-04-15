@@ -1247,7 +1247,7 @@ function go(id) {
   if (id==='s-history')          drawHistory();
   if (id==='s-amici')            drawAmici();
   if (id==='s-create-challenge') { SELECTED_UIDS={}; SEL_CHALLENGED=null; drawChallengeUsers(); updateBal(); }
-  if (id==='s-create-group')     drawGroupUsers();
+  if (id==='s-create-group')     { SELECTED_UIDS={}; drawGroupUsers(); }
   if (id==='s-group-custom')     drawCustomGroup();
   if (id==='s-vote1v1')          initVote1v1();
   if (id==='s-vote-group')       drawGroupVote();
@@ -1642,25 +1642,32 @@ function toggleGroupMember(uid){
 
 function checkCG(){
   var name=((el('cg-name')||{}).value||'').trim();
+  var members=Object.keys(SELECTED_UIDS).length;
   var btn=el('cg-btn');
-  if(btn) btn.disabled=!(name.length>=2&&Object.keys(SELECTED_UIDS).length>0);
+  console.log('checkCG: name="'+name+'" members='+members);
+  if(btn) btn.disabled=!(name.length>=2&&members>0);
 }
 
 function createGroup(){
+  console.log('createGroup chiamata');
   var name=((el('cg-name')||{}).value||'').trim();
   var emojiEl=document.querySelector('.emoji-item.sel');
   var icon=emojiEl?emojiEl.getAttribute('data-e'):'⚽';
-  if(name.length<2) return;
+  if(name.length<2){ console.log('createGroup: nome troppo corto'); return; }
   var gid='g'+Math.random().toString(36).substr(2,8);
   var members={}; members[MY_UID]=MY_NAME;
   for(var uid in SELECTED_UIDS) members[uid]=SELECTED_UIDS[uid];
-  supaUpsert('groups',{id:gid,name:name,icon:icon,creator_uid:MY_UID,created_at:Date.now()}).then(function(){
-    var uids=Object.keys(members), done=0;
-    uids.forEach(function(u){
-      supaUpsert('group_members',{group_id:gid,uid:u,name:members[u]}).then(function(){
-        done++; if(done===uids.length){ STATE.groups[gid]={id:gid,name:name,icon:icon,creatorUid:MY_UID,createdAt:Date.now(),members:members}; SELECTED_UIDS={}; openGroupById(gid,name,icon); }
-      });
-    });
+  console.log('createGroup: gid='+gid+' members='+JSON.stringify(members));
+  // Aggiorna stato e naviga subito (ottimistico)
+  STATE.groups[gid]={id:gid,name:name,icon:icon,creatorUid:MY_UID,createdAt:Date.now(),members:members};
+  SELECTED_UIDS={};
+  openGroupById(gid,name,icon);
+  // Salva su Supabase in background
+  supaUpsert('groups',{id:gid,name:name,icon:icon,creator_uid:MY_UID,created_at:Date.now()})
+    .catch(function(e){console.error('createGroup groups error:',e);});
+  Object.keys(members).forEach(function(u){
+    supaUpsert('group_members',{group_id:gid,uid:u,name:members[u]})
+      .catch(function(e){console.error('createGroup members error:',e);});
   });
 }
 
@@ -1703,7 +1710,7 @@ function selTimeout(item){
 
 function checkChallenge(){
   var txt=((el('ch-text')||{}).value||'').trim(), amt=parseFloat((el('ch-amount')||{}).value)||0, bal=myBal();
-  var ok=txt.length>=5&&amt>=1&&amt<=bal&&SEL_CHALLENGED;
+  var ok=txt.length>=3&&amt>=1&&amt<=bal&&SEL_CHALLENGED;
   var btn=el('ch-btn'), summary=el('ch-summary'), info=el('ch-mode-info');
   if(btn) btn.disabled=!ok;
   if(!ok){
@@ -1721,9 +1728,13 @@ function checkChallenge(){
 
 function launchChallenge(){
   var txt=((el('ch-text')||{}).value||'').trim(), amt=parseFloat((el('ch-amount')||{}).value)||0;
-  if(!SEL_CHALLENGED||txt.length<5||amt<1) return;
+  console.log('launchChallenge: txt="'+txt+'" amt='+amt+' SEL_CHALLENGED='+JSON.stringify(SEL_CHALLENGED));
+  if(!SEL_CHALLENGED){console.log('launchChallenge: nessun avversario');return;}
+  if(txt.length<3){console.log('launchChallenge: testo troppo corto');return;}
+  if(amt<1){console.log('launchChallenge: importo non valido');return;}
   if(hasBlocked(txt)){alert('Contenuto non consentito.');return;}
-  var bal=myBal(); if(amt>bal){alert('Saldo insufficiente.');return;}
+  var bal=myBal(); console.log('launchChallenge: bal='+bal);
+  if(amt>bal){alert('Saldo insufficiente (€'+bal+' disponibili).');return;}
   setBal(MY_UID,bal-amt); setEsc(MY_UID,myEsc()+amt);
   var tLabel=CH_TIMEOUT>=86400?'24 ore':CH_TIMEOUT>=43200?'12 ore':'1 ora';
   supaUpsert('challenges',{id:'current',title:txt,amount:amt,challenger_uid:MY_UID,challenger_name:MY_NAME,challenged_uid:SEL_CHALLENGED.uid,challenged_name:SEL_CHALLENGED.name,status:'pending',timer_start:Date.now(),timeout:CH_TIMEOUT,created_at:Date.now(),winner_uid:null});

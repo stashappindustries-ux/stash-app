@@ -21,7 +21,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .phone{width:100%;max-width:390px;min-height:100vh;position:relative;overflow-x:hidden;margin:0 auto}
 
 /* SCREENS */
-.screen{display:none;flex-direction:column;min-height:100vh;padding:0 18px 90px;animation:fadeIn .22s ease}
+.screen{display:none;flex-direction:column;min-height:100vh;padding:0 18px 90px;animation:fadeIn .22s ease;max-width:600px;margin:0 auto}
 .screen.active{display:flex}
 @keyframes fadeIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -155,7 +155,7 @@ textarea.form-input{resize:none;height:88px}
 .prog-bar{background:var(--accent);border-radius:20px;height:6px;transition:width .5s ease}
 
 /* BOTTOM NAV */
-.bnav{display:flex;border-top:1px solid var(--border);padding:10px 0 env(safe-area-inset-bottom,16px);background:var(--bg);position:fixed;bottom:0;left:0;right:0;z-index:100}
+.bnav{display:flex;border-top:1px solid var(--border);padding:10px 0 env(safe-area-inset-bottom,16px);background:var(--bg);position:fixed;bottom:0;left:0;right:0;z-index:100;max-width:600px;margin:0 auto}
 .bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--text3);font-size:9px;font-weight:600;letter-spacing:.2px;text-transform:uppercase;transition:color .2s;padding:4px 2px}
 .bnav-item.on{color:var(--accent)}
 .bnav-icon{font-size:20px;line-height:1}
@@ -1110,6 +1110,7 @@ function pollSupabase(){
     var users={};
     rows.forEach(function(r){users[r.uid]={name:r.name,balance:r.balance,escrow:r.escrow,lastSeen:r.last_seen};});
     STATE.users=users;
+    onStateChange();
   });
   supaGet('challenges','id=eq.current').then(function(rows){
     if(!Array.isArray(rows)||!rows.length){STATE.challenge=null;onStateChange();return;}

@@ -1112,6 +1112,7 @@ function pollSupabase(){
     }
     var users={};
     rows.forEach(function(r){users[r.uid]={name:r.name,balance:r.balance,escrow:r.escrow,lastSeen:r.last_seen};});
+    console.log('pollSupabase: utenti caricati', Object.keys(users).length, users);
     STATE.users=users;
     onStateChange();
   }).catch(function(e){console.error('pollSupabase error:',e);});
@@ -1265,7 +1266,8 @@ function onStateChange() {
   if (id==='s-amici')        drawAmici();
   if (id==='s-vote1v1')      drawVote1v1Live();
   if (id==='s-vote-group')   drawGroupVote();
-  if (id==='s-create-challenge') { updateBal(); }
+  if (id==='s-create-challenge') { updateBal(); drawChallengeUsers(); }
+  if (id==='s-create-group')     drawGroupUsers();
   var ch = STATE.challenge;
   if (ch && ch.status==='resolved' && ch.winner && (id==='s-vote1v1'||id==='s-vote-group')) {
     drawWinnerScreen(ch);
@@ -1607,6 +1609,257 @@ function doLogout(){
   localStorage.removeItem('stash_terms_v3');
   MY_UID=null; MY_NAME=null;
   location.reload();
+}
+
+// ===== MISSING CORE FUNCTIONS =====
+
+// --- Group creation ---
+function selEmoji(item){
+  var items=document.querySelectorAll('.emoji-item');
+  for(var i=0;i<items.length;i++) items[i].classList.remove('sel');
+  item.classList.add('sel');
+  checkCG();
+}
+
+function drawGroupUsers(){
+  var list=el('cg-members-list'); if(!list) return;
+  var others=[];
+  for(var uid in STATE.users){ if(uid!==MY_UID) others.push(uid); }
+  if(!others.length){ list.innerHTML='<div class="muted" style="padding:12px 0;font-size:13px">Nessun altro utente registrato.</div>'; return; }
+  var html='';
+  for(var i=0;i<others.length;i++){
+    var uid=others[i], u=STATE.users[uid], sel=SELECTED_UIDS[uid];
+    html+='<div class="member-row" onclick="toggleGroupMember(\''+uid+'\')" style="cursor:pointer;padding:10px 4px;border-radius:var(--rs);'+(sel?'background:var(--accent-dim)':'')+'"><div class="av av-sm" style="background:var(--purple);color:#fff">'+initial(u.name)+'</div><div class="member-name" style="flex:1">'+u.name+'</div>'+(sel?'<div style="color:var(--accent);font-weight:700">✓</div>':'<div style="color:var(--text3)">+</div>')+'</div>';
+  }
+  list.innerHTML=html;
+}
+
+function toggleGroupMember(uid){
+  if(SELECTED_UIDS[uid]) delete SELECTED_UIDS[uid];
+  else SELECTED_UIDS[uid]=STATE.users[uid]?STATE.users[uid].name:uid;
+  drawGroupUsers(); checkCG();
+}
+
+function checkCG(){
+  var name=((el('cg-name')||{}).value||'').trim();
+  var btn=el('cg-btn');
+  if(btn) btn.disabled=!(name.length>=2&&Object.keys(SELECTED_UIDS).length>0);
+}
+
+function createGroup(){
+  var name=((el('cg-name')||{}).value||'').trim();
+  var emojiEl=document.querySelector('.emoji-item.sel');
+  var icon=emojiEl?emojiEl.getAttribute('data-e'):'⚽';
+  if(name.length<2) return;
+  var gid='g'+Math.random().toString(36).substr(2,8);
+  var members={}; members[MY_UID]=MY_NAME;
+  for(var uid in SELECTED_UIDS) members[uid]=SELECTED_UIDS[uid];
+  supaUpsert('groups',{id:gid,name:name,icon:icon,creator_uid:MY_UID,created_at:Date.now()}).then(function(){
+    var uids=Object.keys(members), done=0;
+    uids.forEach(function(u){
+      supaUpsert('group_members',{group_id:gid,uid:u,name:members[u]}).then(function(){
+        done++; if(done===uids.length){ STATE.groups[gid]={id:gid,name:name,icon:icon,creatorUid:MY_UID,createdAt:Date.now(),members:members}; SELECTED_UIDS={}; openGroupById(gid,name,icon); }
+      });
+    });
+  });
+}
+
+// --- Challenge creation ---
+function drawChallengeUsers(){
+  var list=el('ch-members-list'); if(!list) return;
+  var others=[];
+  for(var uid in STATE.users){ if(uid!==MY_UID) others.push(uid); }
+  if(!others.length){ list.innerHTML='<div class="muted" style="padding:12px 0;font-size:13px">Nessun altro utente registrato.</div>'; return; }
+  var html='';
+  for(var i=0;i<others.length;i++){
+    var uid=others[i], u=STATE.users[uid], sel=SEL_CHALLENGED&&SEL_CHALLENGED.uid===uid;
+    html+='<div class="member-row" onclick="selChallengee(\''+uid+'\',\''+u.name.replace(/\'/g,"\\'")+'\')" style="cursor:pointer;padding:10px 4px;border-radius:var(--rs);'+(sel?'background:var(--accent-dim)':'')+'"><div class="av av-sm" style="background:var(--purple);color:#fff">'+initial(u.name)+'</div><div class="member-name" style="flex:1">'+u.name+'<div style="font-size:11px;color:var(--text3)">€'+getBal(uid).toFixed(0)+' disponibili</div></div>'+(sel?'<div style="color:var(--accent);font-weight:700;font-size:12px">✓</div>':'')+'</div>';
+  }
+  list.innerHTML=html; checkChallenge();
+}
+
+function selChallengee(uid,name){ SEL_CHALLENGED={uid:uid,name:name}; drawChallengeUsers(); }
+
+function updateCounter(){ var t=el('ch-text'),c=el('ch-count'); if(t&&c) c.textContent=t.value.length; }
+function clearChallengeErr(){}
+
+function setAmt(v){ var inp=el('ch-amount'); if(inp){inp.value=v; syncChips(v); checkChallenge();} }
+
+function syncChips(v){
+  var v2=parseFloat(v), chips=document.querySelectorAll('.chip');
+  for(var i=0;i<chips.length;i++){
+    var oc=chips[i].getAttribute('onclick')||'';
+    if(oc.indexOf('setAmt(')===0){ if(parseInt(chips[i].textContent.replace('€',''))===v2) chips[i].classList.add('sel'); else chips[i].classList.remove('sel'); }
+  }
+}
+
+function selTimeout(item){
+  var chips=document.querySelectorAll('#timeout-chips .chip');
+  for(var i=0;i<chips.length;i++) chips[i].classList.remove('sel');
+  item.classList.add('sel');
+  CH_TIMEOUT=parseInt(item.getAttribute('data-t'))||3600;
+  checkChallenge();
+}
+
+function checkChallenge(){
+  var txt=((el('ch-text')||{}).value||'').trim(), amt=parseFloat((el('ch-amount')||{}).value)||0, bal=myBal();
+  var ok=txt.length>=5&&amt>=1&&amt<=bal&&SEL_CHALLENGED;
+  var btn=el('ch-btn'), summary=el('ch-summary'), info=el('ch-mode-info');
+  if(btn) btn.disabled=!ok;
+  if(!ok){
+    if(summary) summary.style.display='none';
+    if(info){ if(!SEL_CHALLENGED) info.textContent='Seleziona almeno un avversario'; else if(amt<1) info.textContent='Inserisci un importo'; else if(amt>bal) info.textContent='Saldo insufficiente (€'+bal.toFixed(0)+' disponibili)'; else info.textContent='Scrivi la sfida (min. 5 caratteri)'; }
+    return;
+  }
+  if(summary) summary.style.display='block';
+  var tLabel=CH_TIMEOUT>=86400?'24 ore':CH_TIMEOUT>=43200?'12 ore':'1 ora';
+  setText('sum-you','€'+amt.toFixed(0)); setText('sum-them','€'+amt.toFixed(0));
+  setText('sum-timeout',tLabel); setText('sum-total','€'+(amt*2).toFixed(0));
+  setText('sum-them-lbl',(SEL_CHALLENGED?SEL_CHALLENGED.name:'Avversario')+' blocca');
+  if(info) info.textContent='Sfida 1vs1 con '+SEL_CHALLENGED.name;
+}
+
+function launchChallenge(){
+  var txt=((el('ch-text')||{}).value||'').trim(), amt=parseFloat((el('ch-amount')||{}).value)||0;
+  if(!SEL_CHALLENGED||txt.length<5||amt<1) return;
+  if(hasBlocked(txt)){alert('Contenuto non consentito.');return;}
+  var bal=myBal(); if(amt>bal){alert('Saldo insufficiente.');return;}
+  setBal(MY_UID,bal-amt); setEsc(MY_UID,myEsc()+amt);
+  var tLabel=CH_TIMEOUT>=86400?'24 ore':CH_TIMEOUT>=43200?'12 ore':'1 ora';
+  supaUpsert('challenges',{id:'current',title:txt,amount:amt,challenger_uid:MY_UID,challenger_name:MY_NAME,challenged_uid:SEL_CHALLENGED.uid,challenged_name:SEL_CHALLENGED.name,status:'pending',timer_start:Date.now(),timeout:CH_TIMEOUT,created_at:Date.now(),winner_uid:null});
+  setText('suc-other',SEL_CHALLENGED.name); setText('suc-other2',SEL_CHALLENGED.name);
+  setText('suc-amount','€'+amt); setText('suc-timeout',tLabel);
+  go('s-success');
+}
+
+// --- Accept ---
+function fillAcceptScreen(ch){
+  if(!ch) return;
+  setText('acc-from',ch.challengerName||'Qualcuno');
+  var tEl=el('acc-title'); if(tEl) tEl.textContent='"'+ch.title+'"';
+  setText('acc-amount','€'+ch.amount);
+  var bal=getBal(MY_UID);
+  setText('acc-escrow-sub',bal>=ch.amount?'Se accetti, €'+ch.amount+' vengono bloccati in escrow':'Saldo insufficiente per accettare');
+  var btn=el('acc-btn'); if(btn) btn.disabled=bal<ch.amount;
+  var tlEl=el('acc-timer-lbl'); if(tlEl&&ch.timerStart) tlEl.textContent='⏱ Scade tra '+getRem(ch);
+}
+
+function acceptChallenge(){
+  var ch=STATE.challenge; if(!ch||ch.challengedUid!==MY_UID) return;
+  var bal=getBal(MY_UID); if(bal<ch.amount){alert('Saldo insufficiente.');return;}
+  setBal(MY_UID,bal-ch.amount); setEsc(MY_UID,myEsc()+ch.amount);
+  supaPatch('challenges','id=eq.current',{status:'accepted'});
+  go('s-vote1v1');
+}
+
+// --- Vote 1v1 ---
+function initVote1v1(){
+  var ch=STATE.challenge; if(!ch) return;
+  setText('v1-title','"'+ch.title+'"'); setText('v1-amount','€'+ch.amount);
+  var isC=ch.challengerUid===MY_UID, otherName=isC?ch.challengedName:ch.challengerName, otherUid=isC?ch.challengedUid:ch.challengerUid;
+  setText('v1-me-name',MY_NAME||'Tu'); setText('v1-other-name',otherName); setText('v1-other-lbl',otherName);
+  var myDecl=ch.declarations&&ch.declarations[MY_UID];
+  if(myDecl){ show('v1-my-voted'); hide('v1-my-decl'); setText('v1-my-voted-txt','Hai dichiarato: '+(myDecl===MY_UID?MY_NAME:otherName)+' ha vinto'); }
+  else { show('v1-my-decl'); hide('v1-my-voted'); }
+  var otherDecl=ch.declarations&&ch.declarations[otherUid];
+  if(otherDecl){ show('v1-other-voted'); hide('v1-other-wait'); setText('v1-other-voted-txt',otherName+': '+(otherDecl===MY_UID?MY_NAME:otherName)+' ha vinto'); }
+  else { show('v1-other-wait'); hide('v1-other-voted'); }
+  if(myDecl&&otherDecl){ if(myDecl===otherDecl){ show('v1-agree'); hide('v1-conflict'); } else { show('v1-conflict'); hide('v1-agree'); setText('v1-conflict-txt','Dichiarazioni discordanti — il gruppo decide.'); } }
+  else { hide('v1-agree'); hide('v1-conflict'); }
+}
+
+function drawVote1v1Live(){ initVote1v1(); }
+
+function declare(who){
+  var ch=STATE.challenge; if(!ch) return;
+  var winnerUid=who==='self'?MY_UID:(ch.challengerUid===MY_UID?ch.challengedUid:ch.challengerUid);
+  supaUpsert('challenge_votes',{challenge_id:'current',voter_uid:MY_UID,winner_uid:winnerUid});
+  if(!ch.declarations) ch.declarations={};
+  ch.declarations[MY_UID]=winnerUid;
+  initVote1v1();
+}
+
+function resolveChallenge(){
+  var ch=STATE.challenge; if(!ch) return;
+  var myDecl=ch.declarations&&ch.declarations[MY_UID]; if(!myDecl) return;
+  resolveWinner(myDecl);
+}
+
+// --- Group vote ---
+function drawGroupVote(){
+  var ch=STATE.challenge; if(!ch){ go('s-home'); return; }
+  setText('vg-title','"'+ch.title+'"'); setText('vg-amount','€'+ch.amount);
+  setText('vg-challenger-name',ch.challengerName); setText('vg-challenged-name',ch.challengedName);
+  var votes=ch.votes||{}, total=Object.keys(votes).length;
+  setText('vg-vote-count',total+' vot'+(total===1?'o':'i'));
+  var c1=0; for(var uid in votes){ if(votes[uid]===ch.challengerUid) c1++; }
+  var bar=el('vg-prog-bar'); if(bar) bar.style.width=(total>0?Math.round(c1/total*100):50)+'%';
+  if(votes[MY_UID]){ hide('vg-vote-section'); show('vg-already-voted'); } else { show('vg-vote-section'); hide('vg-already-voted'); }
+  hide('vg-voted');
+}
+
+function groupVote(who){
+  var ch=STATE.challenge; if(!ch) return;
+  var winnerUid=who==='challenger'?ch.challengerUid:ch.challengedUid;
+  supaUpsert('challenge_votes',{challenge_id:'current',voter_uid:MY_UID,winner_uid:winnerUid});
+  if(!ch.votes) ch.votes={}; ch.votes[MY_UID]=winnerUid;
+  hide('vg-vote-section'); show('vg-voted'); checkMajority();
+}
+
+function simulateGroupVote(){ var ch=STATE.challenge; if(ch) resolveWinner(ch.challengerUid); }
+
+function checkMajority(){
+  var ch=STATE.challenge; if(!ch) return;
+  var tally={}; for(var uid in (ch.votes||{})){ var v=ch.votes[uid]; tally[v]=(tally[v]||0)+1; }
+  for(var w in tally){ if(tally[w]>=2){ resolveWinner(w); return; } }
+}
+
+function resolveWinner(winnerUid){
+  var ch=STATE.challenge; if(!ch) return;
+  var loserUid=winnerUid===ch.challengerUid?ch.challengedUid:ch.challengerUid, prize=ch.amount;
+  setBal(winnerUid,getBal(winnerUid)+prize*2);
+  setEsc(winnerUid,Math.max(0,(STATE.users[winnerUid]&&STATE.users[winnerUid].escrow||0)-prize));
+  setEsc(loserUid,Math.max(0,(STATE.users[loserUid]&&STATE.users[loserUid].escrow||0)-prize));
+  supaPatch('challenges','id=eq.current',{status:'resolved',winner_uid:winnerUid});
+  supaUpsert('history',{id:'h'+Date.now(),title:ch.title,amount:prize,challenger_uid:ch.challengerUid,challenger_name:ch.challengerName,challenged_uid:ch.challengedUid,challenged_name:ch.challengedName,winner_uid:winnerUid,status:'resolved',created_at:Date.now()});
+  drawWinnerScreen({title:ch.title,amount:prize,challengerUid:ch.challengerUid,challengerName:ch.challengerName,challengedUid:ch.challengedUid,challengedName:ch.challengedName,winner:winnerUid});
+  go('s-winner');
+}
+
+// --- Winner screen ---
+function drawWinnerScreen(ch){
+  if(!ch) return;
+  var winnerUid=ch.winner||ch.winnerUid;
+  var winnerName=winnerUid===ch.challengerUid?ch.challengerName:ch.challengedName;
+  var loserName=winnerUid===ch.challengerUid?ch.challengedName:ch.challengerName;
+  var isMe=winnerUid===MY_UID;
+  setText('w-emoji',isMe?'🏆':'😔'); setText('w-title',isMe?'Hai vinto!':winnerName+' ha vinto');
+  setText('w-sub',isMe?'I fondi sono stati trasferiti a te.':'Meglio la prossima volta.');
+  setText('w-amount','€'+(ch.amount*2)); setText('w-lbl',isMe?'trasferiti a te':'trasferiti a '+winnerName);
+  var wav=el('w-winner-av'); if(wav) wav.textContent=initial(winnerName);
+  var lav=el('w-loser-av'); if(lav) lav.textContent=initial(loserName);
+  setText('w-winner-name',winnerName); setText('w-loser-name',loserName);
+}
+
+// --- Live challenge card & notifications ---
+function liveChallengeHTML(ch){
+  var div=document.createElement('div'); div.className='card'; div.style.marginBottom='12px';
+  var isC=ch.challengerUid===MY_UID, otherName=isC?ch.challengedName:ch.challengerName;
+  var isPending=ch.status==='pending', statusCol=isPending?'var(--amber)':'var(--accent)';
+  div.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="font-size:12px;font-weight:700;color:'+statusCol+'">● '+(isPending?'In attesa di accettazione':'Sfida in corso')+'</div><div style="font-size:12px;color:var(--text2)">€'+ch.amount+' in palio</div></div><div style="font-size:14px;font-weight:600;margin-bottom:8px">"'+ch.title.substr(0,50)+'"</div><div style="font-size:12px;color:var(--text2);margin-bottom:12px">vs '+otherName+'</div><button onclick="go(\''+(isPending&&!isC?'s-accept':'s-vote1v1')+'\')" style="width:100%;background:var(--accent);color:#110D0A;border:none;border-radius:var(--rs);padding:10px;font-weight:900;font-size:13px;cursor:pointer">'+(isPending&&!isC?'Accetta sfida →':'Dichiara esito →')+'</button>';
+  return div;
+}
+
+function notifHTML(name,title,amount){
+  return '<div class="notif-banner" onclick="go(\'s-accept\')"><div>⚡</div><div class="notif-text"><strong>'+name+'</strong> ti sfida: "'+title.substr(0,30)+'"</div><div class="notif-cta">€'+amount+' →</div></div>';
+}
+
+// --- Group navigation ---
+function openGroupById(gid,name,icon){
+  var g=STATE.groups[gid]; GROUP_CREATOR=g?g.creatorUid:null;
+  var iconEl=el('new-group-icon'); if(iconEl) iconEl.textContent=icon||'⚽';
+  var nameEl=el('new-group-name'); if(nameEl) nameEl.textContent=name||'Gruppo';
+  drawCustomGroup(); go('s-group-custom');
 }
 
 // ===== START =====

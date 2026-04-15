@@ -1231,6 +1231,7 @@ function myEsc() { var u=STATE.users[MY_UID]; return (u&&u.escrow!==undefined)?u
 function setBal(uid,v) { supaPatch('users','uid=eq.'+uid,{balance:v}); if(STATE.users[uid])STATE.users[uid].balance=v; }
 function setEsc(uid,v) { supaPatch('users','uid=eq.'+uid,{escrow:v}); if(STATE.users[uid])STATE.users[uid].escrow=v; }
 function getBal(uid)   { var u=STATE.users[uid]; return (u&&u.balance!==undefined)?u.balance:100; }
+function updateBal()   { setText('bal-display','€'+myBal().toFixed(2)); }
 
 // ===== NAVIGATION =====
 function go(id) {

@@ -21,7 +21,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .phone{width:100%;max-width:390px;min-height:100vh;position:relative;overflow-x:hidden;margin:0 auto}
 
 /* SCREENS */
-.screen{display:none;flex-direction:column;min-height:100vh;padding:0 18px 90px;animation:fadeIn .22s ease;max-width:600px;margin:0 auto}
+.screen{display:none;flex-direction:column;min-height:100vh;padding:0 18px 90px;max-width:600px;margin:0 auto}
 .screen.active{display:flex}
 @keyframes fadeIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -361,7 +361,7 @@ textarea.form-input{resize:none;height:88px}
 <script>
 // ===== AUTH — self-contained, no main script dependency =====
 var SUPA_URL_AUTH = 'https://fipgbniotxinkuzgcsgr.supabase.co';
-var SUPA_KEY_AUTH = 'sb_publishable_DYhiN6RFKIrQdzHUBkvMiA_lsZm5wIB';
+var SUPA_KEY_AUTH = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpcGdibmlvdHhpbmt1emdjc2dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTEwNDYsImV4cCI6MjA5MTc2NzA0Nn0.Mi3rNaNaJreR1nR5PXBbqlBIdV-XLkO21K27hzPeJg8';
 
 function authHeaders() {
   return {'apikey':SUPA_KEY_AUTH,'Authorization':'Bearer '+SUPA_KEY_AUTH,'Content-Type':'application/json'};
@@ -1054,7 +1054,7 @@ if (!MY_UID) {
 // ===== FIREBASE =====
 // ===== SUPABASE REST API =====
 var SUPA_URL = 'https://fipgbniotxinkuzgcsgr.supabase.co';
-var SUPA_KEY = 'sb_publishable_DYhiN6RFKIrQdzHUBkvMiA_lsZm5wIB';
+var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpcGdibmlvdHhpbmt1emdjc2dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTEwNDYsImV4cCI6MjA5MTc2NzA0Nn0.Mi3rNaNaJreR1nR5PXBbqlBIdV-XLkO21K27hzPeJg8';
 var pollInterval = null;
 var fbReady = false;
 
@@ -1106,12 +1106,15 @@ function fbGet(path,cb){
 
 function pollSupabase(){
   supaGet('users','select=uid,name,balance,escrow,last_seen').then(function(rows){
-    if(!Array.isArray(rows))return;
+    if(!Array.isArray(rows)){
+      console.error('Supabase users error:', rows);
+      return;
+    }
     var users={};
     rows.forEach(function(r){users[r.uid]={name:r.name,balance:r.balance,escrow:r.escrow,lastSeen:r.last_seen};});
     STATE.users=users;
     onStateChange();
-  });
+  }).catch(function(e){console.error('pollSupabase error:',e);});
   supaGet('challenges','id=eq.current').then(function(rows){
     if(!Array.isArray(rows)||!rows.length){STATE.challenge=null;onStateChange();return;}
     var r=rows[0];

@@ -1425,7 +1425,7 @@ function drawGroups() {
   var myGroups = [];
   for (var gid in STATE.groups) {
     var g = STATE.groups[gid];
-    if (g && g.members && g.members[MY_UID]) myGroups.push(g);
+    if (g && g.members && Object.prototype.hasOwnProperty.call(g.members, MY_UID)) myGroups.push(g);
   }
   myGroups.sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);});
   var emptyEl = el('home-empty-groups');
@@ -1440,7 +1440,7 @@ function drawGroups() {
     var mCount = countKeys(g2.members||{});
     var ch = STATE.challenge;
     var hasLive = ch && (ch.status==='pending'||ch.status==='accepted') &&
-      g2.members && g2.members[ch.challengerUid] && g2.members[ch.challengedUid];
+      g2.members && Object.prototype.hasOwnProperty.call(g2.members, ch.challengerUid) && Object.prototype.hasOwnProperty.call(g2.members, ch.challengedUid];
     var card = document.createElement('div');
     card.className = 'card card-tap';
     card.style.marginBottom = '10px';

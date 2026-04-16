@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>stash - Are you in?</title>
+<title>stash — Are you in?</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -350,7 +350,7 @@ textarea.form-input{resize:none;height:88px}
         <input id="su-pass" type="password" placeholder="min. 6 caratteri" maxlength="40"
           style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-size:16px;outline:none;margin-bottom:8px;-webkit-appearance:none;box-sizing:border-box">
         <div id="su-err" style="color:var(--red);font-size:13px;margin-bottom:12px;min-height:18px"></div>
-        <button id="signup-btn" style="width:100%;background:#E8501A;color:#110D0A;border:none;border-radius:14px;padding:16px;font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:16px;cursor:pointer">Crea account - 100 gratis</button>
+        <button id="signup-btn" style="width:100%;background:#E8501A;color:#110D0A;border:none;border-radius:14px;padding:16px;font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:16px;cursor:pointer">Crea account — €100 gratis</button>
       </div>
       <div style="font-size:11px;color:rgba(245,236,215,0.25);margin-top:16px;text-align:center">Nessun dato reale. Solo credito demo.</div>
     </div>
@@ -358,7 +358,7 @@ textarea.form-input{resize:none;height:88px}
 </div>
 
 <script>
-// ===== AUTH - self-contained, no main script dependency =====
+// ===== AUTH — self-contained, no main script dependency =====
 var SUPA_URL_AUTH = 'https://fipgbniotxinkuzgcsgr.supabase.co';
 var SUPA_KEY_AUTH = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpcGdibmlvdHhpbmt1emdjc2dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTEwNDYsImV4cCI6MjA5MTc2NzA0Nn0.Mi3rNaNaJreR1nR5PXBbqlBIdV-XLkO21K27hzPeJg8';
 
@@ -387,6 +387,7 @@ function authErr(id, msg) {
 function authGoScreen(dest) {
   if (typeof go === 'function') {
     if (typeof setupHome === 'function') setupHome();
+    if (typeof initFirebase === 'function') initFirebase(function(){});
     go(dest);
   } else {
     var all = document.querySelectorAll('.screen');
@@ -419,6 +420,7 @@ document.getElementById('login-btn').onclick = function() {
     var dest=localStorage.getItem('stash_terms_v3')?'s-home':'s-terms';
     authGoScreen(dest);
     if(typeof setupHome==='function') setupHome();
+    if(typeof initFirebase==='function') initFirebase(function(){});
   });
 };
 
@@ -447,6 +449,7 @@ document.getElementById('signup-btn').onclick = function() {
       if(typeof MY_NAME!=='undefined') MY_NAME=name;
       authGoScreen('s-terms');
       if(typeof setupHome==='function') setupHome();
+      if(typeof initFirebase==='function') initFirebase(function(){});
     });
   });
 };
@@ -456,34 +459,34 @@ document.getElementById('signup-btn').onclick = function() {
 <div class="screen" id="s-terms">
   <div style="flex:1;display:flex;flex-direction:column;padding:52px 0 24px">
     <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:22px;margin-bottom:6px">Prima di iniziare</div>
-    <div class="muted" style="margin-bottom:28px">stash  una piattaforma tra amici. Usala bene.</div>
+    <div class="muted" style="margin-bottom:28px">stash è una piattaforma tra amici. Usala bene.</div>
     <div style="flex:1;display:flex;flex-direction:column;gap:12px;margin-bottom:28px">
       <div class="card" style="display:flex;align-items:flex-start;gap:12px">
-        <div style="font-size:24px;flex-shrink:0"></div>
+        <div style="font-size:24px;flex-shrink:0">🚫</div>
         <div>
           <div style="font-weight:700;font-size:15px;margin-bottom:4px">Niente sfide pericolose</div>
-          <div class="muted" style="font-size:13px;line-height:1.5">Non lanciare sfide che possano mettere a rischio la tua incolumit o quella degli altri.</div>
+          <div class="muted" style="font-size:13px;line-height:1.5">Non lanciare sfide che possano mettere a rischio la tua incolumità o quella degli altri.</div>
         </div>
       </div>
       <div class="card" style="display:flex;align-items:flex-start;gap:12px">
-        <div style="font-size:24px;flex-shrink:0"></div>
+        <div style="font-size:24px;flex-shrink:0">🤝</div>
         <div>
           <div style="font-weight:700;font-size:15px;margin-bottom:4px">Rispetto reciproco</div>
           <div class="muted" style="font-size:13px;line-height:1.5">Niente linguaggio offensivo, discriminatorio o inappropriato nelle sfide.</div>
         </div>
       </div>
       <div class="card" style="display:flex;align-items:flex-start;gap:12px">
-        <div style="font-size:24px;flex-shrink:0"></div>
+        <div style="font-size:24px;flex-shrink:0">⚖️</div>
         <div>
           <div style="font-weight:700;font-size:15px;margin-bottom:4px">Vota onestamente</div>
-          <div class="muted" style="font-size:13px;line-height:1.5">Il voto  anonimo ma l'onest  la base del gioco. Chi bluffa sul risultato perde la fiducia del gruppo.</div>
+          <div class="muted" style="font-size:13px;line-height:1.5">Il voto è anonimo ma l'onestà è la base del gioco. Chi bluffa sul risultato perde la fiducia del gruppo.</div>
         </div>
       </div>
       <div class="card" style="display:flex;align-items:flex-start;gap:12px">
-        <div style="font-size:24px;flex-shrink:0"></div>
+        <div style="font-size:24px;flex-shrink:0">🔞</div>
         <div>
           <div style="font-weight:700;font-size:15px;margin-bottom:4px">Solo maggiorenni</div>
-          <div class="muted" style="font-size:13px;line-height:1.5">stash  riservato agli utenti con almeno 18 anni. Dichiari di avere l'et richiesta.</div>
+          <div class="muted" style="font-size:13px;line-height:1.5">stash è riservato agli utenti con almeno 18 anni. Dichiari di avere l'età richiesta.</div>
         </div>
       </div>
     </div>
@@ -493,7 +496,7 @@ document.getElementById('signup-btn').onclick = function() {
         Dichiaro di aver letto e accettare le regole di stash. Confermo di avere almeno 18 anni e di non usare la piattaforma per sfide pericolose o inappropriate.
       </div>
     </div>
-    <button class="btn-primary" id="terms-btn" onclick="inlineAcceptTerms()">Are you in? </button>
+    <button class="btn-primary" id="terms-btn" onclick="inlineAcceptTerms()">Are you in? →</button>
     <script>
     function inlineToggleTerms() {
       var ch = document.getElementById('terms-check');
@@ -502,20 +505,18 @@ document.getElementById('signup-btn').onclick = function() {
     }
     function inlineAcceptTerms() {
       var ch = document.getElementById('terms-check');
-      if (!ch || !ch.classList.contains('on')) {
-        alert('Devi accettare i termini per continuare.');
+      if (!ch.classList.contains('on')) {
+        ch.style.borderColor = '#E8501A';
         return;
       }
-      localStorage.setItem('stash_terms_v3', 'accepted');
-      if (typeof go === 'function') {
-        go('s-home');
-      } else {
-        var all = document.querySelectorAll('.screen');
-        for(var i=0;i<all.length;i++) all[i].classList.remove('active');
-        var t = document.getElementById('s-home');
-        if(t) t.classList.add('active');
-        window.scrollTo(0,0);
-      }
+      localStorage.setItem('stash_terms_v3', '1');
+      var all = document.querySelectorAll('.screen');
+      for (var i=0;i<all.length;i++) all[i].classList.remove('active');
+      var home = document.getElementById('s-home');
+      if (home) home.classList.add('active');
+      if (typeof setupHome === 'function') setupHome();
+      if (typeof drawHome === 'function') drawHome();
+      if (typeof initFirebase === 'function') initFirebase(function(){});
     }
     </script>
   </div>
@@ -524,428 +525,1657 @@ document.getElementById('signup-btn').onclick = function() {
 <!-- ===== HOME ===== -->
 <div class="screen" id="s-home">
   <div class="header">
-    <div class="logo">stash</div>
-    <div class="av" id="home-av">M</div>
+    <div class="logo" style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:22px;letter-spacing:-1.5px;line-height:1;display:inline-flex;align-items:baseline">
+      <span style="color:transparent;-webkit-text-stroke:1.8px #E8501A">s</span><span style="color:#F5ECD7">tas</span><span style="color:#E8501A">h</span>
+    </div>
+    <div class="av" id="home-av" style="cursor:pointer" onclick="go('s-profile')"></div>
   </div>
-  <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:22px;margin-bottom:4px">Ciao, <span id="home-name">Marco</span></div>
-  <div class="muted" style="margin-bottom:24px">Sfida i tuoi amici</div>
-  
-  <div class="stats-bar">
-    <div class="stat-item">
-      <div class="stat-val" id="home-escrow-label">EUR100 disponibili</div>
-      <div class="stat-lbl">Saldo</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-val">0</div>
-      <div class="stat-lbl">Vittorie</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-val">0</div>
-      <div class="stat-lbl">Sfide</div>
+  <div id="notif-banner" style="display:none"></div>
+  <div class="share-row">
+    <div class="sl" style="margin:0">Gruppi</div>
+    <button class="share-btn" id="share-btn" onclick="shareLink()">🔥 Sfida i tuoi amici</button>
+  </div>
+  <div id="live-challenge" style="display:none"></div>
+  <div class="pot" id="home-escrow-label" style="display:none">€0</div>
+
+  <div class="card card-tap" id="new-group-card" style="display:none;background:var(--accent-dim);border-color:var(--accent)" onclick="go('s-group-custom')">
+    <div class="gc-top">
+      <div class="gc-icon" id="new-group-icon">🎮</div>
+      <div class="gc-info"><div class="gc-name" id="new-group-name">Nuovo Gruppo</div><div class="gc-meta" id="new-group-meta">1 membro · nessuna sfida</div></div>
+      <div class="gc-badge">Nuovo</div>
     </div>
   </div>
-  
-  <div class="sl">Gruppi</div>
-  <div id="home-groups"></div>
-  
+
+  <div id="groups-container"></div>
+
   <div id="home-empty-groups" class="info-box info-gray" style="margin-bottom:16px;text-align:center">
     Nessun gruppo ancora. <br>Creane uno o aspetta che un amico ti aggiunga.
   </div>
   <button class="btn-new" onclick="go('s-create-group')"><div class="btn-new-ic">+</div><span>Crea un gruppo</span></button>
   <div class="spacer"></div>
   <div class="bnav">
-    <div class="bnav-item on"><div class="bnav-icon"></div>Gruppi</div>
-    <div class="bnav-item" onclick="go('s-amici')"><div class="bnav-icon"></div>Amici</div>
-    <div class="bnav-item" onclick="go('s-wallet')"><div class="bnav-icon"></div>Wallet</div>
-    <div class="bnav-item" onclick="go('s-history')"><div class="bnav-icon"></div>Storico</div>
-    <div class="bnav-item" onclick="go('s-profile')"><div class="bnav-icon"></div>Profilo</div>
+    <div class="bnav-item on"><div class="bnav-icon">👥</div>Gruppi</div>
+    <div class="bnav-item" onclick="go('s-amici')"><div class="bnav-icon">🤝</div>Amici</div>
+    <div class="bnav-item" onclick="go('s-wallet')"><div class="bnav-icon">👛</div>Wallet</div>
+    <div class="bnav-item" onclick="go('s-history')"><div class="bnav-icon">📋</div>Storico</div>
+    <div class="bnav-item" onclick="go('s-profile')"><div class="bnav-icon">👤</div>Profilo</div>
   </div>
 </div>
 
-<!-- ===== WALLET SCREEN ===== -->
+<!-- ===== CREATE GROUP ===== -->
+<div class="screen" id="s-create-group">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Gruppi</button>
+  </div>
+  <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px;margin-bottom:4px">Nuovo gruppo</div>
+  <div class="muted" style="margin-bottom:24px">Crea il tuo cerchio di sfide private</div>
+  <div class="form-sec">
+    <label class="form-lbl">Nome del gruppo</label>
+    <input class="form-input" id="cg-name" placeholder="Es. Sunday League Crew" oninput="checkCG()">
+  </div>
+  <div class="form-sec">
+    <label class="form-lbl">Icona del gruppo</label>
+    <div class="emoji-grid">
+      <div class="emoji-item sel" data-e="&#x26BD;" onclick="selEmoji(this)">⚽</div>
+      <div class="emoji-item" data-e="&#x1F3AE;" onclick="selEmoji(this)">🎮</div>
+      <div class="emoji-item" data-e="&#x1F3C0;" onclick="selEmoji(this)">🏀</div>
+      <div class="emoji-item" data-e="&#x1F3B2;" onclick="selEmoji(this)">🎲</div>
+      <div class="emoji-item" data-e="&#x1F355;" onclick="selEmoji(this)">🍕</div>
+      <div class="emoji-item" data-e="&#x1F3CB;" onclick="selEmoji(this)">🏋️</div>
+      <div class="emoji-item" data-e="&#x1F3AF;" onclick="selEmoji(this)">🎯</div>
+      <div class="emoji-item" data-e="&#x1F0CF;" onclick="selEmoji(this)">🃏</div>
+    </div>
+  </div>
+  <div class="form-sec">
+    <label class="form-lbl">Aggiungi membri</label>
+    <div id="cg-members-list" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:4px 14px">
+      <div class="muted" style="padding:12px 0;font-size:13px">Caricamento utenti...</div>
+    </div>
+  </div>
+  <button class="btn-primary" id="cg-btn" onclick="createGroup()" disabled>Crea il gruppo</button>
+  <div class="spacer-sm"></div>
+</div>
+
+<!-- ===== CREATE CHALLENGE ===== -->
+<div class="screen" id="s-create-challenge">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Gruppi</button>
+  </div>
+  <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px;margin-bottom:4px">Nuova sfida</div>
+  <div class="muted" style="margin-bottom:22px">Metti qualcosa in palio. Il gruppo ricorda tutto.</div>
+  <div class="form-sec">
+    <label class="form-lbl">La sfida 🎯</label>
+    <textarea class="form-input" id="ch-text" placeholder="Es. Lo fai per X€? Corri fino al bar in meno di 2 minuti" oninput="checkChallenge();updateCounter();clearChallengeErr()"></textarea>
+    <div class="char-count"><span id="ch-count">0</span>/200</div>
+  </div>
+  <div class="form-sec">
+    <label class="form-lbl">Importo in palio 💶</label>
+    <div class="amt-wrap"><span class="amt-pre">€</span><input class="form-input" type="number" id="ch-amount" placeholder="0" min="1" max="100" oninput="checkChallenge();syncChips(this.value)"></div>
+    <div class="chips"><div class="chip" onclick="setAmt(5)">€5</div><div class="chip" onclick="setAmt(10)">€10</div><div class="chip" onclick="setAmt(20)">€20</div><div class="chip" onclick="setAmt(50)">€50</div></div>
+    <div class="info-box info-gray" style="margin-top:10px;font-size:12px">Il tuo credito demo: <strong id="bal-display" style="color:var(--accent)">€100</strong></div>
+  </div>
+  <div class="form-sec">
+    <label class="form-lbl">Chi sfidi? 🎯</label>
+    <div id="ch-members-list" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:4px 14px">
+      <div class="muted" style="padding:12px 0;font-size:13px">Caricamento utenti...</div>
+    </div>
+    <div id="ch-mode-info" class="info-box info-gray" style="margin-top:10px;font-size:13px">Seleziona almeno un avversario</div>
+  </div>
+  <div class="form-sec">
+    <label class="form-lbl">Timeout accettazione ⏱</label>
+    <div class="chips" id="timeout-chips">
+      <div class="chip sel" data-t="3600" onclick="selTimeout(this)">⏱ 1 ora</div>
+      <div class="chip" data-t="43200" onclick="selTimeout(this)">⏱ 12 ore</div>
+      <div class="chip" data-t="86400" onclick="selTimeout(this)">⏱ 24 ore</div>
+    </div>
+    <div class="muted" style="font-size:12px;margin-top:8px">Se non accettata in tempo, i fondi tornano nel wallet</div>
+  </div>
+  <div id="ch-summary" style="display:none">
+    <div class="sl">Riepilogo escrow</div>
+    <div class="summary">
+      <div class="summary-row"><span id="sum-you-lbl">Tu blocchi</span><span id="sum-you">€0</span></div>
+      <div class="summary-row"><span id="sum-them-lbl">Avversario blocca</span><span id="sum-them">€0</span></div>
+      <div class="summary-row"><span>Timeout</span><span id="sum-timeout">1 ora</span></div>
+      <div class="summary-total"><span>Totale in pot</span><span id="sum-total">€0</span></div>
+    </div>
+  </div>
+  <div style="height:20px"></div>
+  <button class="btn-primary" id="ch-btn" onclick="launchChallenge()">🔒 Blocca la quota e lancia</button>
+  <button class="btn-secondary" onclick="go('s-group-custom')">Annulla</button>
+  <div style="height:36px"></div>
+</div>
+
+<!-- ===== SUCCESS ===== -->
+<div class="screen" id="s-success">
+  <div class="success-wrap">
+    <div class="success-icon">🔒</div>
+    <div class="success-title">Sfida lanciata!</div>
+    <div class="success-sub">La quota è bloccata in escrow.<br><strong id="suc-other">L'avversario</strong> riceverà una notifica entro <strong id="suc-timeout">1 ora</strong>.</div>
+    <div class="escrow-hero">
+      <div class="escrow-hero-label">💶 Bloccato in escrow</div>
+      <div class="escrow-hero-amount" id="suc-amount">€20</div>
+      <div class="escrow-hero-sub">Il gruppo decide. Tu intanto aspetti.</div>
+    </div>
+    <div id="suc-notif" style="display:none;width:100%;margin-bottom:20px">
+      <div class="notif-banner" style="cursor:default"><div>📲</div><div class="notif-text"><strong id="suc-other2">L'avversario</strong> ha ricevuto la notifica</div></div>
+    </div>
+    <button class="btn-primary" onclick="go('s-group-custom')">Torna al gruppo</button>
+  </div>
+</div>
+
+<!-- ===== ACCEPT ===== -->
+<div class="screen" id="s-accept">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-group-custom')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Indietro</button>
+  </div>
+  <div style="text-align:center;padding:16px 0 24px">
+    <div style="font-size:52px;margin-bottom:16px">🌶️</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:6px"><strong id="acc-from">Qualcuno</strong> ti sfida</div>
+    <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:18px;margin-bottom:20px;line-height:1.3" id="acc-title">"..."</div>
+    <div class="escrow-hero" style="text-align:left">
+      <div class="escrow-hero-label">💶 In palio</div>
+      <div class="escrow-hero-amount" id="acc-amount">€20</div>
+      <div class="escrow-hero-sub" id="acc-escrow-sub">Se accetti, i fondi vengono bloccati in escrow</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="muted" style="margin-bottom:10px;font-size:13px">Come funziona</div>
+    <div style="font-size:14px;line-height:1.8" id="acc-how">1️⃣ Accetti → fondi bloccati in escrow<br>2️⃣ Fai la sfida<br>3️⃣ Dichiarate chi ha vinto<br>4️⃣ I fondi vanno al vincitore</div>
+  </div>
+  <div class="info-box info-amber" style="margin-bottom:20px"><strong id="acc-timer-lbl">⏱ Scade tra 47:23</strong></div>
+  <button class="btn-primary" id="acc-btn" onclick="acceptChallenge()">✅ Accetto la sfida</button>
+  <button class="btn-danger" onclick="go('s-group-custom')">Rifiuto</button>
+  <div style="height:36px"></div>
+</div>
+
+<!-- ===== VOTE 1V1 ===== -->
+<div class="screen" id="s-vote1v1">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-group-custom')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Indietro</button>
+  </div>
+  <div style="margin-bottom:20px">
+    <div class="sl">Sfida 1vs1 — dichiara l'esito</div>
+    <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:19px;line-height:1.3;margin-bottom:14px" id="v1-title">"Fai 20 squat consecutivi ora, davanti a tutti"</div>
+    <div class="ebar"><div><div class="ebar-label">🔒 In escrow</div><div class="ebar-amount" id="v1-amount">€25</div></div><div class="ebar-right"><div class="ebar-label">Modalità</div><div style="font-size:13px;font-weight:600;color:var(--text)">Dichiarazione 1vs1</div></div></div>
+  </div>
+  <div class="decl-section">
+    <div class="decl-title">La tua dichiarazione 🗣</div>
+    <div class="decl-sub">Dichiarate entrambi lo stesso vincitore per sbloccare i fondi. Disaccordo? Decide il gruppo.</div>
+    <div id="v1-my-decl">
+      <div class="btn-row">
+        <button class="btn-half" id="v1-btn-me" onclick="declare('self')"><span style="font-size:18px">🏆</span><span>Ho vinto io</span><span class="btn-half-sub" id="v1-me-name">Tu</span></button>
+        <button class="btn-half" id="v1-btn-other" onclick="declare('other')"><span style="font-size:18px">👏</span><span>Ha vinto</span><span class="btn-half-sub" id="v1-other-name">L'avversario</span></button>
+      </div>
+    </div>
+    <div id="v1-my-voted" style="display:none">
+      <div class="decl-done" id="v1-my-voted-txt">Hai dichiarato</div>
+    </div>
+  </div>
+  <div class="decl-section">
+    <div class="decl-title">Dichiarazione di <span id="v1-other-lbl">avversario</span></div>
+    <div id="v1-other-wait"><div class="decl-waiting">In attesa...</div></div>
+    <div id="v1-other-voted" style="display:none"><div class="decl-done" id="v1-other-voted-txt"></div></div>
+  </div>
+  <div id="v1-conflict" style="display:none">
+    <div class="info-box info-red" style="margin-bottom:14px"><strong>🚨 Dichiarazioni in conflitto!</strong><br><span id="v1-conflict-txt" style="font-size:13px;color:var(--text2)"></span></div>
+    <button class="btn-primary" onclick="go('s-vote-group')">Chiedi al gruppo di decidere</button>
+  </div>
+  <div id="v1-agree" style="display:none">
+    <div class="info-box info-accent" style="margin-bottom:14px">✅ <strong>Accordo raggiunto!</strong> Fondi sbloccati automaticamente.</div>
+    <button class="btn-primary" onclick="resolveChallenge()">Vedi il risultato →</button>
+  </div>
+  <div style="height:36px"></div>
+</div>
+
+<!-- ===== VOTE GROUP ===== -->
+<div class="screen" id="s-vote-group">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-group-custom')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Indietro</button>
+  </div>
+  <div style="margin-bottom:20px">
+    <div class="sl">Voto del gruppo</div>
+    <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:19px;line-height:1.3;margin-bottom:14px" id="vg-title">"Fai 20 squat consecutivi ora, davanti a tutti"</div>
+    <div class="ebar" id="vg-escrow-bar"><div><div class="ebar-label">🔒 In escrow</div><div class="ebar-amount" id="vg-amount">€25</div></div><div class="ebar-right"><div class="ebar-label">Votanti</div><div style="font-size:14px;font-weight:600" id="vg-vote-count">0 voti</div></div></div>
+    <div class="prog-wrap"><div class="prog-bar" id="vg-prog-bar" style="width:0%"></div></div>
+  </div>
+  <div class="card" id="vg-vote-section">
+    <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:15px;margin-bottom:4px">Chi ha vinto? 🏆</div>
+    <div class="muted" style="font-size:12px;margin-bottom:14px">Voto anonimo — una volta solo. Con la maggioranza i fondi si sbloccano.</div>
+    <div class="btn-row" id="vg-btn-row">
+      <button class="btn-half" id="vg-btn-challenger" onclick="groupVote('challenger')"><span style="font-size:18px">💪</span><span id="vg-challenger-name">Sfidante</span><span class="btn-half-sub">Ha vinto</span></button>
+      <button class="btn-half" id="vg-btn-challenged" onclick="groupVote('challenged')"><span style="font-size:18px">🏆</span><span id="vg-challenged-name">Sfidato</span><span class="btn-half-sub">Ha vinto</span></button>
+    </div>
+  </div>
+  <div id="vg-voted" style="display:none">
+    <div class="info-box info-accent" style="margin-bottom:16px">✅ Hai votato! In attesa degli altri...</div>
+  </div>
+  <div id="vg-already-voted" style="display:none">
+    <div class="info-box info-gray" style="margin-bottom:16px">Hai già votato per questa sfida.</div>
+  </div>
+  <button class="btn-secondary" onclick="simulateGroupVote()" style="margin-top:16px">Simula: tutti hanno votato →</button>
+  <div style="height:36px"></div>
+</div>
+
+<!-- ===== WINNER ===== -->
+<div class="screen" id="s-winner">
+  <div class="winner-wrap">
+    <div class="winner-emoji" id="w-emoji">🏆</div>
+    <div class="winner-title" id="w-title">Ha vinto!</div>
+    <div class="winner-sub" id="w-sub">I fondi si sono sbloccati automaticamente.</div>
+    <div class="winner-amount" id="w-amount">€0</div>
+    <div class="winner-lbl" id="w-lbl">trasferiti al vincitore</div>
+    <div class="vote-result-box">
+      <div class="muted" style="font-size:12px;margin-bottom:10px">Risultato</div>
+      <div class="vr-row"><div class="vr-left"><div class="av av-sm" id="w-winner-av"></div><span style="font-size:14px;font-weight:600" id="w-winner-name">-</span></div><div class="vr-badge vr-win" id="w-winner-badge">🏆 Vincitore</div></div>
+      <div class="vr-row"><div class="vr-left"><div class="av av-sm" id="w-loser-av"></div><span style="font-size:14px;font-weight:600" id="w-loser-name">-</span></div><div class="vr-badge vr-lose">Sconfitto</div></div>
+    </div>
+    <button class="btn-primary" onclick="go('s-home')">Torna ai gruppi</button>
+    <button class="btn-secondary" onclick="go('s-create-challenge')">Rivincita! 🔥</button>
+  </div>
+</div>
+
+<!-- ===== WALLET ===== -->
 <div class="screen" id="s-wallet">
   <div class="header">
-    <button class="back-btn" onclick="go('s-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Home</button>
+    <span style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px">Wallet</span>
   </div>
-  <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:22px;margin-bottom:4px">Wallet</div>
-  <div class="muted" style="margin-bottom:24px">Gestisci il tuo credito demo</div>
-  
   <div class="wallet-hero">
-    <div class="wallet-label">Saldo disponibile</div>
-    <div class="wallet-amount" id="wal-balance">EUR100.00</div>
+    <div class="wallet-label">Saldo disponibile <span class="tag-demo">🎮 DEMO</span></div>
+    <div class="wallet-amount" id="wal-balance">€100.00</div>
     <div class="wallet-locked" id="wal-locked">Nessun importo bloccato</div>
+    <div class="muted" style="font-size:11px;margin-top:8px">Credito demo — nessun denaro reale</div>
   </div>
-  
   <div id="wal-escrow-card" style="display:none">
-    <div class="card">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <div style="font-size:16px"></div>
-        <div>
-          <div style="font-weight:600;font-size:14px">Fondi bloccati</div>
-          <div class="muted" style="font-size:12px">Sfida in corso</div>
-        </div>
+    <div class="card card-amber" style="margin-bottom:12px">
+      <div class="row"><div><div class="muted" style="font-size:12px;margin-bottom:4px">🔒 Fondi bloccati</div><div style="font-size:15px;font-weight:600" id="wal-escrow-detail">Sfida attiva</div></div><div class="ebar-amount" id="wal-escrow-amount">€0</div></div>
+    </div>
+  </div>
+  <div class="wallet-actions">
+    <button class="wallet-act-btn" onclick="go('s-deposit')">+ Deposita</button>
+    <button class="wallet-act-btn" onclick="go('s-withdraw')">↑ Preleva</button>
+  </div>
+  <div class="sl">Ultime transazioni</div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:4px 14px;margin-bottom:12px" id="wal-txs">
+    <div class="muted" style="text-align:center;padding:12px 0;font-size:13px">Caricamento...</div>
+  </div>
+  <div class="info-box info-gray" style="margin-bottom:12px;font-size:12px;text-align:center">🔒 Pagamenti gestiti da <strong>Mangopay</strong> · Istituto EU regolamentato</div>
+  <div class="bnav">
+    <div class="bnav-item" onclick="go('s-home')"><div class="bnav-icon">👥</div>Gruppi</div>
+    <div class="bnav-item" onclick="go('s-amici')"><div class="bnav-icon">🤝</div>Amici</div>
+    <div class="bnav-item on"><div class="bnav-icon">👛</div>Wallet</div>
+    <div class="bnav-item" onclick="go('s-history')"><div class="bnav-icon">📋</div>Storico</div>
+    <div class="bnav-item" onclick="go('s-profile')"><div class="bnav-icon">👤</div>Profilo</div>
+  </div>
+</div>
+
+<!-- ===== DEPOSIT ===== -->
+<div class="screen" id="s-deposit">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-wallet')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Wallet</button>
+  </div>
+  <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px;margin-bottom:4px">Deposita fondi</div>
+  <div class="muted" style="margin-bottom:24px">Gestito da Mangopay, istituto regolamentato EU</div>
+  <div class="form-sec">
+    <label class="form-lbl">Importo</label>
+    <div class="amt-wrap"><span class="amt-pre">€</span><input class="form-input" type="number" id="dep-amount" placeholder="0" min="1" oninput="checkDep()"></div>
+    <div class="chips"><div class="chip" onclick="setDep(10)">€10</div><div class="chip" onclick="setDep(20)">€20</div><div class="chip" onclick="setDep(50)">€50</div><div class="chip" onclick="setDep(100)">€100</div></div>
+  </div>
+  <div class="form-sec">
+    <label class="form-lbl">Metodo di pagamento</label>
+    <div style="display:flex;gap:10px;margin-bottom:10px">
+      <button onclick="selectPayment(this,'apple')" id="pay-apple" style="flex:1;background:#000;color:#fff;border:2px solid transparent;border-radius:var(--rs);padding:13px 10px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        Apple Pay
+      </button>
+      <button onclick="selectPayment(this,'google')" id="pay-google" style="flex:1;background:#fff;color:#333;border:2px solid transparent;border-radius:var(--rs);padding:13px 10px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Google Pay
+      </button>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);overflow:hidden">
+      <div id="pay-card-row" style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;cursor:pointer" onclick="selectPayment(this,'card')">
+        <span style="font-size:18px">💳</span>
+        <div style="flex:1"><div style="font-size:14px;font-weight:500">Carta di credito/debito</div><div style="font-size:12px;color:var(--text2)">Visa •••• 4242</div></div>
+        <div id="pay-card-check" style="width:16px;height:16px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;color:#110D0A;font-weight:800">✓</div>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div class="wallet-amount" id="wal-escrow-amount" style="font-size:24px">EUR0</div>
-        <div class="muted" id="wal-escrow-detail">-</div>
+      <div style="padding:14px 16px;display:flex;align-items:center;gap:10px;opacity:.5">
+        <span style="font-size:18px">🏦</span>
+        <div><div style="font-size:14px;font-weight:500">Bonifico bancario</div><div style="font-size:12px;color:var(--text2)">2-3 giorni lavorativi</div></div>
       </div>
     </div>
   </div>
-  
-  <div class="wallet-actions">
-    <button class="wallet-act-btn" onclick="go('s-deposit')">+ Ricarica</button>
-    <button class="wallet-act-btn" onclick="go('s-withdraw')">- Prelievo</button>
+  <div class="info-box info-amber" style="margin-bottom:20px">🎮 Demo — nessun addebito reale</div>
+  <button class="btn-primary" id="dep-btn" onclick="confirmDeposit()" disabled>Deposita €0</button>
+  <div style="height:36px"></div>
+</div>
+
+<!-- ===== WITHDRAW ===== -->
+<div class="screen" id="s-withdraw">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-wallet')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Wallet</button>
   </div>
-  
-  <div class="sl" style="margin-top:24px">Transazioni recenti</div>
-  <div id="wal-txs"></div>
-  <div class="spacer"></div>
+  <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px;margin-bottom:4px">Preleva fondi</div>
+  <div class="muted" style="margin-bottom:24px">Disponibile: <strong id="wd-avail" style="color:var(--accent)">€100.00</strong></div>
+  <div class="form-sec">
+    <label class="form-lbl">Importo</label>
+    <div class="amt-wrap"><span class="amt-pre">€</span><input class="form-input" type="number" id="wd-amount" placeholder="0" oninput="checkWD()"></div>
+    <div style="text-align:right;margin-top:8px"><span style="font-size:13px;color:var(--accent);cursor:pointer" onclick="setWD()">Preleva tutto →</span></div>
+  </div>
+  <div class="form-sec">
+    <label class="form-lbl">IBAN di destinazione</label>
+    <div class="card" style="margin:0;display:flex;align-items:center;gap:10px">
+      <span style="font-size:20px">🏦</span>
+      <div style="flex:1"><div style="font-size:14px;font-weight:500">IT60 •••• •••• •••• 1234</div><div style="font-size:12px;color:var(--text2)">Conto principale</div></div>
+      <span style="font-size:12px;color:var(--accent);cursor:pointer">Cambia</span>
+    </div>
+  </div>
+  <div class="info-box info-gray" style="margin-bottom:16px">⏱ Fondi entro 1-2 giorni lavorativi</div>
+  <div class="info-box info-amber" style="margin-bottom:20px">🎮 Demo — nessun prelievo reale</div>
+  <button class="btn-primary" id="wd-btn" onclick="confirmWithdraw()" disabled>Richiedi prelievo</button>
+  <div style="height:36px"></div>
+</div>
+
+<!-- ===== HISTORY ===== -->
+<div class="screen" id="s-history">
+  <div class="header">
+    <span style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px">Storico</span>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-val" id="stat-total">0</div><div class="stat-lbl">Sfide</div></div>
+    <div class="stat-item"><div class="stat-val" id="stat-wins">0</div><div class="stat-lbl">Vinte</div></div>
+    <div class="stat-item"><div class="stat-val" id="stat-wr">0%</div><div class="stat-lbl">Win rate</div></div>
+    <div class="stat-item"><div class="stat-val" id="stat-net" style="color:var(--accent)">€0</div><div class="stat-lbl">Netto</div></div>
+  </div>
+  <div class="chips" id="hist-filter" style="margin-bottom:16px">
+    <div class="chip sel" data-f="all" onclick="filterHist(this)">Tutte</div>
+    <div class="chip" data-f="win" onclick="filterHist(this)">Vinte</div>
+    <div class="chip" data-f="lose" onclick="filterHist(this)">Perse</div>
+    <div class="chip" data-f="live" onclick="filterHist(this)">In corso</div>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px" id="hist-list">
+    <div class="muted" style="text-align:center;font-size:13px">Nessuna sfida ancora. Lanciane una!</div>
+  </div>
+  <div class="spacer-sm"></div>
   <div class="bnav">
-    <div class="bnav-item" onclick="go('s-home')"><div class="bnav-icon"></div>Gruppi</div>
-    <div class="bnav-item" onclick="go('s-amici')"><div class="bnav-icon"></div>Amici</div>
-    <div class="bnav-item on"><div class="bnav-icon"></div>Wallet</div>
-    <div class="bnav-item" onclick="go('s-history')"><div class="bnav-icon"></div>Storico</div>
-    <div class="bnav-item" onclick="go('s-profile')"><div class="bnav-icon"></div>Profilo</div>
+    <div class="bnav-item" onclick="go('s-home')"><div class="bnav-icon">👥</div>Gruppi</div>
+    <div class="bnav-item" onclick="go('s-amici')"><div class="bnav-icon">🤝</div>Amici</div>
+    <div class="bnav-item" onclick="go('s-wallet')"><div class="bnav-icon">👛</div>Wallet</div>
+    <div class="bnav-item on"><div class="bnav-icon">📋</div>Storico</div>
+    <div class="bnav-item" onclick="go('s-profile')"><div class="bnav-icon">👤</div>Profilo</div>
   </div>
 </div>
 
 <!-- ===== PROFILE ===== -->
 <div class="screen" id="s-profile">
   <div class="header">
-    <button class="back-btn" onclick="go('s-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Home</button>
+    <span style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px">Profilo</span>
   </div>
   <div class="profile-header">
-    <div class="av av-lg av-marco" id="prof-av">M</div>
-    <div class="profile-name" id="prof-name">Marco</div>
-    <div class="profile-user" id="prof-username">@marco94</div>
+    <div class="av av-lg" id="prof-av" style="margin:0 auto;background:var(--accent);color:#110D0A"></div>
+    <div class="profile-name" id="prof-name">-</div>
+    <div class="profile-user" id="prof-user">stash beta</div>
   </div>
-  <div class="card">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0">
-      <span style="font-size:13px;color:var(--text2)">Saldo disponibile</span>
-      <span style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:16px;color:var(--accent)" id="prof-balance">EUR100.00</span>
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-val" id="prof-stat-total">0</div><div class="stat-lbl">Sfide</div></div>
+    <div class="stat-item"><div class="stat-val" id="prof-stat-wins">0</div><div class="stat-lbl">Vinte</div></div>
+    <div class="stat-item"><div class="stat-val" id="prof-stat-wr">0%</div><div class="stat-lbl">Win rate</div></div>
+    <div class="stat-item"><div class="stat-val" id="prof-stat-net" style="color:var(--accent)">€0</div><div class="stat-lbl">Netto</div></div>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:4px 16px;margin-bottom:16px">
+    <div class="profile-opt" onclick="go('s-wallet')"><div class="profile-opt-icon">👛</div><div class="profile-opt-label">Wallet</div><div class="profile-opt-val" id="prof-balance">€100 <span class="tag-demo">DEMO</span></div></div>
+    <div class="profile-opt" onclick="go('s-history')"><div class="profile-opt-icon">📋</div><div class="profile-opt-label">Storico sfide</div><div class="profile-opt-val" id="prof-sfide-count">0 →</div></div>
+    <div class="profile-opt" onclick="go('s-home')"><div class="profile-opt-icon">👥</div><div class="profile-opt-label">I miei gruppi</div><div class="profile-opt-val" id="prof-groups-count">0 →</div></div>
+    <div class="profile-opt" onclick="toggleNotif()"><div class="profile-opt-icon">🔔</div><div class="profile-opt-label">Notifiche</div><div class="tog on" id="notif-tog"><div class="tog-knob"></div></div></div>
+    <div class="profile-opt" onclick="go('s-settings')"><div class="profile-opt-icon">⚙️</div><div class="profile-opt-label">Impostazioni</div><div class="profile-opt-val">Username · Password →</div></div>
+  </div>
+  <button onclick="doLogout()" style="width:100%;background:none;border:1px solid var(--border);border-radius:var(--r);padding:14px;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:15px;cursor:pointer;margin-bottom:12px">Esci dall'account</button>
+  <div class="center muted" style="font-size:12px;padding-bottom:24px">stash · Beta · 2026<br><span style="color:var(--text3)">"Metti qualcosa in palio." · Mangopay 🔒</span></div>
+  <div class="bnav">
+    <div class="bnav-item" onclick="go('s-home')"><div class="bnav-icon">👥</div>Gruppi</div>
+    <div class="bnav-item" onclick="go('s-amici')"><div class="bnav-icon">🤝</div>Amici</div>
+    <div class="bnav-item" onclick="go('s-wallet')"><div class="bnav-icon">👛</div>Wallet</div>
+    <div class="bnav-item" onclick="go('s-history')"><div class="bnav-icon">📋</div>Storico</div>
+    <div class="bnav-item on"><div class="bnav-icon">👤</div>Profilo</div>
+  </div>
+</div>
+
+<!-- ===== SETTINGS ===== -->
+<div class="screen" id="s-settings">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Profilo</button>
+  </div>
+  <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px;margin-bottom:4px">Impostazioni</div>
+  <div class="muted" style="margin-bottom:28px">Modifica username e password del tuo account.</div>
+
+  <div class="form-sec">
+    <label class="form-lbl">Cambia username</label>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Attuale: <strong id="set-cur-user">-</strong></div>
+    <input class="form-input" id="set-new-user" placeholder="nuovo_username" maxlength="20" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9_]/g,'')">
+    <div id="set-user-err" style="color:var(--red);font-size:13px;min-height:18px;margin-top:6px"></div>
+    <button class="btn-primary" onclick="saveUsername()" style="margin-top:10px">Salva username</button>
+    <div id="set-user-ok" style="color:var(--accent);font-size:13px;min-height:18px;margin-top:6px;display:none">✓ Username aggiornato!</div>
+  </div>
+
+  <div class="divider" style="margin:24px 0"></div>
+
+  <div class="form-sec">
+    <label class="form-lbl">Cambia password</label>
+    <input class="form-input" id="set-new-pass" type="password" placeholder="nuova password" maxlength="40" style="margin-bottom:10px">
+    <input class="form-input" id="set-new-pass2" type="password" placeholder="conferma nuova password" maxlength="40">
+    <div id="set-pass-err" style="color:var(--red);font-size:13px;min-height:18px;margin-top:6px"></div>
+    <button class="btn-primary" onclick="savePassword()" style="margin-top:10px">Salva password</button>
+    <div id="set-pass-ok" style="color:var(--accent);font-size:13px;min-height:18px;margin-top:6px;display:none">✓ Password aggiornata!</div>
+  </div>
+  <div style="height:36px"></div>
+</div>
+
+<!-- ===== AMICI ===== -->
+<div class="screen" id="s-amici">
+  <div class="header">
+    <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:22px">Amici</div>
+    <button class="share-btn" onclick="shareLink()">🔥 Invita</button>
+  </div>
+  <div class="muted" style="margin-bottom:20px;font-size:13px">Persone con cui hai giocato o che hai invitato su stash.</div>
+  <div id="amici-list">
+    <div class="info-box info-gray" style="text-align:center">
+      Nessun amico ancora.<br>Condividi il link per invitarli!
     </div>
   </div>
   <div class="spacer"></div>
   <div class="bnav">
-    <div class="bnav-item" onclick="go('s-home')"><div class="bnav-icon"></div>Gruppi</div>
-    <div class="bnav-item" onclick="go('s-amici')"><div class="bnav-icon"></div>Amici</div>
-    <div class="bnav-item" onclick="go('s-wallet')"><div class="bnav-icon"></div>Wallet</div>
-    <div class="bnav-item" onclick="go('s-history')"><div class="bnav-icon"></div>Storico</div>
-    <div class="bnav-item on"><div class="bnav-icon"></div>Profilo</div>
+    <div class="bnav-item" onclick="go('s-home')"><div class="bnav-icon">👥</div>Gruppi</div>
+    <div class="bnav-item on"><div class="bnav-icon">🤝</div>Amici</div>
+    <div class="bnav-item" onclick="go('s-wallet')"><div class="bnav-icon">👛</div>Wallet</div>
+    <div class="bnav-item" onclick="go('s-history')"><div class="bnav-icon">📋</div>Storico</div>
+    <div class="bnav-item" onclick="go('s-profile')"><div class="bnav-icon">👤</div>Profilo</div>
   </div>
 </div>
 
+<!-- ===== CUSTOM GROUP ===== -->
+<div class="screen" id="s-group-custom">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Gruppi</button>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="font-size:22px" id="cg-detail-icon">🎮</div>
+      <button onclick="toggleGroupMenu()" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:22px;padding:4px;line-height:1" id="group-menu-btn">⋯</button>
+    </div>
+  </div>
+  <div id="group-menu" style="display:none;position:relative;z-index:50;margin-top:-8px;margin-bottom:12px">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.4)">
+      <div id="gm-rename" class="profile-opt" style="padding:14px 16px" onclick="groupMenuAction('rename')"><div class="profile-opt-icon">✏️</div><div class="profile-opt-label">Modifica nome gruppo</div><div class="profile-opt-val" id="gm-rename-note" style="font-size:11px"></div></div>
+      <div id="gm-add" class="profile-opt" style="padding:14px 16px" onclick="groupMenuAction('add')"><div class="profile-opt-icon">➕</div><div class="profile-opt-label">Aggiungi membro</div></div>
+      <div id="gm-remove" class="profile-opt" style="padding:14px 16px" onclick="groupMenuAction('remove')"><div class="profile-opt-icon">➖</div><div class="profile-opt-label">Rimuovi membro</div><div class="profile-opt-val" id="gm-remove-note" style="font-size:11px"></div></div>
+      <div class="profile-opt" style="padding:14px 16px;color:var(--red)" onclick="groupMenuAction('leave')"><div style="width:28px;text-align:center;font-size:20px">🚪</div><div class="profile-opt-label" style="color:var(--red)">Esci ed elimina gruppo</div></div>
+    </div>
+  </div>
+  <div style="margin-bottom:20px">
+    <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px;margin-bottom:4px" id="cg-detail-name">Nuovo Gruppo</div>
+    <div class="muted">Il tuo gruppo · Nessuna fee</div>
+  </div>
+  <div class="sl">Sfide attive</div>
+  <div id="cg-live-challenge" style="display:none"></div>
+  <div class="info-box info-gray" id="cg-empty-state">
+    <strong>Nessuna sfida attiva.</strong><br>
+    Lancia la prima sfida del gruppo!
+  </div>
+  <div class="sl" style="margin-top:16px">Membri</div>
+  <div id="cg-members-display" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:4px 14px;margin-bottom:20px"></div>
+  <div style="padding-bottom:24px">
+    <button class="btn-primary" onclick="go('s-create-challenge')">+ Lancia una sfida</button>
+  </div>
+</div>
+</div><!-- /phone -->
+<div id="share-modal" style="display:none"></div>
+
+<!-- GROUP MODALS -->
+<div id="group-action-modal" style="display:none">
+  <div class="modal-overlay" onclick="closeGroupModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="gam-title">Modifica nome</div>
+      <div id="gam-rename-content" style="display:none">
+        <label class="form-lbl">Nuovo nome del gruppo</label>
+        <input class="form-input" id="gam-new-name" style="margin-bottom:16px">
+        <button class="btn-primary" onclick="confirmRename()">Salva</button>
+      </div>
+      <div id="gam-add-content" style="display:none">
+        <div class="muted" style="margin-bottom:14px;font-size:13px">Seleziona chi aggiungere</div>
+        <div id="gam-add-list"></div>
+        <button class="btn-primary" style="margin-top:16px" onclick="closeGroupModal()">Chiudi</button>
+      </div>
+      <div id="gam-remove-content" style="display:none">
+        <div class="muted" style="margin-bottom:14px;font-size:13px">Seleziona chi rimuovere</div>
+        <div id="gam-remove-list"></div>
+        <button class="btn-primary" style="margin-top:16px" onclick="closeGroupModal()">Chiudi</button>
+      </div>
+      <div id="gam-leave-content" style="display:none">
+        <div class="info-box info-red" style="margin-bottom:16px">Questa azione eliminerà il gruppo per tutti i membri.</div>
+        <button class="btn-primary" style="background:var(--red)" onclick="confirmLeaveGroup()">Sì, esci ed elimina</button>
+        <button class="btn-secondary" onclick="closeGroupModal()">Annulla</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-// ===== MAIN JAVASCRIPT WITH WALLET BALANCE FIXES =====
+// stash v12 — main script
 
-// ===== GLOBAL VARIABLES =====
-var MY_UID = localStorage.getItem('stash_uid_v3');
-var MY_NAME = localStorage.getItem('stash_name_v3');
-var MY_USERNAME = localStorage.getItem('stash_user_v3');
+// ===== IDENTITY =====
+var MY_UID      = localStorage.getItem('stash_uid_v3');
+var MY_NAME     = localStorage.getItem('stash_name_v3');
+var MY_USERNAME = localStorage.getItem('stash_user_v3') || '';
+if (!MY_UID) {
+  MY_UID = 'u' + Math.random().toString(36).substr(2,8);
+  localStorage.setItem('stash_uid_v3', MY_UID);
+}
+
+// ===== SUPABASE REST API =====
 var SUPA_URL = 'https://fipgbniotxinkuzgcsgr.supabase.co';
 var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpcGdibmlvdHhpbmt1emdjc2dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTEwNDYsImV4cCI6MjA5MTc2NzA0Nn0.Mi3rNaNaJreR1nR5PXBbqlBIdV-XLkO21K27hzPeJg8';
+var pollInterval = null;
+var fbReady = false;
 var CURRENT_GROUP_ID = null;
 
-// ===== DATABASE FUNCTIONS =====
-function supaHeaders() {
-  return {'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json'};
+function supaFetch(path, method, body, prefer) {
+  var headers = {'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json'};
+  if(prefer) headers['Prefer'] = prefer;
+  var opts = {method:method||'GET', headers:headers};
+  if(body) opts.body = JSON.stringify(body);
+  return fetch(SUPA_URL+'/rest/v1/'+path, opts);
 }
+function supaGet(table,filter){return supaFetch(table+(filter?'?'+filter:''),'GET').then(function(r){return r.json();});}
+function supaUpsert(table,data){return supaFetch(table,'POST',data,'resolution=merge-duplicates,return=minimal');}
+function supaPatch(table,filter,data){return supaFetch(table+'?'+filter,'PATCH',data,'return=minimal');}
+function supaDelete(table,filter){return supaFetch(table+'?'+filter,'DELETE',null,null);}
 
-function supaGet(table, filter) {
-  var url = SUPA_URL + '/rest/v1/' + table + (filter ? '?' + filter : '');
-  return fetch(url, {headers: supaHeaders()}).then(function(r) { return r.json(); });
-}
+function fbSet(path,val){
+  if(!path)return;
+  var parts=path.split('/');
 
-function supaPatch(table, filter, data) {
-  var url = SUPA_URL + '/rest/v1/' + table + (filter ? '?' + filter : '');
-  return fetch(url, {
-    method: 'PATCH',
-    headers: supaHeaders(),
-    body: JSON.stringify(data)
-  }).then(function(r) { return r.json(); });
-}
-
-function supaUpsert(table, data) {
-  var url = SUPA_URL + '/rest/v1/' + table;
-  return fetch(url, {
-    method: 'POST',
-    headers: supaHeaders(),
-    body: JSON.stringify(data)
-  }).then(function(r) { return r.json(); });
-}
-
-function supaDelete(table, filter) {
-  var url = SUPA_URL + '/rest/v1/' + table + (filter ? '?' + filter : '');
-  return fetch(url, {
-    method: 'DELETE',
-    headers: supaHeaders()
-  }).then(function(r) { return r.json(); });
-}
-
-// ===== WALLET BALANCE FIXES =====
-function myBal() { 
-  var u = STATE.users[MY_UID]; 
-  return (u && u.balance !== undefined && u.balance !== null) ? parseFloat(u.balance) : 100; 
-}
-
-function myEsc() { 
-  var u = STATE.users[MY_UID]; 
-  return (u && u.escrow !== undefined && u.escrow !== null) ? parseFloat(u.escrow) : 0; 
-}
-
-function getBal(uid) { 
-  var u = STATE.users[uid]; 
-  return (u && u.balance !== undefined && u.balance !== null) ? parseFloat(u.balance) : 100; 
-}
-
-function setBal(uid, newBalance) {
-  if (typeof newBalance !== 'number' || isNaN(newBalance)) {
-    console.error('Invalid balance value:', newBalance);
-    return false;
-  }
-  
-  if (STATE.users[uid]) {
-    STATE.users[uid].balance = newBalance;
-  } else {
-    STATE.users[uid] = { balance: newBalance, escrow: 0 };
-  }
-  
-  supaPatch('users', 'uid=eq.' + uid, { balance: newBalance })
-    .catch(function(e) { console.error('Balance update error:', e); });
-  
-  if (uid === MY_UID) {
-    updateBal();
-    updateWalletDisplay();
-  }
-  
-  return true;
-}
-
-function setEsc(uid, newEscrow) {
-  if (typeof newEscrow !== 'number' || isNaN(newEscrow) || newEscrow < 0) {
-    console.error('Invalid escrow value:', newEscrow);
-    return false;
-  }
-  
-  if (STATE.users[uid]) {
-    STATE.users[uid].escrow = newEscrow;
-  } else {
-    STATE.users[uid] = { balance: 100, escrow: newEscrow };
-  }
-  
-  supaPatch('users', 'uid=eq.' + uid, { escrow: newEscrow })
-    .catch(function(e) { console.error('Escrow update error:', e); });
-  
-  if (uid === MY_UID) {
-    updateWalletDisplay();
-  }
-  
-  return true;
-}
-
-function updateWalletDisplay() {
-  var balance = myBal();
-  var escrow = myEsc();
-  
-  setText('wal-balance', 'EUR' + balance.toFixed(2));
-  
-  var escrowCard = el('wal-escrow-card');
-  if (escrowCard) {
-    if (escrow > 0) {
-      escrowCard.style.display = 'block';
-      setText('wal-escrow-amount', 'EUR' + escrow.toFixed(2));
-      var ch = STATE.challenge;
-      setText('wal-escrow-detail', ch ? ch.title.substr(0, 25) + '...' : 'Sfida attiva');
-    } else {
-      escrowCard.style.display = 'none';
+  if(parts[0]==='users'&&parts[1]){
+    var uid=parts[1];
+    if(parts[2]){
+      var upd={};
+      upd[parts[2]==='lastSeen'?'last_seen':parts[2]]=val;
+      supaPatch('users','uid=eq.'+uid,upd);
+    }else{
+      supaUpsert('users',{uid:uid,name:val.name,username:val.username||'',password:val.password||'',balance:val.balance||100,escrow:val.escrow||0,last_seen:val.lastSeen||Date.now()});
     }
-  }
-  
-  setText('wal-locked', escrow > 0 ? 'EUR' + escrow.toFixed(2) + ' bloccati' : 'Nessun importo bloccato');
-  setText('home-escrow-label', escrow > 0 ? 'EUR' + escrow + ' in escrow' : 'EUR' + balance.toFixed(0) + ' disponibili');
-}
-
-function calculateActualBalance() {
-  var balance = 100;
-  var escrow = 0;
-  
-  if (STATE.history) {
-    for (var id in STATE.history) {
-      var transaction = STATE.history[id];
-      if (transaction.challengerUid === MY_UID || transaction.challengedUid === MY_UID) {
-        if (transaction.status === 'resolved') {
-          if (transaction.winnerUid === MY_UID) {
-            balance += transaction.amount;
-          } else if (transaction.winnerUid && transaction.winnerUid !== MY_UID) {
-            balance -= transaction.amount;
-          }
-        } else if (transaction.status === 'accepted' || transaction.status === 'pending') {
-          escrow += transaction.amount;
-          balance -= transaction.amount;
-        }
+  }else if(parts[0]==='challenge'){
+    if(parts.length===1){
+      supaUpsert('challenges',{
+        id:'current',
+        title:val.title,
+        amount:val.amount,
+        challenger_uid:val.challengerUid,
+        challenger_name:val.challengerName,
+        challenged_uid:val.challengedUid,
+        challenged_name:val.challengedName,
+        status:val.status||'pending',
+        timer_start:val.timerStart||Date.now(),
+        timeout:val.timeout||3600,
+        created_at:Date.now(),
+        winner_uid:null
+      });
+    }else if(parts[1]==='status'){
+      supaPatch('challenges','id=eq.current',{status:val});
+    }else if(parts[1]==='winner'){
+      supaPatch('challenges','id=eq.current',{winner_uid:val});
+    }else if((parts[1]==='declarations'||parts[1]==='votes')&&parts[2]){
+      supaUpsert('challenge_votes',{challenge_id:'current',voter_uid:parts[2],winner_uid:val});
+    }
+  }else if(parts[0]==='groups'&&parts[1]){
+    var gid=parts[1];
+    supaUpsert('groups',{id:gid,name:val.name,icon:val.icon||'x',creator_uid:val.creatorUid,created_at:val.createdAt||Date.now()});
+    if(val.members){
+      for(var m in val.members){
+        supaUpsert('group_members',{group_id:gid,uid:m,name:val.members[m]});
       }
     }
-  }
-  
-  return { balance: balance, escrow: escrow };
-}
-
-function syncBalanceWithHistory() {
-  var calculated = calculateActualBalance();
-  var currentBalance = myBal();
-  var currentEscrow = myEsc();
-  
-  if (Math.abs(calculated.balance - currentBalance) > 0.01 || 
-      Math.abs(calculated.escrow - currentEscrow) > 0.01) {
-    console.log('Balance discrepancy detected. Updating...');
-    setBal(MY_UID, calculated.balance);
-    setEsc(MY_UID, calculated.escrow);
-  }
-}
-
-function drawWallet() {
-  syncBalanceWithHistory();
-  updateWalletDisplay();
-  
-  var txEl = el('wal-txs');
-  if (!txEl) return;
-  
-  supaGet('history', 'order=created_at.desc').then(function(data) {
-    var items = [];
-    
-    for (var k in data) {
-      if (data[k] && (data[k].challengerUid === MY_UID || data[k].challengedUid === MY_UID)) {
-        items.push(data[k]);
-      }
-    }
-    
-    items.sort(function(a, b) {
-      return (b.ts || 0) - (a.ts || 0);
+  }else if(parts[0]==='history'&&parts[1]){
+    supaUpsert('history',{
+      id:parts[1],
+      title:val.title,
+      amount:val.amount,
+      challenger_uid:val.challengerUid,
+      challenger_name:val.challengerName,
+      challenged_uid:val.challengedUid,
+      challenged_name:val.challengedName,
+      winner_uid:val.winnerUid||null,
+      status:val.status,
+      created_at:val.ts||Date.now()
     });
-    
-    var rows = '<div class="tx-row"><div class="tx-icon" style="background:var(--bg3)">></div><div class="tx-info"><div class="tx-title">Credito demo</div><div class="tx-meta">Alla registrazione</div></div><div class="tx-amt tx-pos">+EUR100</div></div>';
-    
-    for (var i = 0; i < Math.min(items.length, 5); i++) {
-      var it = items[i];
-      var isWinner = it.winnerUid === MY_UID;
-      var isActive = it.status === 'accepted' || it.status === 'pending';
-      var isChallenger = it.challengerUid === MY_UID;
-      
-      var icon = isActive ? '' : (isWinner ? '' : '');
-      var bgColor = isActive ? 'var(--amber-dim)' : (isWinner ? 'var(--accent-dim)' : 'var(--red-dim)');
-      var amountText = isActive ? 'EUR' + it.amount + ' bloccati' : (isWinner ? '+EUR' + it.amount : '-EUR' + it.amount);
-      var amountClass = isActive ? 'tx-neu' : (isWinner ? 'tx-pos' : 'tx-neg');
-      
-      var opponent = isChallenger ? it.challengedName : it.challengerName;
-      
-      rows += '<div class="tx-row">' +
-        '<div class="tx-icon" style="background:' + bgColor + '">' + icon + '</div>' +
-        '<div class="tx-info"><div class="tx-title">' + it.title.substr(0, 25) + '</div><div class="tx-meta">vs ' + opponent + '</div></div>' +
-        '<div class="tx-amt ' + amountClass + '">' + amountText + '</div>' +
-        '</div>';
+  }
+}
+
+function fbRemove(path){
+  if(!path)return;
+  if(path.indexOf('challenge/declarations')===0||path.indexOf('challenge/votes')===0){
+    supaDelete('challenge_votes','challenge_id=eq.current');
+  }
+}
+
+function fbGet(path,cb){
+  supaGet('history','order=created_at.desc').then(function(rows){
+    var obj={};
+    if(Array.isArray(rows)){
+      rows.forEach(function(r){
+        obj[r.id]={
+          title:r.title,
+          amount:r.amount,
+          challengerUid:r.challenger_uid,
+          challengerName:r.challenger_name,
+          challengedUid:r.challenged_uid,
+          challengedName:r.challenged_name,
+          winnerUid:r.winner_uid,
+          status:r.status,
+          ts:r.created_at
+        };
+      });
     }
-    
-    txEl.innerHTML = rows;
+    if(cb)cb({val:function(){return Object.keys(obj).length?obj:null;}});
+  }).catch(function(){
+    if(cb)cb({val:function(){return null;}});
+  });
+}
+
+function pollSupabase(){
+  supaGet('users','select=uid,name,username,balance,escrow,last_seen').then(function(rows){
+    if(!Array.isArray(rows)){
+      console.error('Supabase users error:', rows);
+      return;
+    }
+    var users={};
+    rows.forEach(function(r){
+      users[r.uid]={name:r.name,username:r.username||'',balance:r.balance,escrow:r.escrow,lastSeen:r.last_seen};
+      if(r.uid===MY_UID && r.username){
+        MY_USERNAME=r.username;
+        localStorage.setItem('stash_user_v3',r.username);
+      }
+    });
+    STATE.users=users;
+    onStateChange();
+  }).catch(function(e){console.error('pollSupabase users error:',e);});
+
+  supaGet('challenges','id=eq.current').then(function(rows){
+    if(!Array.isArray(rows)||!rows.length){
+      STATE.challenge=null;
+      onStateChange();
+      return;
+    }
+    var r=rows[0];
+    var ch={
+      title:r.title,
+      amount:r.amount,
+      challengerUid:r.challenger_uid,
+      challengerName:r.challenger_name,
+      challengedUid:r.challenged_uid,
+      challengedName:r.challenged_name,
+      status:r.status,
+      winner:r.winner_uid,
+      timerStart:r.timer_start,
+      timeout:r.timeout
+    };
+    supaGet('challenge_votes','challenge_id=eq.current').then(function(vrows){
+      ch.votes={};
+      ch.declarations={};
+      if(Array.isArray(vrows)){
+        vrows.forEach(function(v){
+          ch.votes[v.voter_uid]=v.winner_uid;
+          ch.declarations[v.voter_uid]=v.winner_uid;
+        });
+      }
+      STATE.challenge=ch;
+      onStateChange();
+    }).catch(function(e){
+      console.error('pollSupabase challenge_votes error:',e);
+      STATE.challenge=ch;
+      onStateChange();
+    });
+  }).catch(function(e){console.error('pollSupabase challenges error:',e);});
+
+  supaGet('groups','select=id,name,icon,creator_uid,created_at').then(function(grows){
+    if(!Array.isArray(grows)||!grows.length){
+      STATE.groups={};
+      onStateChange();
+      return;
+    }
+
+    var groups={};
+    var pending=grows.length;
+
+    grows.forEach(function(g){
+      supaGet('group_members','group_id=eq.'+g.id).then(function(mrows){
+        var members={};
+        if(Array.isArray(mrows)){
+          mrows.forEach(function(m){
+            members[m.uid]=m.name;
+          });
+        }
+
+        groups[g.id]={
+          id:g.id,
+          name:g.name,
+          icon:g.icon,
+          creatorUid:g.creator_uid,
+          createdAt:g.created_at,
+          members:members
+        };
+
+        pending--;
+        if(pending===0){
+          STATE.groups=groups;
+          onStateChange();
+        }
+      }).catch(function(e){
+        console.error('pollSupabase group_members error for', g.id, e);
+
+        groups[g.id]={
+          id:g.id,
+          name:g.name,
+          icon:g.icon,
+          creatorUid:g.creator_uid,
+          createdAt:g.created_at,
+          members:{}
+        };
+
+        pending--;
+        if(pending===0){
+          STATE.groups=groups;
+          onStateChange();
+        }
+      });
+    });
+  }).catch(function(e){
+    console.error('pollSupabase groups error:',e);
+  });
+}
+
+function initFirebase(cb){
+  if(fbReady){if(cb)cb();return;}
+  fbReady=true;
+  pollSupabase();
+  if(!pollInterval)pollInterval=setInterval(pollSupabase,3000);
+  if(cb)cb();
+}
+
+function addFallbackUser(){}
+
+// ===== STATE =====
+var STATE = { users:{}, challenge:null, groups:{} };
+
+// ===== AUTH =====
+function authTab(tab) {
+  var pl=el('panel-login'),ps=el('panel-signup');
+  var tl=el('tab-login'),ts=el('tab-signup');
+  if(tab==='login'){
+    pl.style.display='block';ps.style.display='none';
+    tl.style.background='var(--accent)';tl.style.color='#110D0A';
+    ts.style.background='transparent';ts.style.color='var(--text2)';
+  } else {
+    pl.style.display='none';ps.style.display='block';
+    ts.style.background='var(--accent)';ts.style.color='#110D0A';
+    tl.style.background='transparent';tl.style.color='var(--text2)';
+  }
+}
+
+function doLogin() {
+  var user=((el('login-user')||{}).value||'').trim().toLowerCase();
+  var pass=(el('login-pass')||{}).value||'';
+  var errEl=el('login-err');
+  if(!user||!pass){if(errEl)errEl.textContent='Compila tutti i campi.';return;}
+  initFirebase(function(){
+    fbGet('usernames/'+user, function(snap){
+      var data=snap.val();
+      if(!data){if(errEl)errEl.textContent='Username non trovato.';return;}
+      if(data.password!==pass){if(errEl)errEl.textContent='Password errata.';return;}
+      MY_UID=data.uid; MY_NAME=data.name;
+      localStorage.setItem('stash_uid_v3',MY_UID);
+      localStorage.setItem('stash_name_v3',MY_NAME);
+      localStorage.setItem('stash_user_v3',user);
+      fbSet('users/'+MY_UID+'/lastSeen',Date.now());
+      setupHome();
+      go(localStorage.getItem('stash_terms_v3')?'s-home':'s-terms');
+    });
+  });
+}
+
+function doSignup() {
+  var name=((el('su-name')||{}).value||'').trim();
+  var user=((el('su-user')||{}).value||'').trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
+  var pass=(el('su-pass')||{}).value||'';
+  var errEl=el('su-err');
+  if(!name||name.length<2){if(errEl)errEl.textContent='Nome troppo corto.';return;}
+  if(!user||user.length<3){if(errEl)errEl.textContent='Username min. 3 caratteri.';return;}
+  if(!pass||pass.length<6){if(errEl)errEl.textContent='Password min. 6 caratteri.';return;}
+  initFirebase(function(){
+    fbGet('usernames/'+user, function(snap){
+      if(snap.val()){if(errEl)errEl.textContent='Username già in uso.';return;}
+      var uid='u'+Math.random().toString(36).substr(2,8);
+      MY_UID=uid; MY_NAME=name;
+      localStorage.setItem('stash_uid_v3',uid);
+      localStorage.setItem('stash_name_v3',name);
+      localStorage.setItem('stash_user_v3',user);
+      fbSet('users/'+uid,{name:name,username:user,balance:100,escrow:0,lastSeen:Date.now()});
+      fbSet('usernames/'+user,{uid:uid,name:name,password:pass});
+      setupHome();
+      go('s-terms');
+    });
+  });
+}
+
+var SEL_CHALLENGED = null;
+var SELECTED_UIDS = {};
+var CH_TIMEOUT = 3600;
+var MY_DECLARED = false;
+var PIZZA_SEC = 47*60+23;
+var PIZZA_INT = null;
+var GROUP_CREATOR = null;
+var BLOCKED = ['morte','morire','muori','ammazzati','uccidi','cazzo','fanculo','vaffanculo','stronzo','stronza','puttana','troia','bastardo','bastarda','coglione','cogliona','merda','minchia','porco dio','porca madonna','porcodio','affanculo','figlio di'];
+
+function countKeys(obj){var n=0;for(var k in obj){if(obj.hasOwnProperty(k))n++;}return n;}
+function myBal() { var u=STATE.users[MY_UID]; return (u&&u.balance!==undefined)?u.balance:100; }
+function myEsc() { var u=STATE.users[MY_UID]; return (u&&u.escrow!==undefined)?u.escrow:0; }
+function setBal(uid,v) { supaPatch('users','uid=eq.'+uid,{balance:v}); if(STATE.users[uid])STATE.users[uid].balance=v; }
+function setEsc(uid,v) { supaPatch('users','uid=eq.'+uid,{escrow:v}); if(STATE.users[uid])STATE.users[uid].escrow=v; }
+function getBal(uid)   { var u=STATE.users[uid]; return (u&&u.balance!==undefined)?u.balance:100; }
+function updateBal()   { setText('bal-display','€'+myBal().toFixed(2)); }
+
+// ===== NAVIGATION =====
+function go(id) {
+  var all = document.querySelectorAll('.screen');
+  for (var i=0;i<all.length;i++) all[i].classList.remove('active');
+  var t = document.getElementById(id);
+  if (t) t.classList.add('active');
+  window.scrollTo(0,0);
+  if (id==='s-home')             drawHome();
+  if (id==='s-wallet')           drawWallet();
+  if (id==='s-profile')          drawProfile();
+  if (id==='s-settings')         drawSettings();
+  if (id==='s-history')          drawHistory();
+  if (id==='s-amici')            drawAmici();
+  if (id==='s-create-challenge') { SELECTED_UIDS={}; SEL_CHALLENGED=null; drawChallengeUsers(); updateBal(); }
+  if (id==='s-create-group')     { SELECTED_UIDS={}; drawGroupUsers(); }
+  if (id==='s-group-custom')     drawCustomGroup();
+  if (id==='s-vote1v1')          initVote1v1();
+  if (id==='s-vote-group')       drawGroupVote();
+  if (id==='s-withdraw')         setText('wd-avail','€'+myBal().toFixed(2));
+  if (id==='s-success')          setTimeout(function(){ show('suc-notif'); },1500);
+}
+
+function onStateChange() {
+  var cur = document.querySelector('.screen.active');
+  if (!cur) return;
+  var id = cur.id;
+  if (id==='s-home')         drawHome();
+  if (id==='s-wallet')       drawWallet();
+  if (id==='s-profile')      drawProfile();
+  if (id==='s-history')      drawHistory();
+  if (id==='s-amici')        drawAmici();
+  if (id==='s-vote1v1')      drawVote1v1Live();
+  if (id==='s-vote-group')   drawGroupVote();
+  if (id==='s-create-challenge') { updateBal(); drawChallengeUsers(); }
+  if (id==='s-create-group')     drawGroupUsers();
+  if (id==='s-group-custom')     drawCustomGroup();
+  var ch = STATE.challenge;
+  if (ch && ch.status==='resolved' && ch.winner && (id==='s-vote1v1'||id==='s-vote-group')) {
+    drawWinnerScreen(ch);
+    go('s-winner');
+  }
+  updateGlobalNotif();
+}
+
+var _lastChStatus = null;
+function updateGlobalNotif() {
+  var gn = el('global-notif');
+  if (!gn) return;
+  var ch = STATE.challenge;
+  if (ch && ch.status==='pending' && ch.challengedUid===MY_UID) {
+    gn.style.display = 'flex';
+    setText('gn-icon', '⚡');
+    setText('gn-text', ch.challengerName+' ti sfida: "'+ch.title.substr(0,30)+'" — €'+ch.amount);
+    if (_lastChStatus !== 'pending_for_me') {
+      _lastChStatus = 'pending_for_me';
+      var cur = document.querySelector('.screen.active');
+      if (cur && cur.id !== 's-accept' && cur.id !== 's-welcome' && cur.id !== 's-terms') {
+        fillAcceptScreen(ch);
+        setTimeout(function(){ go('s-accept'); }, 800);
+      }
+    }
+  } else if (ch && ch.status==='accepted' && (ch.challengerUid===MY_UID||ch.challengedUid===MY_UID)) {
+    gn.style.display = 'flex';
+    setText('gn-icon', '🔴');
+    setText('gn-text', 'Sfida live - ' + ch.title.substr(0,25) + '... - dichiara il tuo esito');
+    _lastChStatus = 'accepted';
+  } else {
+    gn.style.display = 'none';
+    _lastChStatus = null;
+  }
+}
+
+function handleGlobalNotif() {
+  var ch = STATE.challenge;
+  if (!ch) return;
+  if (ch.status==='pending' && ch.challengedUid===MY_UID) {
+    fillAcceptScreen(ch);
+    go('s-accept');
+  } else if (ch.status==='accepted') {
+    go('s-vote1v1');
+  }
+}
+
+// ===== HELPERS =====
+function el(id) { return document.getElementById(id); }
+function setText(id,v) { var e=el(id); if(e)e.textContent=v; }
+function setHTML(id,v) { var e=el(id); if(e)e.innerHTML=v; }
+function show(id)  { var e=el(id); if(e)e.style.display='block'; }
+function hide(id)  { var e=el(id); if(e)e.style.display='none'; }
+function initial(name) { return (name||'?').charAt(0).toUpperCase(); }
+function timeSince(ts) {
+  var s=Math.floor((Date.now()-ts)/1000);
+  if(s<60) return 'adesso';
+  if(s<3600) return Math.floor(s/60)+'m fa';
+  if(s<86400) return Math.floor(s/3600)+'h fa';
+  return Math.floor(s/86400)+'g fa';
+}
+function getRem(ch) {
+  if(!ch||!ch.timerStart||!ch.timeout) return '--:--';
+  var rem=Math.max(0,ch.timeout-Math.floor((Date.now()-ch.timerStart)/1000));
+  if(rem>=3600) return Math.floor(rem/3600)+'h '+Math.floor((rem%3600)/60)+'m';
+  var m=Math.floor(rem/60),s=rem%60;
+  return (m<10?'0'+m:m)+':'+(s<10?'0'+s:s);
+}
+function hasBlocked(txt) {
+  var low=txt.toLowerCase();
+  for(var i=0;i<BLOCKED.length;i++) if(low.indexOf(BLOCKED[i])!==-1) return true;
+  return false;
+}
+function chId(ch) { return (ch.challengerUid||'')+'_'+(ch.challengedUid||'')+'_'+(ch.timerStart||0); }
+
+// ===== SETUP HOME =====
+function setupHome() {
+  var init = initial(MY_NAME);
+  var av = el('home-av'); if(av){av.textContent=init; av.className='av av-marco';}
+  var pa = el('prof-av'); if(pa){pa.textContent=init; pa.className='av av-lg av-marco';}
+  setText('prof-name', MY_NAME||'-');
+}
+
+// ===== HOME =====
+function drawHome() {
+  var init = initial(MY_NAME);
+  var av = el('home-av'); if(av) av.textContent=init;
+  var esc=myEsc(),bal=myBal();
+  setText('home-escrow-label', esc>0 ? '€'+esc+' in escrow' : '€'+bal.toFixed(0)+' disponibili');
+  var ch = STATE.challenge;
+  var liveEl = el('live-challenge');
+  if (ch && (ch.status==='pending'||ch.status==='accepted') && (ch.challengerUid===MY_UID||ch.challengedUid===MY_UID)) {
+    if (liveEl) { liveEl.innerHTML=''; liveEl.appendChild(liveChallengeHTML(ch)); liveEl.style.display='block'; }
+  } else {
+    if (liveEl) liveEl.style.display='none';
+  }
+  var banner = el('notif-banner');
+  if (!banner) return;
+  if (ch && ch.status==='pending' && ch.challengedUid===MY_UID) {
+    banner.style.display='block';
+    banner.innerHTML = notifHTML(ch.challengerName, ch.title, ch.amount);
+    fillAcceptScreen(ch);
+  } else if (ch && ch.status==='accepted' && (ch.challengerUid===MY_UID||ch.challengedUid===MY_UID)) {
+    banner.style.display='block';
+    banner.innerHTML = '<div class="notif-banner" style="cursor:default"><div>&#x1F534;</div><div class="notif-text">Sfida live &mdash; &euro;'+ch.amount+' in palio</div><div class="notif-cta" onclick="go(\'s-vote1v1\')">Dichiara &rarr;</div></div>';
+  } else {
+    banner.style.display='none';
+  }
+  drawGroups();
+}
+
+function drawGroups() {
+  var container = el('groups-container');
+  if (!container) return;
+
+  var myGroups = [];
+  for (var gid in STATE.groups) {
+    var g = STATE.groups[gid];
+    if (g && g.members && Object.prototype.hasOwnProperty.call(g.members, MY_UID)) {
+      myGroups.push(g);
+    }
+  }
+
+  myGroups.sort(function(a,b){
+    return (b.createdAt||0)-(a.createdAt||0);
+  });
+
+  var emptyEl = el('home-empty-groups');
+  container.innerHTML = '';
+
+  if (myGroups.length === 0) {
+    if (emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+
+  if (emptyEl) emptyEl.style.display = 'none';
+
+  for (var i=0; i<myGroups.length; i++) {
+    var g2 = myGroups[i];
+    var mCount = countKeys(g2.members||{});
+    var ch = STATE.challenge;
+
+    var hasLive = ch &&
+      (ch.status==='pending'||ch.status==='accepted') &&
+      g2.members &&
+      Object.prototype.hasOwnProperty.call(g2.members, ch.challengerUid) &&
+      Object.prototype.hasOwnProperty.call(g2.members, ch.challengedUid);
+
+    var card = document.createElement('div');
+    card.className = 'card card-tap';
+    card.style.marginBottom = '10px';
+    card.innerHTML = '<div class="gc-top">'
+      + '<div class="gc-icon">' + (g2.icon||'⚽') + '</div>'
+      + '<div class="gc-info"><div class="gc-name">' + g2.name + '</div>'
+      + '<div class="gc-meta">' + mCount + ' membr' + (mCount===1?'o':'i') + (hasLive?' · 1 sfida attiva':'') + '</div></div>'
+      + (hasLive ? '<div class="gc-badge">1 attiva</div>' : '')
+      + '</div>';
+
+    (function(gid2, name, icon) {
+      card.onclick = function() { openGroupById(gid2, name, icon); };
+    })(g2.id, g2.name, g2.icon||'⚽');
+
+    container.appendChild(card);
+  }
+}
+
+// ===== MISSING DRAW FUNCTIONS =====
+function drawWallet() {
+  var bal=myBal(),esc=myEsc();
+  setText('wal-balance','€'+bal.toFixed(2));
+  setText('wal-locked',esc>0?'€'+esc.toFixed(2)+' bloccati':'Nessun importo bloccato');
+  var ec=el('wal-escrow-card');
+  if(ec){
+    if(esc>0){
+      ec.style.display='block';
+      setText('wal-escrow-amount','€'+esc.toFixed(2));
+      var ch=STATE.challenge;
+      setText('wal-escrow-detail',ch?ch.title.substr(0,25)+'...':'Sfida attiva');
+    }else{
+      ec.style.display='none';
+    }
+  }
+  var txEl=el('wal-txs');if(!txEl)return;
+  fbGet('history',function(snap){
+    var data=snap.val()||{},items=[];
+    for(var k in data){if(data[k]&&(data[k].challengerUid===MY_UID||data[k].challengedUid===MY_UID))items.push(data[k]);}
+    items.sort(function(a,b){return(b.ts||0)-(a.ts||0);});
+    var rows='<div class="tx-row"><div class="tx-icon" style="background:var(--bg3)">💸</div><div class="tx-info"><div class="tx-title">Credito demo</div><div class="tx-meta">Alla registrazione</div></div><div class="tx-amt tx-pos">+€100</div></div>';
+    for(var i=0;i<Math.min(items.length,5);i++){
+      var it=items[i],isW=it.winnerUid===MY_UID,isL=it.status==='accepted'||it.status==='pending';
+      var ic=isL?'🔒':isW?'✅':'❌';
+      var bg=isL?'var(--amber-dim)':isW?'var(--accent-dim)':'var(--red-dim)';
+      var amt=isL?'€'+it.amount+' bloccati':isW?'+€'+it.amount:'-€'+it.amount;
+      var cls=isL?'tx-neu':isW?'tx-pos':'tx-neg';
+      var vs=it.challengerUid===MY_UID?it.challengedName:it.challengerName;
+      rows+='<div class="tx-row"><div class="tx-icon" style="background:'+bg+'">'+ic+'</div><div class="tx-info"><div class="tx-title">'+it.title.substr(0,25)+'</div><div class="tx-meta">vs '+vs+'</div></div><div class="tx-amt '+cls+'">'+amt+'</div></div>';
+    }
+    txEl.innerHTML=rows;
+  });
+}
+
+function drawProfile() {
+  var init=initial(MY_NAME);
+  var pa=el('prof-av');if(pa){pa.textContent=init;pa.className='av av-lg av-marco';}
+  setText('prof-name',MY_NAME||'-');
+  setText('prof-user',MY_USERNAME?'@'+MY_USERNAME:'');
+  setText('prof-balance','€'+myBal().toFixed(2));
+  var groupCount=0;
+  for(var gid in STATE.groups){
+    var g=STATE.groups[gid];
+    if(g&&g.members&&Object.prototype.hasOwnProperty.call(g.members,MY_UID)) groupCount++;
+  }
+  setText('prof-groups-count',groupCount+' →');
+  drawHistory();
+}
+
+function drawHistory() {
+  var list=el('hist-list');if(!list)return;
+  list.innerHTML='<div class="muted" style="text-align:center;padding:12px 0;font-size:13px">Caricamento...</div>';
+  fbGet('history',function(snap){
+    var data=snap.val()||{},items=[],wins=0,net=0;
+    for(var k in data){if(data[k]&&(data[k].challengerUid===MY_UID||data[k].challengedUid===MY_UID))items.push(data[k]);}
+    items.sort(function(a,b){return(b.ts||0)-(a.ts||0);});
+    if(!items.length){list.innerHTML='<div class="muted" style="text-align:center;padding:12px 0;font-size:13px">Nessuna sfida ancora.</div>';return;}
+    var html='';
+    for(var i=0;i<items.length;i++){
+      var it=items[i],isW=it.winnerUid===MY_UID,isL=it.status==='accepted'||it.status==='pending';
+      if(isW){wins++;net+=it.amount;}else if(!isL&&it.winnerUid)net-=it.amount;
+      var ic=isL?'🔒':isW?'✅':'❌',bg=isL?'var(--amber-dim)':isW?'var(--accent-dim)':'var(--red-dim)';
+      var amt=isL?'€'+it.amount+' bloccati':isW?'+€'+it.amount:'-€'+it.amount;
+      var cls=isL?'tx-neu':isW?'tx-pos':'tx-neg';
+      var vs=it.challengerUid===MY_UID?it.challengedName:it.challengerName;
+      html+='<div class="hcard" data-f="'+(isL?'live':isW?'win':'lose')+'"><div class="hcard-ic" style="background:'+bg+'">'+ic+'</div><div class="hcard-info"><div class="hcard-title">"'+it.title+'"</div><div class="hcard-meta">vs '+vs+'</div></div><div class="hcard-amt '+cls+'">'+amt+'</div></div>';
+    }
+    list.innerHTML=html;
+    var tot=items.length,wr=tot>0?Math.round(wins/tot*100):0;
+    setText('stat-total',tot);setText('stat-wins',wins);setText('stat-wr',wr+'%');
+    setHTML('stat-net',(net>=0?'+':'')+'€'+Math.abs(net));
+    setText('prof-stat-total',tot);setText('prof-stat-wins',wins);setText('prof-stat-wr',wr+'%');
+    setHTML('prof-stat-net',(net>=0?'+':'')+'€'+Math.abs(net));
+    setText('prof-sfide-count',tot+' →');
+  });
+}
+
+function drawAmici() {
+  var list=el('amici-list');if(!list)return;
+  var ch=STATE.challenge;
+  list.innerHTML='';
+  var count=0;
+  for(var uid in STATE.users){
+    if(uid===MY_UID)continue;
+    count++;
+    var u=STATE.users[uid];
+    var card=document.createElement('div');
+    card.className='card';card.style.marginBottom='10px';
+    var topRow=document.createElement('div');
+    topRow.style.cssText='display:flex;align-items:center;gap:12px';
+    var av=document.createElement('div');
+    av.className='av';av.style.cssText='width:48px;height:48px;font-size:18px;background:var(--purple);color:#fff;flex-shrink:0';
+    av.textContent=initial(u.name);topRow.appendChild(av);
+    var info=document.createElement('div');info.style.cssText='flex:1;min-width:0';
+    var uLabel=u.username?'@'+u.username:u.name;
+    info.innerHTML='<div style="font-weight:900;font-size:16px">'+uLabel+'</div><div class="muted" style="font-size:12px">Visto '+timeSince(u.lastSeen||Date.now())+'</div>';
+    topRow.appendChild(info);
+    var btns=document.createElement('div');btns.style.cssText='display:flex;flex-direction:column;gap:6px';
+    var sfBtn=document.createElement('button');
+    sfBtn.style.cssText='background:var(--accent);color:#110D0A;border:none;border-radius:var(--rs);padding:7px 12px;font-weight:900;font-size:12px;cursor:pointer';
+    sfBtn.textContent='Sfida';
+    sfBtn.setAttribute('data-sf-uid',uid);sfBtn.setAttribute('data-sf-name',u.name);
+    sfBtn.onclick=function(){sfidaDiretto(this.getAttribute('data-sf-uid'),this.getAttribute('data-sf-name'));};
+    var rmBtn=document.createElement('button');
+    rmBtn.style.cssText='background:none;color:var(--red);border:1px solid var(--red-dim);border-radius:var(--rs);padding:5px 12px;font-size:11px;cursor:pointer';
+    rmBtn.textContent='Rimuovi';
+    rmBtn.setAttribute('data-remove-uid',uid);
+    rmBtn.onclick=function(){removeAmico(this.getAttribute('data-remove-uid'));};
+    btns.appendChild(sfBtn);btns.appendChild(rmBtn);topRow.appendChild(btns);card.appendChild(topRow);
+    if(ch&&(ch.status==='pending'||ch.status==='accepted')&&((ch.challengerUid===MY_UID&&ch.challengedUid===uid)||(ch.challengedUid===MY_UID&&ch.challengerUid===uid))){
+      var badge=document.createElement('div');
+      badge.style.cssText='background:var(--bg3);border-radius:var(--rs);padding:8px 10px;margin-top:8px;font-size:12px;display:flex;justify-content:space-between;align-items:center';
+      var sl=ch.status==='pending'?'In attesa':'Live';
+      var sc=ch.status==='pending'?'var(--amber)':'var(--red)';
+      badge.innerHTML='<span><span style="color:'+sc+';font-weight:700">'+sl+'</span> — '+ch.title.substr(0,20)+'... €'+ch.amount+'</span>';
+      var vBtn=document.createElement('span');vBtn.textContent='Vedi';vBtn.style.cssText='color:var(--accent);cursor:pointer;margin-left:8px';
+      var dest=ch.status==='accepted'?'s-vote1v1':'s-accept';
+      vBtn.setAttribute('data-dest',dest);
+      vBtn.onclick=function(){go(this.getAttribute('data-dest'));};
+      badge.appendChild(vBtn);card.appendChild(badge);
+    }
+    list.appendChild(card);
+  }
+  if(!count)list.innerHTML='<div class="info-box info-gray" style="text-align:center">Nessun amico ancora.<br>Condividi il link!</div>';
+}
+
+function removeAmico(uid){
+  var RF=JSON.parse(localStorage.getItem('stash_removed')||'{}');
+  RF[uid]=true;localStorage.setItem('stash_removed',JSON.stringify(RF));
+  drawAmici();
+}
+
+function sfidaDiretto(uid,name){SEL_CHALLENGED={uid:uid,name:name};go('s-create-challenge');}
+
+function drawCustomGroup() {
+  var currentGroup = CURRENT_GROUP_ID && STATE.groups[CURRENT_GROUP_ID] ? STATE.groups[CURRENT_GROUP_ID] : null;
+
+  var di=el('cg-detail-icon'),dn=el('cg-detail-name');
+  if(currentGroup){
+    if(di) di.textContent=currentGroup.icon||'⚽';
+    if(dn) dn.textContent=currentGroup.name||'Gruppo';
+    GROUP_CREATOR=currentGroup.creatorUid||null;
+  }
+
+  var ch=STATE.challenge,live=el('cg-live-challenge'),empty=el('cg-empty-state');
+  var hasLiveForGroup = false;
+
+  if(currentGroup && ch && (ch.status==='pending'||ch.status==='accepted') && currentGroup.members){
+    hasLiveForGroup =
+      Object.prototype.hasOwnProperty.call(currentGroup.members, ch.challengerUid) &&
+      Object.prototype.hasOwnProperty.call(currentGroup.members, ch.challengedUid);
+  }
+
+  if(hasLiveForGroup){
+    if(live){live.innerHTML='';live.appendChild(liveChallengeHTML(ch));live.style.display='block';}
+    if(empty)empty.style.display='none';
+  }else{
+    if(live)live.style.display='none';
+    if(empty)empty.style.display='block';
+  }
+
+  var mEl=el('cg-members-display');
+  if(mEl){
+    var html='';
+    if(currentGroup && currentGroup.members){
+      var memberList=[];
+      for(var uid in currentGroup.members){
+        memberList.push({
+          uid:uid,
+          name:currentGroup.members[uid] || (STATE.users[uid] ? STATE.users[uid].name : uid)
+        });
+      }
+      memberList.sort(function(a,b){
+        if(a.uid===MY_UID) return -1;
+        if(b.uid===MY_UID) return 1;
+        return a.name.localeCompare(b.name);
+      });
+
+      for(var i=0;i<memberList.length;i++){
+        var member=memberList[i];
+        var me=member.uid===MY_UID;
+        html+='<div class="member-row"><div class="av av-sm '+(me?'av-marco':'av-alex')+'">'+initial(member.name)+'</div><div class="member-name">'+member.name+(me?' (tu)':'')+'</div></div>';
+      }
+    }else{
+      html='<div class="muted" style="padding:10px 0">Nessun membro trovato.</div>';
+    }
+    mEl.innerHTML=html;
+  }
+}
+function toggleGroupMenu(){var m=el('group-menu');if(m)m.style.display=m.style.display==='none'?'block':'none';}
+function groupMenuAction(action){
+  var m=el('group-menu');if(m)m.style.display='none';
+  var modal=el('group-action-modal');if(!modal)return;
+  var ids=['gam-rename-content','gam-add-content','gam-remove-content','gam-leave-content'];
+  for(var i=0;i<ids.length;i++){var c=el(ids[i]);if(c)c.style.display='none';}
+  modal.style.display='block';
+  if(action==='rename'){if(GROUP_CREATOR!==MY_UID){alert('Solo il creatore può modificare il nome.');modal.style.display='none';return;}setText('gam-title','Modifica nome');show('gam-rename-content');var inp=el('gam-new-name');var dn=el('cg-detail-name');if(inp&&dn)inp.value=dn.textContent;}
+  if(action==='add'){setText('gam-title','Aggiungi membro');show('gam-add-content');var al=el('gam-add-list');if(al){var h='';for(var uid in STATE.users){if(uid!==MY_UID)h+='<div class="member-row"><div class="av av-sm av-alex">'+initial(STATE.users[uid].name)+'</div><div class="member-name">'+STATE.users[uid].name+'</div><div style="font-size:12px;color:var(--accent)">Aggiunto ✓</div></div>';}al.innerHTML=h||'<div class="muted" style="padding:10px 0;font-size:13px">Nessun utente.</div>';}}
+  if(action==='remove'){if(GROUP_CREATOR!==MY_UID){alert('Solo il creatore può rimuovere membri.');modal.style.display='none';return;}setText('gam-title','Rimuovi membro');show('gam-remove-content');var rl=el('gam-remove-list');if(rl){var rh='';var group=STATE.groups[CURRENT_GROUP_ID];if(group&&group.members){for(var ruid in group.members){if(ruid!==MY_UID){var rname=group.members[ruid]||(STATE.users[ruid]?STATE.users[ruid].name:ruid);rh+='<div class="member-row"><div class="av av-sm av-alex">'+initial(rname)+'</div><div class="member-name">'+rname+'</div><button onclick="alert(\'Rimosso (demo).\');closeGroupModal()" style="background:var(--red);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer">Rimuovi</button></div>';}}}rl.innerHTML=rh||'<div class="muted" style="padding:10px 0">Nessun membro.</div>';}}
+  if(action==='leave'){setText('gam-title','Esci dal gruppo');show('gam-leave-content');}
+}
+function closeGroupModal(){var m=el('group-action-modal');if(m)m.style.display='none';}
+function shareLink(){
+  var url=window.location.href;
+  var msg=encodeURIComponent('Sfidami su stash! Registrati qui: '+url+' e ricevi \u20ac100 di credito demo gratuito \uD83D\uDD25');
+  var m=el('share-modal');
+  if(!m)return;
+  m.innerHTML='<div class="modal-overlay" onclick="closeShareModal()"><div class="modal-box" onclick="event.stopPropagation()"><div class="modal-handle"></div><div class="modal-title">Invita un amico</div><div class="modal-sub">Condividi il link e il tuo amico riceve \u20ac100 di credito demo gratuito.</div><div class="modal-link-box"><span class="modal-link-url">'+url+'</span></div><button class="btn-primary" style="background:#25D366;margin-bottom:10px" onclick="window.open(\'https://wa.me/?text='+msg+'\',\'_blank\')">&#128232; Condividi su WhatsApp</button><button class="btn-secondary" onclick="copyShareLink(\''+url+'\')"><span id="copy-share-label">Copia link</span></button><button class="btn-secondary" onclick="window.open(\''+url+'\',\'_blank\');closeShareModal()">Apri in nuova tab \u2197</button><button class="modal-close" onclick="closeShareModal()">Chiudi</button></div></div>';
+  m.style.display='block';
+}
+function closeShareModal(){var m=el('share-modal');if(m){m.style.display='none';m.innerHTML='';}}
+function copyShareLink(url){
+  navigator.clipboard.writeText(url).then(function(){
+    var lbl=el('copy-share-label');if(lbl){lbl.textContent='Copiato! \u2713';setTimeout(function(){lbl.textContent='Copia link';},2000);}
+  }).catch(function(){
+    var lbl=el('copy-share-label');if(lbl){lbl.textContent='Copia link';}
+  });
+}
+function confirmRename(){var nm=(el('gam-new-name')||{}).value||'';if(nm.trim().length<2)return;var group=STATE.groups[CURRENT_GROUP_ID];if(group){group.name=nm.trim();supaPatch('groups','id=eq.'+CURRENT_GROUP_ID,{name:nm.trim()});}drawCustomGroup();drawGroups();closeGroupModal();}
+function confirmLeaveGroup(){closeGroupModal();go('s-home');}
+
+// ===== PAYMENT =====
+function selectPayment(e2,type){
+  var ab=el('pay-apple'),gb=el('pay-google'),cc=el('pay-card-check');
+  if(ab)ab.style.border='2px solid transparent';
+  if(gb)gb.style.border='2px solid transparent';
+  if(cc)cc.style.display='none';
+  if(type==='apple'&&ab)ab.style.border='2px solid var(--accent)';
+  if(type==='google'&&gb)gb.style.border='2px solid var(--accent)';
+  if(type==='card'&&cc)cc.style.display='flex';
+}
+
+// ===== FILTER =====
+function filterHist(e2){
+  var chips=document.querySelectorAll('#hist-filter .chip');
+  for(var i=0;i<chips.length;i++)chips[i].classList.remove('sel');
+  e2.classList.add('sel');
+  var f=e2.dataset.f;
+  var cards=document.querySelectorAll('.hcard');
+  for(var j=0;j<cards.length;j++)cards[j].style.display=(f==='all'||cards[j].dataset.f===f)?'flex':'none';
+}
+
+// ===== MISC =====
+function toggleNotif(){var t=el('notif-tog');if(t)t.classList.toggle('on');}
+
+function doLogout(){
+  localStorage.removeItem('stash_uid_v3');
+  localStorage.removeItem('stash_name_v3');
+  localStorage.removeItem('stash_user_v3');
+  localStorage.removeItem('stash_terms_v3');
+  MY_UID=null; MY_NAME=null;
+  location.reload();
+}
+
+// ===== SETTINGS =====
+function drawSettings(){
+  setText('set-cur-user', MY_USERNAME ? '@'+MY_USERNAME : '(nessuno)');
+  var inp=el('set-new-user'); if(inp) inp.value='';
+  var p1=el('set-new-pass'); if(p1) p1.value='';
+  var p2=el('set-new-pass2'); if(p2) p2.value='';
+  hide('set-user-ok'); hide('set-pass-ok');
+  setText('set-user-err',''); setText('set-pass-err','');
+}
+
+function saveUsername(){
+  var newUser=((el('set-new-user')||{}).value||'').trim().toLowerCase();
+  var errEl=el('set-user-err'), okEl=el('set-user-ok');
+  if(errEl) errEl.textContent=''; if(okEl) okEl.style.display='none';
+  if(!newUser||newUser.length<3){if(errEl)errEl.textContent='Username min. 3 caratteri.';return;}
+  if(newUser===MY_USERNAME){if(errEl)errEl.textContent='È già il tuo username.';return;}
+  authFetch('users','username=eq.'+newUser+'&select=uid','GET',null,function(err,data){
+    if(err){if(errEl)errEl.textContent='Errore: '+err;return;}
+    if(data&&data.length){if(errEl)errEl.textContent='Username già in uso.';return;}
+    authFetch('users','uid=eq.'+MY_UID,'PATCH',{username:newUser},function(err2){
+      if(err2){if(errEl)errEl.textContent='Errore salvataggio: '+err2;return;}
+      MY_USERNAME=newUser;
+      localStorage.setItem('stash_user_v3',newUser);
+      if(STATE.users[MY_UID]) STATE.users[MY_UID].username=newUser;
+      setText('set-cur-user','@'+newUser);
+      var inp=el('set-new-user'); if(inp) inp.value='';
+      if(okEl){okEl.style.display='block'; setTimeout(function(){okEl.style.display='none';},3000);}
+    });
+  });
+}
+
+function savePassword(){
+  var p1=((el('set-new-pass')||{}).value||'');
+  var p2=((el('set-new-pass2')||{}).value||'');
+  var errEl=el('set-pass-err'), okEl=el('set-pass-ok');
+  if(errEl) errEl.textContent=''; if(okEl) okEl.style.display='none';
+  if(p1.length<6){if(errEl)errEl.textContent='Password min. 6 caratteri.';return;}
+  if(p1!==p2){if(errEl)errEl.textContent='Le password non coincidono.';return;}
+  authFetch('users','uid=eq.'+MY_UID,'PATCH',{password:p1},function(err){
+    if(err){if(errEl)errEl.textContent='Errore salvataggio: '+err;return;}
+    var p1El=el('set-new-pass'), p2El=el('set-new-pass2');
+    if(p1El) p1El.value=''; if(p2El) p2El.value='';
+    if(okEl){okEl.style.display='block'; setTimeout(function(){okEl.style.display='none';},3000);}
   });
 }
 
 // ===== CORE FUNCTIONS =====
-var STATE = { users: {}, challenge: null, groups: {}, history: {} };
-
-function el(id) { return document.getElementById(id); }
-function setText(id, v) { var e = el(id); if(e) e.textContent = v; }
-function setHTML(id, v) { var e = el(id); if(e) e.innerHTML = v; }
-function show(id) { var e = el(id); if(e) e.style.display = 'block'; }
-function hide(id) { var e = el(id); if(e) e.style.display = 'none'; }
-function initial(name) { return (name || '?').charAt(0).toUpperCase(); }
-
-function updateBal() {
-  setText('bal-display', 'EUR' + myBal().toFixed(2));
+function selEmoji(item){
+  var items=document.querySelectorAll('.emoji-item');
+  for(var i=0;i<items.length;i++) items[i].classList.remove('sel');
+  item.classList.add('sel');
+  checkCG();
 }
 
-function go(id) {
-  var all = document.querySelectorAll('.screen');
-  for (var i = 0; i < all.length; i++) all[i].classList.remove('active');
-  var t = document.getElementById(id);
-  if (t) t.classList.add('active');
-  window.scrollTo(0, 0);
-  
-  if (id === 's-home') drawHome();
-  if (id === 's-wallet') drawWallet();
-  if (id === 's-profile') drawProfile();
+function drawGroupUsers(){
+  var list=el('cg-members-list'); if(!list) return;
+  var others=[];
+  for(var uid in STATE.users){ if(uid!==MY_UID) others.push(uid); }
+  if(!others.length){ list.innerHTML='<div class="muted" style="padding:12px 0;font-size:13px">Nessun altro utente registrato.</div>'; return; }
+  var html='';
+  for(var i=0;i<others.length;i++){
+    var uid=others[i], u=STATE.users[uid], sel=SELECTED_UIDS[uid];
+    var uLabel=u.username?'@'+u.username:u.name;
+    html+='<div class="member-row" onclick="toggleGroupMember(\''+uid+'\')" style="cursor:pointer;padding:10px 4px;border-radius:var(--rs);'+(sel?'background:var(--accent-dim)':'')+'"><div class="av av-sm" style="background:var(--purple);color:#fff">'+initial(u.name)+'</div><div class="member-name" style="flex:1">'+uLabel+'</div>'+(sel?'<div style="color:var(--accent);font-weight:700">✓</div>':'<div style="color:var(--text3)">+</div>')+'</div>';
+  }
+  list.innerHTML=html;
 }
 
-function setupHome() {
-  var init = initial(MY_NAME);
-  var av = el('home-av'); 
-  if(av) {
-    av.textContent = init; 
-    av.className = 'av av-marco';
+function toggleGroupMember(uid){
+  if(SELECTED_UIDS[uid]) delete SELECTED_UIDS[uid];
+  else SELECTED_UIDS[uid]=STATE.users[uid]?STATE.users[uid].name:uid;
+  drawGroupUsers(); checkCG();
+}
+
+function checkCG(){
+  var name=((el('cg-name')||{}).value||'').trim();
+  var members=Object.keys(SELECTED_UIDS).length;
+  var btn=el('cg-btn');
+  if(btn) btn.disabled=!(name.length>=2&&members>0);
+}
+
+function createGroup(){
+  var name=((el('cg-name')||{}).value||'').trim();
+  var emojiEl=document.querySelector('.emoji-item.sel');
+  var icon=emojiEl?emojiEl.getAttribute('data-e'):'⚽';
+  if(name.length<2)return;
+
+  var gid='g'+Math.random().toString(36).substr(2,8);
+  var members={}; members[MY_UID]=MY_NAME;
+  for(var uid in SELECTED_UIDS) members[uid]=SELECTED_UIDS[uid];
+
+  STATE.groups[gid]={id:gid,name:name,icon:icon,creatorUid:MY_UID,createdAt:Date.now(),members:members};
+  SELECTED_UIDS={};
+
+  supaUpsert('groups',{id:gid,name:name,icon:icon,creator_uid:MY_UID,created_at:Date.now()})
+    .catch(function(e){console.error('createGroup groups error:',e);});
+  Object.keys(members).forEach(function(u){
+    supaUpsert('group_members',{group_id:gid,uid:u,name:members[u]})
+      .catch(function(e){console.error('createGroup members error:',e);});
+  });
+
+  openGroupById(gid,name,icon);
+}
+
+function drawChallengeUsers(){
+  var list=el('ch-members-list'); if(!list) return;
+  var sourceGroup = CURRENT_GROUP_ID && STATE.groups[CURRENT_GROUP_ID] ? STATE.groups[CURRENT_GROUP_ID] : null;
+  var others=[];
+
+  if(sourceGroup && sourceGroup.members){
+    for(var gidUid in sourceGroup.members){
+      if(gidUid!==MY_UID && STATE.users[gidUid]) others.push(gidUid);
+    }
+  }else{
+    for(var uid in STATE.users){ if(uid!==MY_UID) others.push(uid); }
+  }
+
+  if(!others.length){ list.innerHTML='<div class="muted" style="padding:12px 0;font-size:13px">Nessun altro utente disponibile.</div>'; return; }
+  var html='';
+  for(var i=0;i<others.length;i++){
+    var uid=others[i], u=STATE.users[uid], sel=SEL_CHALLENGED&&SEL_CHALLENGED.uid===uid;
+    var uLabel=u.username?'@'+u.username:u.name;
+    html+='<div class="member-row" onclick="selChallengee(\''+uid+'\',\''+u.name.replace(/\'/g,"\\'")+'\')" style="cursor:pointer;padding:10px 4px;border-radius:var(--rs);'+(sel?'background:var(--accent-dim)':'')+'"><div class="av av-sm" style="background:var(--purple);color:#fff">'+initial(u.name)+'</div><div class="member-name" style="flex:1">'+uLabel+'<div style="font-size:11px;color:var(--text3)">€'+getBal(uid).toFixed(0)+' disponibili</div></div>'+(sel?'<div style="color:var(--accent);font-weight:700;font-size:12px">✓</div>':'')+'</div>';
+  }
+  list.innerHTML=html; checkChallenge();
+}
+
+function selChallengee(uid,name){ SEL_CHALLENGED={uid:uid,name:name}; drawChallengeUsers(); }
+function updateCounter(){ var t=el('ch-text'),c=el('ch-count'); if(t&&c) c.textContent=t.value.length; }
+function clearChallengeErr(){}
+function setAmt(v) { var inp=el('ch-amount'); if(inp){inp.value=v; syncChips(v); checkChallenge();} }
+
+function syncChips(v){
+  var v2=parseFloat(v), chips=document.querySelectorAll('.chip');
+  for(var i=0;i<chips.length;i++){
+    var oc=chips[i].getAttribute('onclick')||'';
+    if(oc.indexOf('setAmt(')===0){
+      if(parseInt(chips[i].textContent.replace('€',''))===v2) chips[i].classList.add('sel');
+      else chips[i].classList.remove('sel');
+    }
   }
 }
 
-function drawHome() {
-  var init = initial(MY_NAME);
-  var av = el('home-av'); 
-  if(av) av.textContent = init;
-  
-  var esc = myEsc(), bal = myBal();
-  setText('home-escrow-label', esc > 0 ? 'EUR' + esc + ' in escrow' : 'EUR' + bal.toFixed(0) + ' disponibili');
+function selTimeout(item){
+  var chips=document.querySelectorAll('#timeout-chips .chip');
+  for(var i=0;i<chips.length;i++) chips[i].classList.remove('sel');
+  item.classList.add('sel');
+  CH_TIMEOUT=parseInt(item.getAttribute('data-t'))||3600;
+  checkChallenge();
 }
 
-function drawProfile() {
-  var init = initial(MY_NAME);
-  var pa = el('prof-av'); 
-  if(pa) {
-    pa.textContent = init; 
-    pa.className = 'av av-lg av-marco';
+function checkChallenge(){
+  var txt=((el('ch-text')||{}).value||'').trim(), amt=parseFloat((el('ch-amount')||{}).value)||0, bal=myBal();
+  var ok=txt.length>=3&&amt>=1&&amt<=bal&&SEL_CHALLENGED;
+  var btn=el('ch-btn'), summary=el('ch-summary'), info=el('ch-mode-info');
+  if(btn) btn.disabled=!ok;
+  if(!ok){
+    if(summary) summary.style.display='none';
+    if(info){ if(!SEL_CHALLENGED) info.textContent='Seleziona almeno un avversario'; else if(amt<1) info.textContent='Inserisci un importo'; else if(amt>bal) info.textContent='Saldo insufficiente (€'+bal.toFixed(0)+' disponibili)'; else info.textContent='Scrivi la sfida (min. 3 caratteri)'; }
+    return;
   }
-  setText('prof-name', MY_NAME || '-');
-  setText('prof-username', '@' + (MY_USERNAME || 'user'));
-  setText('prof-balance', 'EUR' + myBal().toFixed(2));
+  if(summary) summary.style.display='block';
+  var tLabel=CH_TIMEOUT>=86400?'24 ore':CH_TIMEOUT>=43200?'12 ore':'1 ora';
+  setText('sum-you','€'+amt.toFixed(0)); setText('sum-them','€'+amt.toFixed(0));
+  setText('sum-timeout',tLabel); setText('sum-total','€'+(amt*2).toFixed(0));
+  setText('sum-them-lbl',(SEL_CHALLENGED?SEL_CHALLENGED.name:'Avversario')+' blocca');
+  if(info) info.textContent='Sfida 1vs1 con '+SEL_CHALLENGED.name;
 }
 
-// ===== INITIALIZATION =====
-function initializeWalletFixes() {
-  window.myBal = myBal;
-  window.myEsc = myEsc;
-  window.getBal = getBal;
-  window.setBal = setBal;
-  window.setEsc = setEsc;
-  window.updateWalletDisplay = updateWalletDisplay;
-  window.drawWallet = drawWallet;
-  
-  setTimeout(function() {
-    syncBalanceWithHistory();
-    updateWalletDisplay();
-  }, 1000);
+function launchChallenge(){
+  var txt=((el('ch-text')||{}).value||'').trim(), amt=parseFloat((el('ch-amount')||{}).value)||0;
+  if(!SEL_CHALLENGED)return;
+  if(txt.length<3)return;
+  if(amt<1)return;
+  if(hasBlocked(txt)){alert('Contenuto non consentito.');return;}
+  var bal=myBal();
+  if(amt>bal){alert('Saldo insufficiente (€'+bal+' disponibili).');return;}
+
+  setBal(MY_UID,bal-amt); setEsc(MY_UID,myEsc()+amt);
+
+  supaUpsert('challenges',{id:'current',title:txt,amount:amt,challenger_uid:MY_UID,challenger_name:MY_NAME,challenged_uid:SEL_CHALLENGED.uid,challenged_name:SEL_CHALLENGED.name,status:'pending',timer_start:Date.now(),timeout:CH_TIMEOUT,created_at:Date.now(),winner_uid:null});
+
+  var tLabel=CH_TIMEOUT>=86400?'24 ore':CH_TIMEOUT>=43200?'12 ore':'1 ora';
+  setText('suc-other',SEL_CHALLENGED.name); setText('suc-other2',SEL_CHALLENGED.name);
+  setText('suc-amount','€'+amt); setText('suc-timeout',tLabel);
+  go('s-success');
 }
 
-// Initialize on page load
+function fillAcceptScreen(ch){
+  if(!ch) return;
+  setText('acc-from',ch.challengerName||'Qualcuno');
+  var tEl=el('acc-title'); if(tEl) tEl.textContent='"'+ch.title+'"';
+  setText('acc-amount','€'+ch.amount);
+  var bal=getBal(MY_UID);
+  setText('acc-escrow-sub',bal>=ch.amount?'Se accetti, €'+ch.amount+' vengono bloccati in escrow':'Saldo insufficiente per accettare');
+  var btn=el('acc-btn'); if(btn) btn.disabled=bal<ch.amount;
+  var tlEl=el('acc-timer-lbl'); if(tlEl&&ch.timerStart) tlEl.textContent='⏱ Scade tra '+getRem(ch);
+}
+
+function acceptChallenge(){
+  var ch=STATE.challenge; if(!ch||ch.challengedUid!==MY_UID) return;
+  var bal=getBal(MY_UID); if(bal<ch.amount){alert('Saldo insufficiente.');return;}
+  setBal(MY_UID,bal-ch.amount); setEsc(MY_UID,myEsc()+ch.amount);
+  supaPatch('challenges','id=eq.current',{status:'accepted'});
+  go('s-vote1v1');
+}
+
+function initVote1v1(){
+  var ch=STATE.challenge; if(!ch) return;
+  setText('v1-title','"'+ch.title+'"'); setText('v1-amount','€'+ch.amount);
+  var isC=ch.challengerUid===MY_UID, otherName=isC?ch.challengedName:ch.challengerName, otherUid=isC?ch.challengedUid:ch.challengerUid;
+  setText('v1-me-name',MY_NAME||'Tu'); setText('v1-other-name',otherName); setText('v1-other-lbl',otherName);
+  var myDecl=ch.declarations&&ch.declarations[MY_UID];
+  if(myDecl){ show('v1-my-voted'); hide('v1-my-decl'); setText('v1-my-voted-txt','Hai dichiarato: '+(myDecl===MY_UID?MY_NAME:otherName)+' ha vinto'); }
+  else { show('v1-my-decl'); hide('v1-my-voted'); }
+  var otherDecl=ch.declarations&&ch.declarations[otherUid];
+  if(otherDecl){ show('v1-other-voted'); hide('v1-other-wait'); setText('v1-other-voted-txt',otherName+': '+(otherDecl===MY_UID?MY_NAME:otherName)+' ha vinto'); }
+  else { show('v1-other-wait'); hide('v1-other-voted'); }
+  if(myDecl&&otherDecl){ if(myDecl===otherDecl){ show('v1-agree'); hide('v1-conflict'); } else { show('v1-conflict'); hide('v1-agree'); setText('v1-conflict-txt','Dichiarazioni discordanti — il gruppo decide.'); } }
+  else { hide('v1-agree'); hide('v1-conflict'); }
+}
+
+function drawVote1v1Live(){ initVote1v1(); }
+
+function declare(who){
+  var ch=STATE.challenge; if(!ch) return;
+  var winnerUid=who==='self'?MY_UID:(ch.challengerUid===MY_UID?ch.challengedUid:ch.challengerUid);
+  supaUpsert('challenge_votes',{challenge_id:'current',voter_uid:MY_UID,winner_uid:winnerUid});
+  if(!ch.declarations) ch.declarations={};
+  ch.declarations[MY_UID]=winnerUid;
+  initVote1v1();
+}
+
+function resolveChallenge(){
+  var ch=STATE.challenge; if(!ch) return;
+  var myDecl=ch.declarations&&ch.declarations[MY_UID]; if(!myDecl) return;
+  resolveWinner(myDecl);
+}
+
+function drawGroupVote(){
+  var ch=STATE.challenge; if(!ch){ go('s-home'); return; }
+  setText('vg-title','"'+ch.title+'"'); setText('vg-amount','€'+ch.amount);
+  setText('vg-challenger-name',ch.challengerName); setText('vg-challenged-name',ch.challengedName);
+  var votes=ch.votes||{}, total=Object.keys(votes).length;
+  setText('vg-vote-count',total+' vot'+(total===1?'o':'i'));
+  var c1=0; for(var uid in votes){ if(votes[uid]===ch.challengerUid) c1++; }
+  var bar=el('vg-prog-bar'); if(bar) bar.style.width=(total>0?Math.round(c1/total*100):50)+'%';
+  if(votes[MY_UID]){ hide('vg-vote-section'); show('vg-already-voted'); } else { show('vg-vote-section'); hide('vg-already-voted'); }
+  hide('vg-voted');
+}
+
+function groupVote(who){
+  var ch=STATE.challenge; if(!ch) return;
+  var winnerUid=who==='challenger'?ch.challengerUid:ch.challengedUid;
+  supaUpsert('challenge_votes',{challenge_id:'current',voter_uid:MY_UID,winner_uid:winnerUid});
+  if(!ch.votes) ch.votes={}; ch.votes[MY_UID]=winnerUid;
+  hide('vg-vote-section'); show('vg-voted'); checkMajority();
+}
+
+function simulateGroupVote(){ var ch=STATE.challenge; if(ch) resolveWinner(ch.challengerUid); }
+
+function checkMajority(){
+  var ch=STATE.challenge; if(!ch) return;
+  var tally={}; for(var uid in (ch.votes||{})){ var v=ch.votes[uid]; tally[v]=(tally[v]||0)+1; }
+  for(var w in tally){ if(tally[w]>=2){ resolveWinner(w); return; } }
+}
+
+function resolveWinner(winnerUid){
+  var ch=STATE.challenge; if(!ch) return;
+  var loserUid=winnerUid===ch.challengerUid?ch.challengedUid:ch.challengerUid, prize=ch.amount;
+  setBal(winnerUid,getBal(winnerUid)+prize*2);
+  setEsc(winnerUid,Math.max(0,(STATE.users[winnerUid]&&STATE.users[winnerUid].escrow||0)-prize));
+  setEsc(loserUid,Math.max(0,(STATE.users[loserUid]&&STATE.users[loserUid].escrow||0)-prize));
+  supaPatch('challenges','id=eq.current',{status:'resolved',winner_uid:winnerUid});
+  supaUpsert('history',{id:'h'+Date.now(),title:ch.title,amount:prize,challenger_uid:ch.challengerUid,challenger_name:ch.challengerName,challenged_uid:ch.challengedUid,challenged_name:ch.challengedName,winner_uid:winnerUid,status:'resolved',created_at:Date.now()});
+  drawWinnerScreen({title:ch.title,amount:prize,challengerUid:ch.challengerUid,challengerName:ch.challengerName,challengedUid:ch.challengedUid,challengedName:ch.challengedName,winner:winnerUid});
+  go('s-winner');
+}
+
+function drawWinnerScreen(ch){
+  if(!ch) return;
+  var winnerUid=ch.winner||ch.winnerUid;
+  var winnerName=winnerUid===ch.challengerUid?ch.challengerName:ch.challengedName;
+  var loserName=winnerUid===ch.challengerUid?ch.challengedName:ch.challengerName;
+  var isMe=winnerUid===MY_UID;
+  setText('w-emoji',isMe?'🏆':'😔'); setText('w-title',isMe?'Hai vinto!':winnerName+' ha vinto');
+  setText('w-sub',isMe?'I fondi sono stati trasferiti a te.':'Meglio la prossima volta.');
+  setText('w-amount','€'+(ch.amount*2)); setText('w-lbl',isMe?'trasferiti a te':'trasferiti a '+winnerName);
+  var wav=el('w-winner-av'); if(wav) wav.textContent=initial(winnerName);
+  var lav=el('w-loser-av'); if(lav) lav.textContent=initial(loserName);
+  setText('w-winner-name',winnerName); setText('w-loser-name',loserName);
+}
+
+function liveChallengeHTML(ch){
+  var div=document.createElement('div'); div.className='card'; div.style.marginBottom='12px';
+  var isC=ch.challengerUid===MY_UID, otherName=isC?ch.challengedName:ch.challengerName;
+  var isPending=ch.status==='pending', statusCol=isPending?'var(--amber)':'var(--accent)';
+  div.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="font-size:12px;font-weight:700;color:'+statusCol+'">● '+(isPending?'In attesa di accettazione':'Sfida in corso')+'</div><div style="font-size:12px;color:var(--text2)">€'+ch.amount+' in palio</div></div><div style="font-size:14px;font-weight:600;margin-bottom:8px">"'+ch.title.substr(0,50)+'"</div><div style="font-size:12px;color:var(--text2);margin-bottom:12px">vs '+otherName+'</div><button onclick="go(\''+(isPending&&!isC?'s-accept':'s-vote1v1')+'\')" style="width:100%;background:var(--accent);color:#110D0A;border:none;border-radius:var(--rs);padding:10px;font-weight:900;font-size:13px;cursor:pointer">'+(isPending&&!isC?'Accetta sfida →':'Dichiara esito →')+'</button>';
+  return div;
+}
+
+function notifHTML(name,title,amount){
+  return '<div class="notif-banner" onclick="go(\'s-accept\')"><div>⚡</div><div class="notif-text"><strong>'+name+'</strong> ti sfida: "'+title.substr(0,30)+'"</div><div class="notif-cta">€'+amount+' →</div></div>';
+}
+
+function openGroupById(gid,name,icon){
+  var g=STATE.groups[gid];
+  CURRENT_GROUP_ID = gid;
+  GROUP_CREATOR=g?g.creatorUid:null;
+
+  var iconEl=el('new-group-icon');
+  if(iconEl) iconEl.textContent=(g&&g.icon)?g.icon:(icon||'⚽');
+
+  var nameEl=el('new-group-name');
+  if(nameEl) nameEl.textContent=(g&&g.name)?g.name:(name||'Gruppo');
+
+  drawCustomGroup();
+  go('s-group-custom');
+}
+
+// ===== PAYMENT HELPERS PLACEHOLDERS =====
+function checkDep(){ var v=parseFloat((el('dep-amount')||{}).value)||0; var b=el('dep-btn'); if(b){b.disabled=v<=0;b.textContent='Deposita €'+(v>0?v:0);} }
+function setDep(v){ var e=el('dep-amount'); if(e){e.value=v;checkDep();} }
+function confirmDeposit(){ alert('Demo mode'); }
+function checkWD(){ var v=parseFloat((el('wd-amount')||{}).value)||0; var b=el('wd-btn'); if(b){b.disabled=v<=0||v>myBal();b.textContent='Richiedi prelievo';} }
+function setWD(){ var e=el('wd-amount'); if(e){e.value=myBal().toFixed(2);checkWD();} }
+function confirmWithdraw(){ alert('Demo mode'); }
+
+// ===== START =====
 (function(){
-  if (MY_NAME && MY_UID) {
+  if(MY_NAME && MY_UID){
     setupHome();
-    go('s-home');
-    initializeWalletFixes();
-    
-    // Initialize user in state
-    STATE.users[MY_UID] = {
-      uid: MY_UID,
-      name: MY_NAME,
-      username: MY_USERNAME,
-      balance: 100,
-      escrow: 0
-    };
-    
-    // Poll for data updates
-    setInterval(function() {
-      syncBalanceWithHistory();
-    }, 5000);
+    go(localStorage.getItem('stash_terms_v3')?'s-home':'s-terms');
+    initFirebase(function(){
+      supaPatch('users','uid=eq.'+MY_UID,{last_seen:Date.now()});
+    });
   }
 })();
 </script>
-
 </body>
 </html>

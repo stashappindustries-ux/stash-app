@@ -1613,6 +1613,22 @@ function groupMenuAction(action){
   if(action==='leave'){setText('gam-title','Esci dal gruppo');show('gam-leave-content');}
 }
 function closeGroupModal(){var m=el('group-action-modal');if(m)m.style.display='none';}
+function shareLink(){
+  var url=window.location.href;
+  var msg=encodeURIComponent('Sfidami su stash! Registrati qui: '+url+' e ricevi \u20ac100 di credito demo gratuito \uD83D\uDD25');
+  var m=el('share-modal');
+  if(!m)return;
+  m.innerHTML='<div class="modal-overlay" onclick="closeShareModal()"><div class="modal-box" onclick="event.stopPropagation()"><div class="modal-handle"></div><div class="modal-title">Invita un amico</div><div class="modal-sub">Condividi il link e il tuo amico riceve \u20ac100 di credito demo gratuito.</div><div class="modal-link-box"><span class="modal-link-url">'+url+'</span></div><button class="btn-primary" style="background:#25D366;margin-bottom:10px" onclick="window.open(\'https://wa.me/?text='+msg+'\',\'_blank\')">&#128232; Condividi su WhatsApp</button><button class="btn-secondary" onclick="copyShareLink(\''+url+'\')"><span id="copy-share-label">Copia link</span></button><button class="btn-secondary" onclick="window.open(\''+url+'\',\'_blank\');closeShareModal()">Apri in nuova tab \u2197</button><button class="modal-close" onclick="closeShareModal()">Chiudi</button></div></div>';
+  m.style.display='block';
+}
+function closeShareModal(){var m=el('share-modal');if(m){m.style.display='none';m.innerHTML='';}}
+function copyShareLink(url){
+  navigator.clipboard.writeText(url).then(function(){
+    var lbl=el('copy-share-label');if(lbl){lbl.textContent='Copiato! \u2713';setTimeout(function(){lbl.textContent='Copia link';},2000);}
+  }).catch(function(){
+    var lbl=el('copy-share-label');if(lbl){lbl.textContent='Copia link';}
+  });
+}
 function confirmRename(){var nm=(el('gam-new-name')||{}).value||'';if(nm.trim().length<2)return;setText('cg-detail-name',nm.trim());setText('new-group-name',nm.trim());closeGroupModal();}
 function confirmLeaveGroup(){var c=el('new-group-card');if(c)c.style.display='none';closeGroupModal();go('s-home');}
 

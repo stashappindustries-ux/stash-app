@@ -1609,7 +1609,7 @@ function drawWallet() {
       var it=items[i],isW=it.winnerUid===MY_UID,isL=it.status==='accepted'||it.status==='pending';
       var ic=isL?'🔒':isW?'✅':'❌';
       var bg=isL?'var(--amber-dim)':isW?'var(--accent-dim)':'var(--red-dim)';
-      var amt=isL?'€'+it.amount:isW?'+€'+(it.amount*2):'-€'+it.amount;
+      var amt=isL?'€'+it.amount+' bloccati':isW?'+€'+it.amount:'-€'+it.amount;
       var cls=isL?'tx-neu':isW?'tx-pos':'tx-neg';
       var vs=it.challengerUid===MY_UID?it.challengedName:it.challengerName;
       rows+='<div class="tx-row"><div class="tx-icon" style="background:'+bg+'">'+ic+'</div><div class="tx-info"><div class="tx-title">'+it.title.substr(0,25)+'</div><div class="tx-meta">vs '+vs+'</div></div><div class="tx-amt '+cls+'">'+amt+'</div></div>';
@@ -1646,7 +1646,7 @@ function drawHistory() {
       var it=items[i],isW=it.winnerUid===MY_UID,isL=it.status==='accepted'||it.status==='pending';
       if(isW){wins++;net+=it.amount;}else if(!isL&&it.winnerUid)net-=it.amount;
       var ic=isL?'🔒':isW?'✅':'❌',bg=isL?'var(--amber-dim)':isW?'var(--accent-dim)':'var(--red-dim)';
-      var amt=isL?'€'+it.amount:isW?'+€'+(it.amount*2):'-€'+it.amount;
+      var amt=isL?'€'+it.amount+' bloccati':isW?'+€'+it.amount:'-€'+it.amount;
       var cls=isL?'tx-neu':isW?'tx-pos':'tx-neg';
       var vs=it.challengerUid===MY_UID?it.challengedName:it.challengerName;
       html+='<div class="hcard" data-f="'+(isL?'live':isW?'win':'lose')+'"><div class="hcard-ic" style="background:'+bg+'">'+ic+'</div><div class="hcard-info"><div class="hcard-title">"'+it.title+'"</div><div class="hcard-meta">vs '+vs+'</div></div><div class="hcard-amt '+cls+'">'+amt+'</div></div>';

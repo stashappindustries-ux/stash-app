@@ -357,7 +357,6 @@ textarea.form-input{resize:none;height:88px}
   </div>
 </div>
 
-
 <script>
 // ===== AUTH — self-contained, no main script dependency =====
 var SUPA_URL_AUTH = 'https://fipgbniotxinkuzgcsgr.supabase.co';
@@ -386,7 +385,6 @@ function authErr(id, msg) {
 }
 
 function authGoScreen(dest) {
-  // Use main script go() if available, else do basic navigation
   if (typeof go === 'function') {
     if (typeof setupHome === 'function') setupHome();
     if (typeof initFirebase === 'function') initFirebase(function(){});
@@ -502,7 +500,6 @@ document.getElementById('signup-btn').onclick = function() {
     <script>
     function inlineToggleTerms() {
       var ch = document.getElementById('terms-check');
-      var btn = document.getElementById('terms-btn');
       ch.classList.toggle('on');
       ch.textContent = ch.classList.contains('on') ? '\u2713' : '';
     }
@@ -524,6 +521,7 @@ document.getElementById('signup-btn').onclick = function() {
     </script>
   </div>
 </div>
+
 <!-- ===== HOME ===== -->
 <div class="screen" id="s-home">
   <div class="header">
@@ -537,7 +535,6 @@ document.getElementById('signup-btn').onclick = function() {
     <div class="sl" style="margin:0">Gruppi</div>
     <button class="share-btn" id="share-btn" onclick="shareLink()">🔥 Sfida i tuoi amici</button>
   </div>
-  <!-- Live challenge card injected here -->
   <div id="live-challenge" style="display:none"></div>
   <div class="pot" id="home-escrow-label" style="display:none">€0</div>
 
@@ -548,6 +545,8 @@ document.getElementById('signup-btn').onclick = function() {
       <div class="gc-badge">Nuovo</div>
     </div>
   </div>
+
+  <div id="groups-container"></div>
 
   <div id="home-empty-groups" class="info-box info-gray" style="margin-bottom:16px;text-align:center">
     Nessun gruppo ancora. <br>Creane uno o aspetta che un amico ti aggiunga.
@@ -562,9 +561,6 @@ document.getElementById('signup-btn').onclick = function() {
     <div class="bnav-item" onclick="go('s-profile')"><div class="bnav-icon">👤</div>Profilo</div>
   </div>
 </div>
-
-
-
 
 <!-- ===== CREATE GROUP ===== -->
 <div class="screen" id="s-create-group">
@@ -742,7 +738,6 @@ document.getElementById('signup-btn').onclick = function() {
     <div class="ebar" id="vg-escrow-bar"><div><div class="ebar-label">🔒 In escrow</div><div class="ebar-amount" id="vg-amount">€25</div></div><div class="ebar-right"><div class="ebar-label">Votanti</div><div style="font-size:14px;font-weight:600" id="vg-vote-count">0 voti</div></div></div>
     <div class="prog-wrap"><div class="prog-bar" id="vg-prog-bar" style="width:0%"></div></div>
   </div>
-  <!-- Voting section - shown before voting -->
   <div class="card" id="vg-vote-section">
     <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:15px;margin-bottom:4px">Chi ha vinto? 🏆</div>
     <div class="muted" style="font-size:12px;margin-bottom:14px">Voto anonimo — una volta solo. Con la maggioranza i fondi si sbloccano.</div>
@@ -751,15 +746,12 @@ document.getElementById('signup-btn').onclick = function() {
       <button class="btn-half" id="vg-btn-challenged" onclick="groupVote('challenged')"><span style="font-size:18px">🏆</span><span id="vg-challenged-name">Sfidato</span><span class="btn-half-sub">Ha vinto</span></button>
     </div>
   </div>
-  <!-- After voting -->
   <div id="vg-voted" style="display:none">
     <div class="info-box info-accent" style="margin-bottom:16px">✅ Hai votato! In attesa degli altri...</div>
   </div>
-  <!-- Already voted notice -->
   <div id="vg-already-voted" style="display:none">
     <div class="info-box info-gray" style="margin-bottom:16px">Hai già votato per questa sfida.</div>
   </div>
-  <!-- Simulate button for demo -->
   <button class="btn-secondary" onclick="simulateGroupVote()" style="margin-top:16px">Simula: tutti hanno votato →</button>
   <div style="height:36px"></div>
 </div>
@@ -947,8 +939,6 @@ document.getElementById('signup-btn').onclick = function() {
   </div>
 </div>
 
-
-
 <!-- ===== SETTINGS ===== -->
 <div class="screen" id="s-settings">
   <div class="header">
@@ -1010,7 +1000,6 @@ document.getElementById('signup-btn').onclick = function() {
       <button onclick="toggleGroupMenu()" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:22px;padding:4px;line-height:1" id="group-menu-btn">⋯</button>
     </div>
   </div>
-  <!-- Group dropdown menu -->
   <div id="group-menu" style="display:none;position:relative;z-index:50;margin-top:-8px;margin-bottom:12px">
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.4)">
       <div id="gm-rename" class="profile-opt" style="padding:14px 16px" onclick="groupMenuAction('rename')"><div class="profile-opt-icon">✏️</div><div class="profile-opt-label">Modifica nome gruppo</div><div class="profile-opt-val" id="gm-rename-note" style="font-size:11px"></div></div>
@@ -1068,9 +1057,6 @@ document.getElementById('signup-btn').onclick = function() {
   </div>
 </div>
 
-
-
-
 <script>
 // stash v12 — main script
 
@@ -1083,12 +1069,12 @@ if (!MY_UID) {
   localStorage.setItem('stash_uid_v3', MY_UID);
 }
 
-// ===== FIREBASE =====
 // ===== SUPABASE REST API =====
 var SUPA_URL = 'https://fipgbniotxinkuzgcsgr.supabase.co';
 var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpcGdibmlvdHhpbmt1emdjc2dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxOTEwNDYsImV4cCI6MjA5MTc2NzA0Nn0.Mi3rNaNaJreR1nR5PXBbqlBIdV-XLkO21K27hzPeJg8';
 var pollInterval = null;
 var fbReady = false;
+var CURRENT_GROUP_ID = null;
 
 function supaFetch(path, method, body, prefer) {
   var headers = {'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json'};
@@ -1105,35 +1091,92 @@ function supaDelete(table,filter){return supaFetch(table+'?'+filter,'DELETE',nul
 function fbSet(path,val){
   if(!path)return;
   var parts=path.split('/');
+
   if(parts[0]==='users'&&parts[1]){
     var uid=parts[1];
-    if(parts[2]){var upd={};upd[parts[2]==='lastSeen'?'last_seen':parts[2]]=val;supaPatch('users','uid=eq.'+uid,upd);}
-    else{supaUpsert('users',{uid:uid,name:val.name,username:val.username||'',password:val.password||'',balance:val.balance||100,escrow:val.escrow||0,last_seen:val.lastSeen||Date.now()});}
+    if(parts[2]){
+      var upd={};
+      upd[parts[2]==='lastSeen'?'last_seen':parts[2]]=val;
+      supaPatch('users','uid=eq.'+uid,upd);
+    }else{
+      supaUpsert('users',{uid:uid,name:val.name,username:val.username||'',password:val.password||'',balance:val.balance||100,escrow:val.escrow||0,last_seen:val.lastSeen||Date.now()});
+    }
   }else if(parts[0]==='challenge'){
-    if(parts.length===1){supaUpsert('challenges',{id:'current',title:val.title,amount:val.amount,challenger_uid:val.challengerUid,challenger_name:val.challengerName,challenged_uid:val.challengedUid,challenged_name:val.challengedName,status:val.status||'pending',timer_start:val.timerStart||Date.now(),timeout:val.timeout||3600,created_at:Date.now(),winner_uid:null});}
-    else if(parts[1]==='status'){supaPatch('challenges','id=eq.current',{status:val});}
-    else if(parts[1]==='winner'){supaPatch('challenges','id=eq.current',{winner_uid:val});}
-    else if((parts[1]==='declarations'||parts[1]==='votes')&&parts[2]){supaUpsert('challenge_votes',{challenge_id:'current',voter_uid:parts[2],winner_uid:val});}
+    if(parts.length===1){
+      supaUpsert('challenges',{
+        id:'current',
+        title:val.title,
+        amount:val.amount,
+        challenger_uid:val.challengerUid,
+        challenger_name:val.challengerName,
+        challenged_uid:val.challengedUid,
+        challenged_name:val.challengedName,
+        status:val.status||'pending',
+        timer_start:val.timerStart||Date.now(),
+        timeout:val.timeout||3600,
+        created_at:Date.now(),
+        winner_uid:null
+      });
+    }else if(parts[1]==='status'){
+      supaPatch('challenges','id=eq.current',{status:val});
+    }else if(parts[1]==='winner'){
+      supaPatch('challenges','id=eq.current',{winner_uid:val});
+    }else if((parts[1]==='declarations'||parts[1]==='votes')&&parts[2]){
+      supaUpsert('challenge_votes',{challenge_id:'current',voter_uid:parts[2],winner_uid:val});
+    }
   }else if(parts[0]==='groups'&&parts[1]){
     var gid=parts[1];
     supaUpsert('groups',{id:gid,name:val.name,icon:val.icon||'x',creator_uid:val.creatorUid,created_at:val.createdAt||Date.now()});
-    if(val.members){for(var m in val.members)supaUpsert('group_members',{group_id:gid,uid:m,name:val.members[m]});}
+    if(val.members){
+      for(var m in val.members){
+        supaUpsert('group_members',{group_id:gid,uid:m,name:val.members[m]});
+      }
+    }
   }else if(parts[0]==='history'&&parts[1]){
-    supaUpsert('history',{id:parts[1],title:val.title,amount:val.amount,challenger_uid:val.challengerUid,challenger_name:val.challengerName,challenged_uid:val.challengedUid,challenged_name:val.challengedName,winner_uid:val.winnerUid||null,status:val.status,created_at:val.ts||Date.now()});
+    supaUpsert('history',{
+      id:parts[1],
+      title:val.title,
+      amount:val.amount,
+      challenger_uid:val.challengerUid,
+      challenger_name:val.challengerName,
+      challenged_uid:val.challengedUid,
+      challenged_name:val.challengedName,
+      winner_uid:val.winnerUid||null,
+      status:val.status,
+      created_at:val.ts||Date.now()
+    });
   }
 }
 
 function fbRemove(path){
   if(!path)return;
-  if(path.indexOf('challenge/declarations')===0||path.indexOf('challenge/votes')===0)supaDelete('challenge_votes','challenge_id=eq.current');
+  if(path.indexOf('challenge/declarations')===0||path.indexOf('challenge/votes')===0){
+    supaDelete('challenge_votes','challenge_id=eq.current');
+  }
 }
 
 function fbGet(path,cb){
   supaGet('history','order=created_at.desc').then(function(rows){
     var obj={};
-    if(Array.isArray(rows))rows.forEach(function(r){obj[r.id]={title:r.title,amount:r.amount,challengerUid:r.challenger_uid,challengerName:r.challenger_name,challengedUid:r.challenged_uid,challengedName:r.challenged_name,winnerUid:r.winner_uid,status:r.status,ts:r.created_at};});
+    if(Array.isArray(rows)){
+      rows.forEach(function(r){
+        obj[r.id]={
+          title:r.title,
+          amount:r.amount,
+          challengerUid:r.challenger_uid,
+          challengerName:r.challenger_name,
+          challengedUid:r.challenged_uid,
+          challengedName:r.challenged_name,
+          winnerUid:r.winner_uid,
+          status:r.status,
+          ts:r.created_at
+        };
+      });
+    }
     if(cb)cb({val:function(){return Object.keys(obj).length?obj:null;}});
-  }).catch(function(){if(cb)cb({val:function(){return null;}});});
+  }).catch(function(){
+    if(cb)cb({val:function(){return null;}});
+  });
 }
 
 function pollSupabase(){
@@ -1145,33 +1188,106 @@ function pollSupabase(){
     var users={};
     rows.forEach(function(r){
       users[r.uid]={name:r.name,username:r.username||'',balance:r.balance,escrow:r.escrow,lastSeen:r.last_seen};
-      if(r.uid===MY_UID && r.username){ MY_USERNAME=r.username; localStorage.setItem('stash_user_v3',r.username); }
+      if(r.uid===MY_UID && r.username){
+        MY_USERNAME=r.username;
+        localStorage.setItem('stash_user_v3',r.username);
+      }
     });
-    console.log('pollSupabase: utenti caricati', Object.keys(users).length, users);
     STATE.users=users;
     onStateChange();
-  }).catch(function(e){console.error('pollSupabase error:',e);});
+  }).catch(function(e){console.error('pollSupabase users error:',e);});
+
   supaGet('challenges','id=eq.current').then(function(rows){
-    if(!Array.isArray(rows)||!rows.length){STATE.challenge=null;onStateChange();return;}
+    if(!Array.isArray(rows)||!rows.length){
+      STATE.challenge=null;
+      onStateChange();
+      return;
+    }
     var r=rows[0];
-    var ch={title:r.title,amount:r.amount,challengerUid:r.challenger_uid,challengerName:r.challenger_name,challengedUid:r.challenged_uid,challengedName:r.challenged_name,status:r.status,winner:r.winner_uid,timerStart:r.timer_start,timeout:r.timeout};
+    var ch={
+      title:r.title,
+      amount:r.amount,
+      challengerUid:r.challenger_uid,
+      challengerName:r.challenger_name,
+      challengedUid:r.challenged_uid,
+      challengedName:r.challenged_name,
+      status:r.status,
+      winner:r.winner_uid,
+      timerStart:r.timer_start,
+      timeout:r.timeout
+    };
     supaGet('challenge_votes','challenge_id=eq.current').then(function(vrows){
-      ch.votes={};ch.declarations={};
-      if(Array.isArray(vrows))vrows.forEach(function(v){ch.votes[v.voter_uid]=v.winner_uid;ch.declarations[v.voter_uid]=v.winner_uid;});
-      STATE.challenge=ch;onStateChange();
+      ch.votes={};
+      ch.declarations={};
+      if(Array.isArray(vrows)){
+        vrows.forEach(function(v){
+          ch.votes[v.voter_uid]=v.winner_uid;
+          ch.declarations[v.voter_uid]=v.winner_uid;
+        });
+      }
+      STATE.challenge=ch;
+      onStateChange();
+    }).catch(function(e){
+      console.error('pollSupabase challenge_votes error:',e);
+      STATE.challenge=ch;
+      onStateChange();
     });
-  });
+  }).catch(function(e){console.error('pollSupabase challenges error:',e);});
+
   supaGet('groups','select=id,name,icon,creator_uid,created_at').then(function(grows){
-    if(!Array.isArray(grows)||!grows.length){STATE.groups={};return;}
-    var groups={},pending=grows.length;
+    if(!Array.isArray(grows)||!grows.length){
+      STATE.groups={};
+      onStateChange();
+      return;
+    }
+
+    var groups={};
+    var pending=grows.length;
+
     grows.forEach(function(g){
       supaGet('group_members','group_id=eq.'+g.id).then(function(mrows){
         var members={};
-        if(Array.isArray(mrows))mrows.forEach(function(m){members[m.uid]=m.name;});
-        groups[g.id]={id:g.id,name:g.name,icon:g.icon,creatorUid:g.creator_uid,createdAt:g.created_at,members:members};
-        pending--;if(pending===0)STATE.groups=groups;
+        if(Array.isArray(mrows)){
+          mrows.forEach(function(m){
+            members[m.uid]=m.name;
+          });
+        }
+
+        groups[g.id]={
+          id:g.id,
+          name:g.name,
+          icon:g.icon,
+          creatorUid:g.creator_uid,
+          createdAt:g.created_at,
+          members:members
+        };
+
+        pending--;
+        if(pending===0){
+          STATE.groups=groups;
+          onStateChange();
+        }
+      }).catch(function(e){
+        console.error('pollSupabase group_members error for', g.id, e);
+
+        groups[g.id]={
+          id:g.id,
+          name:g.name,
+          icon:g.icon,
+          creatorUid:g.creator_uid,
+          createdAt:g.created_at,
+          members:{}
+        };
+
+        pending--;
+        if(pending===0){
+          STATE.groups=groups;
+          onStateChange();
+        }
       });
     });
+  }).catch(function(e){
+    console.error('pollSupabase groups error:',e);
   });
 }
 
@@ -1208,13 +1324,11 @@ function doLogin() {
   var pass=(el('login-pass')||{}).value||'';
   var errEl=el('login-err');
   if(!user||!pass){if(errEl)errEl.textContent='Compila tutti i campi.';return;}
-  // Look up username in Firebase
   initFirebase(function(){
     fbGet('usernames/'+user, function(snap){
       var data=snap.val();
       if(!data){if(errEl)errEl.textContent='Username non trovato.';return;}
       if(data.password!==pass){if(errEl)errEl.textContent='Password errata.';return;}
-      // Login OK
       MY_UID=data.uid; MY_NAME=data.name;
       localStorage.setItem('stash_uid_v3',MY_UID);
       localStorage.setItem('stash_name_v3',MY_NAME);
@@ -1234,17 +1348,14 @@ function doSignup() {
   if(!name||name.length<2){if(errEl)errEl.textContent='Nome troppo corto.';return;}
   if(!user||user.length<3){if(errEl)errEl.textContent='Username min. 3 caratteri.';return;}
   if(!pass||pass.length<6){if(errEl)errEl.textContent='Password min. 6 caratteri.';return;}
-  // Check username not taken
   initFirebase(function(){
     fbGet('usernames/'+user, function(snap){
       if(snap.val()){if(errEl)errEl.textContent='Username già in uso.';return;}
-      // Create account
       var uid='u'+Math.random().toString(36).substr(2,8);
       MY_UID=uid; MY_NAME=name;
       localStorage.setItem('stash_uid_v3',uid);
       localStorage.setItem('stash_name_v3',name);
       localStorage.setItem('stash_user_v3',user);
-      // Save user + username index
       fbSet('users/'+uid,{name:name,username:user,balance:100,escrow:0,lastSeen:Date.now()});
       fbSet('usernames/'+user,{uid:uid,name:name,password:pass});
       setupHome();
@@ -1252,6 +1363,7 @@ function doSignup() {
     });
   });
 }
+
 var SEL_CHALLENGED = null;
 var SELECTED_UIDS = {};
 var CH_TIMEOUT = 3600;
@@ -1304,12 +1416,12 @@ function onStateChange() {
   if (id==='s-vote-group')   drawGroupVote();
   if (id==='s-create-challenge') { updateBal(); drawChallengeUsers(); }
   if (id==='s-create-group')     drawGroupUsers();
+  if (id==='s-group-custom')     drawCustomGroup();
   var ch = STATE.challenge;
   if (ch && ch.status==='resolved' && ch.winner && (id==='s-vote1v1'||id==='s-vote-group')) {
     drawWinnerScreen(ch);
     go('s-winner');
   }
-  // Global notification — shows on ANY screen
   updateGlobalNotif();
 }
 
@@ -1318,12 +1430,10 @@ function updateGlobalNotif() {
   var gn = el('global-notif');
   if (!gn) return;
   var ch = STATE.challenge;
-  // Show notification if I'm involved and haven't seen it yet
   if (ch && ch.status==='pending' && ch.challengedUid===MY_UID) {
     gn.style.display = 'flex';
     setText('gn-icon', '⚡');
     setText('gn-text', ch.challengerName+' ti sfida: "'+ch.title.substr(0,30)+'" — €'+ch.amount);
-    // Auto-navigate to accept screen if just arrived
     if (_lastChStatus !== 'pending_for_me') {
       _lastChStatus = 'pending_for_me';
       var cur = document.querySelector('.screen.active');
@@ -1415,32 +1525,46 @@ function drawHome() {
   } else {
     banner.style.display='none';
   }
-  // Render Firebase groups
   drawGroups();
 }
 
 function drawGroups() {
   var container = el('groups-container');
   if (!container) return;
+
   var myGroups = [];
   for (var gid in STATE.groups) {
     var g = STATE.groups[gid];
-    if (g && g.members && g.members[MY_UID]) myGroups.push(g);
+    if (g && g.members && Object.prototype.hasOwnProperty.call(g.members, MY_UID)) {
+      myGroups.push(g);
+    }
   }
-  myGroups.sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);});
+
+  myGroups.sort(function(a,b){
+    return (b.createdAt||0)-(a.createdAt||0);
+  });
+
   var emptyEl = el('home-empty-groups');
   container.innerHTML = '';
+
   if (myGroups.length === 0) {
     if (emptyEl) emptyEl.style.display = 'block';
     return;
   }
+
   if (emptyEl) emptyEl.style.display = 'none';
+
   for (var i=0; i<myGroups.length; i++) {
     var g2 = myGroups[i];
     var mCount = countKeys(g2.members||{});
     var ch = STATE.challenge;
-    var hasLive = ch && (ch.status==='pending'||ch.status==='accepted') &&
-      g2.members && g2.members[ch.challengerUid] && g2.members[ch.challengedUid];
+
+    var hasLive = ch &&
+      (ch.status==='pending'||ch.status==='accepted') &&
+      g2.members &&
+      Object.prototype.hasOwnProperty.call(g2.members, ch.challengerUid) &&
+      Object.prototype.hasOwnProperty.call(g2.members, ch.challengedUid);
+
     var card = document.createElement('div');
     card.className = 'card card-tap';
     card.style.marginBottom = '10px';
@@ -1450,9 +1574,11 @@ function drawGroups() {
       + '<div class="gc-meta">' + mCount + ' membr' + (mCount===1?'o':'i') + (hasLive?' · 1 sfida attiva':'') + '</div></div>'
       + (hasLive ? '<div class="gc-badge">1 attiva</div>' : '')
       + '</div>';
+
     (function(gid2, name, icon) {
       card.onclick = function() { openGroupById(gid2, name, icon); };
     })(g2.id, g2.name, g2.icon||'⚽');
+
     container.appendChild(card);
   }
 }
@@ -1463,7 +1589,16 @@ function drawWallet() {
   setText('wal-balance','€'+bal.toFixed(2));
   setText('wal-locked',esc>0?'€'+esc.toFixed(2)+' bloccati':'Nessun importo bloccato');
   var ec=el('wal-escrow-card');
-  if(ec){if(esc>0){ec.style.display='block';setText('wal-escrow-amount','€'+esc.toFixed(2));var ch=STATE.challenge;setText('wal-escrow-detail',ch?ch.title.substr(0,25)+'...':'Sfida attiva');}else ec.style.display='none';}
+  if(ec){
+    if(esc>0){
+      ec.style.display='block';
+      setText('wal-escrow-amount','€'+esc.toFixed(2));
+      var ch=STATE.challenge;
+      setText('wal-escrow-detail',ch?ch.title.substr(0,25)+'...':'Sfida attiva');
+    }else{
+      ec.style.display='none';
+    }
+  }
   var txEl=el('wal-txs');if(!txEl)return;
   fbGet('history',function(snap){
     var data=snap.val()||{},items=[];
@@ -1489,6 +1624,12 @@ function drawProfile() {
   setText('prof-name',MY_NAME||'-');
   setText('prof-user',MY_USERNAME?'@'+MY_USERNAME:'');
   setText('prof-balance','€'+myBal().toFixed(2));
+  var groupCount=0;
+  for(var gid in STATE.groups){
+    var g=STATE.groups[gid];
+    if(g&&g.members&&Object.prototype.hasOwnProperty.call(g.members,MY_UID)) groupCount++;
+  }
+  setText('prof-groups-count',groupCount+' →');
   drawHistory();
 }
 
@@ -1577,26 +1718,58 @@ function removeAmico(uid){
 
 function sfidaDiretto(uid,name){SEL_CHALLENGED={uid:uid,name:name};go('s-create-challenge');}
 
-function timeSince(ts){
-  var s=Math.floor((Date.now()-ts)/1000);
-  if(s<60)return 'adesso';if(s<3600)return Math.floor(s/60)+'m fa';
-  if(s<86400)return Math.floor(s/3600)+'h fa';return Math.floor(s/86400)+'g fa';
-}
-
 function drawCustomGroup() {
-  var icon=el('new-group-icon'),nm=el('new-group-name');
+  var currentGroup = CURRENT_GROUP_ID && STATE.groups[CURRENT_GROUP_ID] ? STATE.groups[CURRENT_GROUP_ID] : null;
+
   var di=el('cg-detail-icon'),dn=el('cg-detail-name');
-  if(icon&&di)di.textContent=icon.textContent;
-  if(nm&&dn)dn.textContent=nm.textContent;
+  if(currentGroup){
+    if(di) di.textContent=currentGroup.icon||'⚽';
+    if(dn) dn.textContent=currentGroup.name||'Gruppo';
+    GROUP_CREATOR=currentGroup.creatorUid||null;
+  }
+
   var ch=STATE.challenge,live=el('cg-live-challenge'),empty=el('cg-empty-state');
-  if(ch&&(ch.status==='pending'||ch.status==='accepted')&&(ch.challengerUid===MY_UID||ch.challengedUid===MY_UID)){
+  var hasLiveForGroup = false;
+
+  if(currentGroup && ch && (ch.status==='pending'||ch.status==='accepted') && currentGroup.members){
+    hasLiveForGroup =
+      Object.prototype.hasOwnProperty.call(currentGroup.members, ch.challengerUid) &&
+      Object.prototype.hasOwnProperty.call(currentGroup.members, ch.challengedUid);
+  }
+
+  if(hasLiveForGroup){
     if(live){live.innerHTML='';live.appendChild(liveChallengeHTML(ch));live.style.display='block';}
     if(empty)empty.style.display='none';
-  }else{if(live)live.style.display='none';if(empty)empty.style.display='block';}
+  }else{
+    if(live)live.style.display='none';
+    if(empty)empty.style.display='block';
+  }
+
   var mEl=el('cg-members-display');
   if(mEl){
-    var html='<div class="member-row"><div class="av av-sm av-marco">'+initial(MY_NAME)+'</div><div class="member-name">'+(MY_NAME||'Tu')+' (tu)</div></div>';
-    for(var uid in STATE.users){if(uid!==MY_UID){html+='<div class="member-row"><div class="av av-sm av-alex">'+initial(STATE.users[uid].name)+'</div><div class="member-name">'+STATE.users[uid].name+'</div></div>';}}
+    var html='';
+    if(currentGroup && currentGroup.members){
+      var memberList=[];
+      for(var uid in currentGroup.members){
+        memberList.push({
+          uid:uid,
+          name:currentGroup.members[uid] || (STATE.users[uid] ? STATE.users[uid].name : uid)
+        });
+      }
+      memberList.sort(function(a,b){
+        if(a.uid===MY_UID) return -1;
+        if(b.uid===MY_UID) return 1;
+        return a.name.localeCompare(b.name);
+      });
+
+      for(var i=0;i<memberList.length;i++){
+        var member=memberList[i];
+        var me=member.uid===MY_UID;
+        html+='<div class="member-row"><div class="av av-sm '+(me?'av-marco':'av-alex')+'">'+initial(member.name)+'</div><div class="member-name">'+member.name+(me?' (tu)':'')+'</div></div>';
+      }
+    }else{
+      html='<div class="muted" style="padding:10px 0">Nessun membro trovato.</div>';
+    }
     mEl.innerHTML=html;
   }
 }
@@ -1609,7 +1782,7 @@ function groupMenuAction(action){
   modal.style.display='block';
   if(action==='rename'){if(GROUP_CREATOR!==MY_UID){alert('Solo il creatore può modificare il nome.');modal.style.display='none';return;}setText('gam-title','Modifica nome');show('gam-rename-content');var inp=el('gam-new-name');var dn=el('cg-detail-name');if(inp&&dn)inp.value=dn.textContent;}
   if(action==='add'){setText('gam-title','Aggiungi membro');show('gam-add-content');var al=el('gam-add-list');if(al){var h='';for(var uid in STATE.users){if(uid!==MY_UID)h+='<div class="member-row"><div class="av av-sm av-alex">'+initial(STATE.users[uid].name)+'</div><div class="member-name">'+STATE.users[uid].name+'</div><div style="font-size:12px;color:var(--accent)">Aggiunto ✓</div></div>';}al.innerHTML=h||'<div class="muted" style="padding:10px 0;font-size:13px">Nessun utente.</div>';}}
-  if(action==='remove'){if(GROUP_CREATOR!==MY_UID){alert('Solo il creatore può rimuovere membri.');modal.style.display='none';return;}setText('gam-title','Rimuovi membro');show('gam-remove-content');var rl=el('gam-remove-list');if(rl){var rh='';for(var ruid in STATE.users){if(ruid!==MY_UID)rh+='<div class="member-row"><div class="av av-sm av-alex">'+initial(STATE.users[ruid].name)+'</div><div class="member-name">'+STATE.users[ruid].name+'</div><button onclick="alert(\'Rimosso (demo).\');closeGroupModal()" style="background:var(--red);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer">Rimuovi</button></div>';}rl.innerHTML=rh||'<div class="muted" style="padding:10px 0">Nessun membro.</div>';}}
+  if(action==='remove'){if(GROUP_CREATOR!==MY_UID){alert('Solo il creatore può rimuovere membri.');modal.style.display='none';return;}setText('gam-title','Rimuovi membro');show('gam-remove-content');var rl=el('gam-remove-list');if(rl){var rh='';var group=STATE.groups[CURRENT_GROUP_ID];if(group&&group.members){for(var ruid in group.members){if(ruid!==MY_UID){var rname=group.members[ruid]||(STATE.users[ruid]?STATE.users[ruid].name:ruid);rh+='<div class="member-row"><div class="av av-sm av-alex">'+initial(rname)+'</div><div class="member-name">'+rname+'</div><button onclick="alert(\'Rimosso (demo).\');closeGroupModal()" style="background:var(--red);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer">Rimuovi</button></div>';}}}rl.innerHTML=rh||'<div class="muted" style="padding:10px 0">Nessun membro.</div>';}}
   if(action==='leave'){setText('gam-title','Esci dal gruppo');show('gam-leave-content');}
 }
 function closeGroupModal(){var m=el('group-action-modal');if(m)m.style.display='none';}
@@ -1629,8 +1802,8 @@ function copyShareLink(url){
     var lbl=el('copy-share-label');if(lbl){lbl.textContent='Copia link';}
   });
 }
-function confirmRename(){var nm=(el('gam-new-name')||{}).value||'';if(nm.trim().length<2)return;setText('cg-detail-name',nm.trim());setText('new-group-name',nm.trim());closeGroupModal();}
-function confirmLeaveGroup(){var c=el('new-group-card');if(c)c.style.display='none';closeGroupModal();go('s-home');}
+function confirmRename(){var nm=(el('gam-new-name')||{}).value||'';if(nm.trim().length<2)return;var group=STATE.groups[CURRENT_GROUP_ID];if(group){group.name=nm.trim();supaPatch('groups','id=eq.'+CURRENT_GROUP_ID,{name:nm.trim()});}drawCustomGroup();drawGroups();closeGroupModal();}
+function confirmLeaveGroup(){closeGroupModal();go('s-home');}
 
 // ===== PAYMENT =====
 function selectPayment(e2,type){
@@ -1681,11 +1854,9 @@ function saveUsername(){
   if(errEl) errEl.textContent=''; if(okEl) okEl.style.display='none';
   if(!newUser||newUser.length<3){if(errEl)errEl.textContent='Username min. 3 caratteri.';return;}
   if(newUser===MY_USERNAME){if(errEl)errEl.textContent='È già il tuo username.';return;}
-  // Controlla disponibilità
   authFetch('users','username=eq.'+newUser+'&select=uid','GET',null,function(err,data){
     if(err){if(errEl)errEl.textContent='Errore: '+err;return;}
     if(data&&data.length){if(errEl)errEl.textContent='Username già in uso.';return;}
-    // Aggiorna
     authFetch('users','uid=eq.'+MY_UID,'PATCH',{username:newUser},function(err2){
       if(err2){if(errEl)errEl.textContent='Errore salvataggio: '+err2;return;}
       MY_USERNAME=newUser;
@@ -1713,9 +1884,7 @@ function savePassword(){
   });
 }
 
-// ===== MISSING CORE FUNCTIONS =====
-
-// --- Group creation ---
+// ===== CORE FUNCTIONS =====
 function selEmoji(item){
   var items=document.querySelectorAll('.emoji-item');
   for(var i=0;i<items.length;i++) items[i].classList.remove('sel');
@@ -1747,39 +1916,46 @@ function checkCG(){
   var name=((el('cg-name')||{}).value||'').trim();
   var members=Object.keys(SELECTED_UIDS).length;
   var btn=el('cg-btn');
-  console.log('checkCG: name="'+name+'" members='+members);
   if(btn) btn.disabled=!(name.length>=2&&members>0);
 }
 
 function createGroup(){
-  console.log('createGroup chiamata');
   var name=((el('cg-name')||{}).value||'').trim();
   var emojiEl=document.querySelector('.emoji-item.sel');
   var icon=emojiEl?emojiEl.getAttribute('data-e'):'⚽';
-  if(name.length<2){ console.log('createGroup: nome troppo corto'); return; }
+  if(name.length<2)return;
+
   var gid='g'+Math.random().toString(36).substr(2,8);
   var members={}; members[MY_UID]=MY_NAME;
   for(var uid in SELECTED_UIDS) members[uid]=SELECTED_UIDS[uid];
-  console.log('createGroup: gid='+gid+' members='+JSON.stringify(members));
-  // Aggiorna stato e naviga subito (ottimistico)
+
   STATE.groups[gid]={id:gid,name:name,icon:icon,creatorUid:MY_UID,createdAt:Date.now(),members:members};
   SELECTED_UIDS={};
-  openGroupById(gid,name,icon);
-  // Salva su Supabase in background
+
   supaUpsert('groups',{id:gid,name:name,icon:icon,creator_uid:MY_UID,created_at:Date.now()})
     .catch(function(e){console.error('createGroup groups error:',e);});
   Object.keys(members).forEach(function(u){
     supaUpsert('group_members',{group_id:gid,uid:u,name:members[u]})
       .catch(function(e){console.error('createGroup members error:',e);});
   });
+
+  openGroupById(gid,name,icon);
 }
 
-// --- Challenge creation ---
 function drawChallengeUsers(){
   var list=el('ch-members-list'); if(!list) return;
+  var sourceGroup = CURRENT_GROUP_ID && STATE.groups[CURRENT_GROUP_ID] ? STATE.groups[CURRENT_GROUP_ID] : null;
   var others=[];
-  for(var uid in STATE.users){ if(uid!==MY_UID) others.push(uid); }
-  if(!others.length){ list.innerHTML='<div class="muted" style="padding:12px 0;font-size:13px">Nessun altro utente registrato.</div>'; return; }
+
+  if(sourceGroup && sourceGroup.members){
+    for(var gidUid in sourceGroup.members){
+      if(gidUid!==MY_UID && STATE.users[gidUid]) others.push(gidUid);
+    }
+  }else{
+    for(var uid in STATE.users){ if(uid!==MY_UID) others.push(uid); }
+  }
+
+  if(!others.length){ list.innerHTML='<div class="muted" style="padding:12px 0;font-size:13px">Nessun altro utente disponibile.</div>'; return; }
   var html='';
   for(var i=0;i<others.length;i++){
     var uid=others[i], u=STATE.users[uid], sel=SEL_CHALLENGED&&SEL_CHALLENGED.uid===uid;
@@ -1790,17 +1966,18 @@ function drawChallengeUsers(){
 }
 
 function selChallengee(uid,name){ SEL_CHALLENGED={uid:uid,name:name}; drawChallengeUsers(); }
-
 function updateCounter(){ var t=el('ch-text'),c=el('ch-count'); if(t&&c) c.textContent=t.value.length; }
 function clearChallengeErr(){}
-
-function setAmt(v){ var inp=el('ch-amount'); if(inp){inp.value=v; syncChips(v); checkChallenge();} }
+function setAmt(v) { var inp=el('ch-amount'); if(inp){inp.value=v; syncChips(v); checkChallenge();} }
 
 function syncChips(v){
   var v2=parseFloat(v), chips=document.querySelectorAll('.chip');
   for(var i=0;i<chips.length;i++){
     var oc=chips[i].getAttribute('onclick')||'';
-    if(oc.indexOf('setAmt(')===0){ if(parseInt(chips[i].textContent.replace('€',''))===v2) chips[i].classList.add('sel'); else chips[i].classList.remove('sel'); }
+    if(oc.indexOf('setAmt(')===0){
+      if(parseInt(chips[i].textContent.replace('€',''))===v2) chips[i].classList.add('sel');
+      else chips[i].classList.remove('sel');
+    }
   }
 }
 
@@ -1819,7 +1996,7 @@ function checkChallenge(){
   if(btn) btn.disabled=!ok;
   if(!ok){
     if(summary) summary.style.display='none';
-    if(info){ if(!SEL_CHALLENGED) info.textContent='Seleziona almeno un avversario'; else if(amt<1) info.textContent='Inserisci un importo'; else if(amt>bal) info.textContent='Saldo insufficiente (€'+bal.toFixed(0)+' disponibili)'; else info.textContent='Scrivi la sfida (min. 5 caratteri)'; }
+    if(info){ if(!SEL_CHALLENGED) info.textContent='Seleziona almeno un avversario'; else if(amt<1) info.textContent='Inserisci un importo'; else if(amt>bal) info.textContent='Saldo insufficiente (€'+bal.toFixed(0)+' disponibili)'; else info.textContent='Scrivi la sfida (min. 3 caratteri)'; }
     return;
   }
   if(summary) summary.style.display='block';
@@ -1832,22 +2009,23 @@ function checkChallenge(){
 
 function launchChallenge(){
   var txt=((el('ch-text')||{}).value||'').trim(), amt=parseFloat((el('ch-amount')||{}).value)||0;
-  console.log('launchChallenge: txt="'+txt+'" amt='+amt+' SEL_CHALLENGED='+JSON.stringify(SEL_CHALLENGED));
-  if(!SEL_CHALLENGED){console.log('launchChallenge: nessun avversario');return;}
-  if(txt.length<3){console.log('launchChallenge: testo troppo corto');return;}
-  if(amt<1){console.log('launchChallenge: importo non valido');return;}
+  if(!SEL_CHALLENGED)return;
+  if(txt.length<3)return;
+  if(amt<1)return;
   if(hasBlocked(txt)){alert('Contenuto non consentito.');return;}
-  var bal=myBal(); console.log('launchChallenge: bal='+bal);
+  var bal=myBal();
   if(amt>bal){alert('Saldo insufficiente (€'+bal+' disponibili).');return;}
+
   setBal(MY_UID,bal-amt); setEsc(MY_UID,myEsc()+amt);
-  var tLabel=CH_TIMEOUT>=86400?'24 ore':CH_TIMEOUT>=43200?'12 ore':'1 ora';
+
   supaUpsert('challenges',{id:'current',title:txt,amount:amt,challenger_uid:MY_UID,challenger_name:MY_NAME,challenged_uid:SEL_CHALLENGED.uid,challenged_name:SEL_CHALLENGED.name,status:'pending',timer_start:Date.now(),timeout:CH_TIMEOUT,created_at:Date.now(),winner_uid:null});
+
+  var tLabel=CH_TIMEOUT>=86400?'24 ore':CH_TIMEOUT>=43200?'12 ore':'1 ora';
   setText('suc-other',SEL_CHALLENGED.name); setText('suc-other2',SEL_CHALLENGED.name);
   setText('suc-amount','€'+amt); setText('suc-timeout',tLabel);
   go('s-success');
 }
 
-// --- Accept ---
 function fillAcceptScreen(ch){
   if(!ch) return;
   setText('acc-from',ch.challengerName||'Qualcuno');
@@ -1867,7 +2045,6 @@ function acceptChallenge(){
   go('s-vote1v1');
 }
 
-// --- Vote 1v1 ---
 function initVote1v1(){
   var ch=STATE.challenge; if(!ch) return;
   setText('v1-title','"'+ch.title+'"'); setText('v1-amount','€'+ch.amount);
@@ -1900,7 +2077,6 @@ function resolveChallenge(){
   resolveWinner(myDecl);
 }
 
-// --- Group vote ---
 function drawGroupVote(){
   var ch=STATE.challenge; if(!ch){ go('s-home'); return; }
   setText('vg-title','"'+ch.title+'"'); setText('vg-amount','€'+ch.amount);
@@ -1941,7 +2117,6 @@ function resolveWinner(winnerUid){
   go('s-winner');
 }
 
-// --- Winner screen ---
 function drawWinnerScreen(ch){
   if(!ch) return;
   var winnerUid=ch.winner||ch.winnerUid;
@@ -1956,7 +2131,6 @@ function drawWinnerScreen(ch){
   setText('w-winner-name',winnerName); setText('w-loser-name',loserName);
 }
 
-// --- Live challenge card & notifications ---
 function liveChallengeHTML(ch){
   var div=document.createElement('div'); div.className='card'; div.style.marginBottom='12px';
   var isC=ch.challengerUid===MY_UID, otherName=isC?ch.challengedName:ch.challengerName;
@@ -1969,13 +2143,28 @@ function notifHTML(name,title,amount){
   return '<div class="notif-banner" onclick="go(\'s-accept\')"><div>⚡</div><div class="notif-text"><strong>'+name+'</strong> ti sfida: "'+title.substr(0,30)+'"</div><div class="notif-cta">€'+amount+' →</div></div>';
 }
 
-// --- Group navigation ---
 function openGroupById(gid,name,icon){
-  var g=STATE.groups[gid]; GROUP_CREATOR=g?g.creatorUid:null;
-  var iconEl=el('new-group-icon'); if(iconEl) iconEl.textContent=icon||'⚽';
-  var nameEl=el('new-group-name'); if(nameEl) nameEl.textContent=name||'Gruppo';
-  drawCustomGroup(); go('s-group-custom');
+  var g=STATE.groups[gid];
+  CURRENT_GROUP_ID = gid;
+  GROUP_CREATOR=g?g.creatorUid:null;
+
+  var iconEl=el('new-group-icon');
+  if(iconEl) iconEl.textContent=(g&&g.icon)?g.icon:(icon||'⚽');
+
+  var nameEl=el('new-group-name');
+  if(nameEl) nameEl.textContent=(g&&g.name)?g.name:(name||'Gruppo');
+
+  drawCustomGroup();
+  go('s-group-custom');
 }
+
+// ===== PAYMENT HELPERS PLACEHOLDERS =====
+function checkDep(){ var v=parseFloat((el('dep-amount')||{}).value)||0; var b=el('dep-btn'); if(b){b.disabled=v<=0;b.textContent='Deposita €'+(v>0?v:0);} }
+function setDep(v){ var e=el('dep-amount'); if(e){e.value=v;checkDep();} }
+function confirmDeposit(){ alert('Demo mode'); }
+function checkWD(){ var v=parseFloat((el('wd-amount')||{}).value)||0; var b=el('wd-btn'); if(b){b.disabled=v<=0||v>myBal();b.textContent='Richiedi prelievo';} }
+function setWD(){ var e=el('wd-amount'); if(e){e.value=myBal().toFixed(2);checkWD();} }
+function confirmWithdraw(){ alert('Demo mode'); }
 
 // ===== START =====
 (function(){

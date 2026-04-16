@@ -934,6 +934,7 @@ document.getElementById('signup-btn').onclick = function() {
     <div class="profile-opt" onclick="go('s-history')"><div class="profile-opt-icon">📋</div><div class="profile-opt-label">Storico sfide</div><div class="profile-opt-val" id="prof-sfide-count">0 →</div></div>
     <div class="profile-opt" onclick="go('s-home')"><div class="profile-opt-icon">👥</div><div class="profile-opt-label">I miei gruppi</div><div class="profile-opt-val" id="prof-groups-count">0 →</div></div>
     <div class="profile-opt" onclick="toggleNotif()"><div class="profile-opt-icon">🔔</div><div class="profile-opt-label">Notifiche</div><div class="tog on" id="notif-tog"><div class="tog-knob"></div></div></div>
+    <div class="profile-opt" onclick="go('s-settings')"><div class="profile-opt-icon">⚙️</div><div class="profile-opt-label">Impostazioni</div><div class="profile-opt-val">Username · Password →</div></div>
   </div>
   <button onclick="doLogout()" style="width:100%;background:none;border:1px solid var(--border);border-radius:var(--r);padding:14px;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:15px;cursor:pointer;margin-bottom:12px">Esci dall'account</button>
   <div class="center muted" style="font-size:12px;padding-bottom:24px">stash · Beta · 2026<br><span style="color:var(--text3)">"Metti qualcosa in palio." · Mangopay 🔒</span></div>
@@ -947,6 +948,36 @@ document.getElementById('signup-btn').onclick = function() {
 </div>
 
 
+
+<!-- ===== SETTINGS ===== -->
+<div class="screen" id="s-settings">
+  <div class="header">
+    <button class="back-btn" onclick="go('s-profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Profilo</button>
+  </div>
+  <div style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px;margin-bottom:4px">Impostazioni</div>
+  <div class="muted" style="margin-bottom:28px">Modifica username e password del tuo account.</div>
+
+  <div class="form-sec">
+    <label class="form-lbl">Cambia username</label>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Attuale: <strong id="set-cur-user">-</strong></div>
+    <input class="form-input" id="set-new-user" placeholder="nuovo_username" maxlength="20" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9_]/g,'')">
+    <div id="set-user-err" style="color:var(--red);font-size:13px;min-height:18px;margin-top:6px"></div>
+    <button class="btn-primary" onclick="saveUsername()" style="margin-top:10px">Salva username</button>
+    <div id="set-user-ok" style="color:var(--accent);font-size:13px;min-height:18px;margin-top:6px;display:none">✓ Username aggiornato!</div>
+  </div>
+
+  <div class="divider" style="margin:24px 0"></div>
+
+  <div class="form-sec">
+    <label class="form-lbl">Cambia password</label>
+    <input class="form-input" id="set-new-pass" type="password" placeholder="nuova password" maxlength="40" style="margin-bottom:10px">
+    <input class="form-input" id="set-new-pass2" type="password" placeholder="conferma nuova password" maxlength="40">
+    <div id="set-pass-err" style="color:var(--red);font-size:13px;min-height:18px;margin-top:6px"></div>
+    <button class="btn-primary" onclick="savePassword()" style="margin-top:10px">Salva password</button>
+    <div id="set-pass-ok" style="color:var(--accent);font-size:13px;min-height:18px;margin-top:6px;display:none">✓ Password aggiornata!</div>
+  </div>
+  <div style="height:36px"></div>
+</div>
 
 <!-- ===== AMICI ===== -->
 <div class="screen" id="s-amici">
@@ -1044,8 +1075,9 @@ document.getElementById('signup-btn').onclick = function() {
 // stash v12 — main script
 
 // ===== IDENTITY =====
-var MY_UID  = localStorage.getItem('stash_uid_v3');
-var MY_NAME = localStorage.getItem('stash_name_v3');
+var MY_UID      = localStorage.getItem('stash_uid_v3');
+var MY_NAME     = localStorage.getItem('stash_name_v3');
+var MY_USERNAME = localStorage.getItem('stash_user_v3') || '';
 if (!MY_UID) {
   MY_UID = 'u' + Math.random().toString(36).substr(2,8);
   localStorage.setItem('stash_uid_v3', MY_UID);
@@ -1105,13 +1137,16 @@ function fbGet(path,cb){
 }
 
 function pollSupabase(){
-  supaGet('users','select=uid,name,balance,escrow,last_seen').then(function(rows){
+  supaGet('users','select=uid,name,username,balance,escrow,last_seen').then(function(rows){
     if(!Array.isArray(rows)){
       console.error('Supabase users error:', rows);
       return;
     }
     var users={};
-    rows.forEach(function(r){users[r.uid]={name:r.name,balance:r.balance,escrow:r.escrow,lastSeen:r.last_seen};});
+    rows.forEach(function(r){
+      users[r.uid]={name:r.name,username:r.username||'',balance:r.balance,escrow:r.escrow,lastSeen:r.last_seen};
+      if(r.uid===MY_UID && r.username){ MY_USERNAME=r.username; localStorage.setItem('stash_user_v3',r.username); }
+    });
     console.log('pollSupabase: utenti caricati', Object.keys(users).length, users);
     STATE.users=users;
     onStateChange();
@@ -1244,6 +1279,7 @@ function go(id) {
   if (id==='s-home')             drawHome();
   if (id==='s-wallet')           drawWallet();
   if (id==='s-profile')          drawProfile();
+  if (id==='s-settings')         drawSettings();
   if (id==='s-history')          drawHistory();
   if (id==='s-amici')            drawAmici();
   if (id==='s-create-challenge') { SELECTED_UIDS={}; SEL_CHALLENGED=null; drawChallengeUsers(); updateBal(); }
@@ -1451,6 +1487,7 @@ function drawProfile() {
   var init=initial(MY_NAME);
   var pa=el('prof-av');if(pa){pa.textContent=init;pa.className='av av-lg av-marco';}
   setText('prof-name',MY_NAME||'-');
+  setText('prof-user',MY_USERNAME?'@'+MY_USERNAME:'');
   setText('prof-balance','€'+myBal().toFixed(2));
   drawHistory();
 }
@@ -1500,7 +1537,8 @@ function drawAmici() {
     av.className='av';av.style.cssText='width:48px;height:48px;font-size:18px;background:var(--purple);color:#fff;flex-shrink:0';
     av.textContent=initial(u.name);topRow.appendChild(av);
     var info=document.createElement('div');info.style.cssText='flex:1;min-width:0';
-    info.innerHTML='<div style="font-weight:900;font-size:16px">'+u.name+'</div><div class="muted" style="font-size:12px">Visto '+timeSince(u.lastSeen||Date.now())+'</div>';
+    var uLabel=u.username?'@'+u.username:u.name;
+    info.innerHTML='<div style="font-weight:900;font-size:16px">'+uLabel+'</div><div class="muted" style="font-size:12px">Visto '+timeSince(u.lastSeen||Date.now())+'</div>';
     topRow.appendChild(info);
     var btns=document.createElement('div');btns.style.cssText='display:flex;flex-direction:column;gap:6px';
     var sfBtn=document.createElement('button');
@@ -1611,6 +1649,54 @@ function doLogout(){
   location.reload();
 }
 
+// ===== SETTINGS =====
+function drawSettings(){
+  setText('set-cur-user', MY_USERNAME ? '@'+MY_USERNAME : '(nessuno)');
+  var inp=el('set-new-user'); if(inp) inp.value='';
+  var p1=el('set-new-pass'); if(p1) p1.value='';
+  var p2=el('set-new-pass2'); if(p2) p2.value='';
+  hide('set-user-ok'); hide('set-pass-ok');
+  setText('set-user-err',''); setText('set-pass-err','');
+}
+
+function saveUsername(){
+  var newUser=((el('set-new-user')||{}).value||'').trim().toLowerCase();
+  var errEl=el('set-user-err'), okEl=el('set-user-ok');
+  if(errEl) errEl.textContent=''; if(okEl) okEl.style.display='none';
+  if(!newUser||newUser.length<3){if(errEl)errEl.textContent='Username min. 3 caratteri.';return;}
+  if(newUser===MY_USERNAME){if(errEl)errEl.textContent='È già il tuo username.';return;}
+  // Controlla disponibilità
+  authFetch('users','username=eq.'+newUser+'&select=uid','GET',null,function(err,data){
+    if(err){if(errEl)errEl.textContent='Errore: '+err;return;}
+    if(data&&data.length){if(errEl)errEl.textContent='Username già in uso.';return;}
+    // Aggiorna
+    authFetch('users','uid=eq.'+MY_UID,'PATCH',{username:newUser},function(err2){
+      if(err2){if(errEl)errEl.textContent='Errore salvataggio: '+err2;return;}
+      MY_USERNAME=newUser;
+      localStorage.setItem('stash_user_v3',newUser);
+      if(STATE.users[MY_UID]) STATE.users[MY_UID].username=newUser;
+      setText('set-cur-user','@'+newUser);
+      var inp=el('set-new-user'); if(inp) inp.value='';
+      if(okEl){okEl.style.display='block'; setTimeout(function(){okEl.style.display='none';},3000);}
+    });
+  });
+}
+
+function savePassword(){
+  var p1=((el('set-new-pass')||{}).value||'');
+  var p2=((el('set-new-pass2')||{}).value||'');
+  var errEl=el('set-pass-err'), okEl=el('set-pass-ok');
+  if(errEl) errEl.textContent=''; if(okEl) okEl.style.display='none';
+  if(p1.length<6){if(errEl)errEl.textContent='Password min. 6 caratteri.';return;}
+  if(p1!==p2){if(errEl)errEl.textContent='Le password non coincidono.';return;}
+  authFetch('users','uid=eq.'+MY_UID,'PATCH',{password:p1},function(err){
+    if(err){if(errEl)errEl.textContent='Errore salvataggio: '+err;return;}
+    var p1El=el('set-new-pass'), p2El=el('set-new-pass2');
+    if(p1El) p1El.value=''; if(p2El) p2El.value='';
+    if(okEl){okEl.style.display='block'; setTimeout(function(){okEl.style.display='none';},3000);}
+  });
+}
+
 // ===== MISSING CORE FUNCTIONS =====
 
 // --- Group creation ---
@@ -1629,7 +1715,8 @@ function drawGroupUsers(){
   var html='';
   for(var i=0;i<others.length;i++){
     var uid=others[i], u=STATE.users[uid], sel=SELECTED_UIDS[uid];
-    html+='<div class="member-row" onclick="toggleGroupMember(\''+uid+'\')" style="cursor:pointer;padding:10px 4px;border-radius:var(--rs);'+(sel?'background:var(--accent-dim)':'')+'"><div class="av av-sm" style="background:var(--purple);color:#fff">'+initial(u.name)+'</div><div class="member-name" style="flex:1">'+u.name+'</div>'+(sel?'<div style="color:var(--accent);font-weight:700">✓</div>':'<div style="color:var(--text3)">+</div>')+'</div>';
+    var uLabel=u.username?'@'+u.username:u.name;
+    html+='<div class="member-row" onclick="toggleGroupMember(\''+uid+'\')" style="cursor:pointer;padding:10px 4px;border-radius:var(--rs);'+(sel?'background:var(--accent-dim)':'')+'"><div class="av av-sm" style="background:var(--purple);color:#fff">'+initial(u.name)+'</div><div class="member-name" style="flex:1">'+uLabel+'</div>'+(sel?'<div style="color:var(--accent);font-weight:700">✓</div>':'<div style="color:var(--text3)">+</div>')+'</div>';
   }
   list.innerHTML=html;
 }
@@ -1680,7 +1767,8 @@ function drawChallengeUsers(){
   var html='';
   for(var i=0;i<others.length;i++){
     var uid=others[i], u=STATE.users[uid], sel=SEL_CHALLENGED&&SEL_CHALLENGED.uid===uid;
-    html+='<div class="member-row" onclick="selChallengee(\''+uid+'\',\''+u.name.replace(/\'/g,"\\'")+'\')" style="cursor:pointer;padding:10px 4px;border-radius:var(--rs);'+(sel?'background:var(--accent-dim)':'')+'"><div class="av av-sm" style="background:var(--purple);color:#fff">'+initial(u.name)+'</div><div class="member-name" style="flex:1">'+u.name+'<div style="font-size:11px;color:var(--text3)">€'+getBal(uid).toFixed(0)+' disponibili</div></div>'+(sel?'<div style="color:var(--accent);font-weight:700;font-size:12px">✓</div>':'')+'</div>';
+    var uLabel=u.username?'@'+u.username:u.name;
+    html+='<div class="member-row" onclick="selChallengee(\''+uid+'\',\''+u.name.replace(/\'/g,"\\'")+'\')" style="cursor:pointer;padding:10px 4px;border-radius:var(--rs);'+(sel?'background:var(--accent-dim)':'')+'"><div class="av av-sm" style="background:var(--purple);color:#fff">'+initial(u.name)+'</div><div class="member-name" style="flex:1">'+uLabel+'<div style="font-size:11px;color:var(--text3)">€'+getBal(uid).toFixed(0)+' disponibili</div></div>'+(sel?'<div style="color:var(--accent);font-weight:700;font-size:12px">✓</div>':'')+'</div>';
   }
   list.innerHTML=html; checkChallenge();
 }

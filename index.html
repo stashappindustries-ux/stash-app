@@ -296,6 +296,18 @@ textarea.form-input{resize:none;height:88px}
 #global-notif{display:none;position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:390px;z-index:999;background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 18px;align-items:center;gap:10px;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.4)}
 #gn-icon{font-size:18px;flex-shrink:0}
 #gn-text{flex:1;font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bell-wrap{position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;width:36px;height:36px}
+.bell-badge{position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px;line-height:1;border:1.5px solid var(--bg)}
+.notif-overlay{display:none;position:fixed;inset:0;z-index:199;background:rgba(0,0,0,0.45)}
+.notif-panel{display:none;position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:390px;z-index:200;background:var(--bg2);border-bottom-left-radius:20px;border-bottom-right-radius:20px;padding:52px 0 0;box-shadow:0 8px 32px rgba(0,0,0,0.5);max-height:80vh;overflow-y:auto}
+.notif-panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--border)}
+.notif-panel-title{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:16px}
+.notif-item{display:flex;align-items:flex-start;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.notif-item:hover{background:var(--bg3)}
+.notif-item-icon{font-size:18px;flex-shrink:0;margin-top:2px}
+.notif-item-body{flex:1;min-width:0}
+.notif-item-text{font-size:13px;font-weight:500;line-height:1.4;color:var(--text)}
+.notif-item-time{font-size:11px;color:var(--text3);margin-top:2px}
 </style>
 </head>
 <body>
@@ -534,7 +546,13 @@ document.getElementById('signup-btn').onclick = function() {
     <div class="logo" style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:22px;letter-spacing:-1.5px;line-height:1;display:inline-flex;align-items:baseline">
       <span style="color:transparent;-webkit-text-stroke:1.8px #E8501A">s</span><span style="color:#F5ECD7">tas</span><span style="color:#E8501A">h</span>
     </div>
-    <div class="av" id="home-av" style="cursor:pointer" onclick="go('s-profile')"></div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="bell-wrap" onclick="openNotifPanel()">
+        <span style="font-size:20px">🔔</span>
+        <div class="bell-badge" id="bell-badge" style="display:none">0</div>
+      </div>
+      <div class="av" id="home-av" style="cursor:pointer" onclick="go('s-profile')"></div>
+    </div>
   </div>
   <div id="notif-banner" style="display:none"></div>
   <div class="share-row">
@@ -1073,6 +1091,16 @@ document.getElementById('signup-btn').onclick = function() {
   </div>
 </div>
 
+<div class="notif-overlay" id="notif-overlay" onclick="closeNotifPanel()"></div>
+<div class="notif-panel" id="notif-panel">
+  <div class="notif-panel-hdr">
+    <div class="notif-panel-title">Notifiche</div>
+    <button onclick="markAllRead()" style="background:none;border:none;color:var(--accent);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">Segna tutte come lette</button>
+  </div>
+  <div id="notif-list"></div>
+  <div id="notif-empty" style="display:none;padding:24px 18px;text-align:center;font-size:13px;color:var(--text2)">Nessuna notifica.</div>
+</div>
+
 <script>
 // stash v12 — main script
 
@@ -1172,7 +1200,7 @@ function fbRemove(path){
 }
 
 function fbGet(path,cb){
-  supaGet('history','order=created_at.desc').then(function(rows){
+  supaGet('history','order=created_at.desc&limit=1000').then(function(rows){
     var obj={};
     if(Array.isArray(rows)){
       rows.forEach(function(r){
@@ -1340,6 +1368,8 @@ var SEL_CHALLENGED = null;
 var SELECTED_UIDS = {};
 var CH_TIMEOUT = 3600;
 var CH_TYPE = '1v1';
+var NOTIF_HIST_CACHE = [];
+var NOTIF_CACHE_TS = 0;
 
 function getChMeta(){try{return JSON.parse(localStorage.getItem('stash_ch_meta')||'{}');}catch(e){return {};}}
 function getChType(){return getChMeta().type||'1v1';}
@@ -1528,6 +1558,7 @@ function drawHome() {
     banner.style.display='none';
   }
   drawGroups();
+  drawNotifBell();
 }
 
 function drawGroups() {
@@ -1667,6 +1698,101 @@ function drawHistory() {
     setHTML('prof-stat-net',(net>=0?'+':'')+'€'+Math.abs(net));
     setText('prof-sfide-count',tot+' →');
   });
+}
+
+function refreshNotifCache(cb){
+  if(NOTIF_CACHE_TS>0&&Date.now()-NOTIF_CACHE_TS<30000){if(cb)cb();return;}
+  fbGet('history',function(snap){
+    var data=snap.val()||{};
+    NOTIF_HIST_CACHE=[];
+    for(var k in data){
+      if(data[k]&&(data[k].challengerUid===MY_UID||data[k].challengedUid===MY_UID)) NOTIF_HIST_CACHE.push(data[k]);
+    }
+    NOTIF_HIST_CACHE.sort(function(a,b){return(b.ts||0)-(a.ts||0);});
+    NOTIF_CACHE_TS=Date.now();
+    if(cb)cb();
+  });
+}
+
+function buildNotifs(){
+  var notifs=[];
+  var ch=STATE.challenge;
+  if(ch){
+    if(ch.status==='pending'&&ch.challengedUid===MY_UID){
+      notifs.push({id:'ch_p_'+(ch.timerStart||0),icon:'⚡',text:ch.challengerName+' ti ha sfidato: "'+ch.title+'"',dest:'s-accept',ts:ch.timerStart||Date.now()});
+    }else if(ch.status==='pending'&&ch.challengerUid===MY_UID){
+      notifs.push({id:'ch_s_'+(ch.timerStart||0),icon:'⏳',text:'Sfida "'+ch.title+'" in attesa di accettazione',dest:'s-vote1v1',ts:ch.timerStart||Date.now()});
+    }else if(ch.status==='accepted'&&isParticipant(ch)){
+      var vd=ch.type&&ch.type!=='1v1'?'s-vote-group':'s-vote1v1';
+      notifs.push({id:'ch_l_'+(ch.timerStart||0),icon:'🔴',text:'Sfida live: "'+ch.title+'" — dichiara l\'esito',dest:vd,ts:ch.timerStart||Date.now()});
+    }
+  }
+  for(var i=0;i<Math.min(NOTIF_HIST_CACHE.length,9);i++){
+    var it=NOTIF_HIST_CACHE[i];
+    var isW=it.winnerUid===MY_UID;
+    var vs=it.challengerUid===MY_UID?it.challengedName:it.challengerName;
+    if(vs&&vs.indexOf(',')!==-1) vs=vs.split(',')[0]+'...';
+    var icon=isW?'✅':'❌';
+    var txt=isW?'Hai vinto vs '+vs+': "'+it.title+'"':'Hai perso vs '+vs+': "'+it.title+'"';
+    notifs.push({id:'h_'+(it.ts||i),icon:icon,text:txt,dest:'s-history',ts:it.ts||0});
+  }
+  return notifs.slice(0,10);
+}
+
+function drawNotifBell(){
+  refreshNotifCache(function(){
+    var notifs=buildNotifs();
+    var read=JSON.parse(localStorage.getItem('stash_notif_read')||'{}');
+    var unread=0;
+    for(var i=0;i<notifs.length;i++){if(!read[notifs[i].id])unread++;}
+    var badge=el('bell-badge');if(!badge)return;
+    if(unread>0){badge.style.display='flex';badge.textContent=unread>9?'9+':String(unread);}
+    else{badge.style.display='none';}
+  });
+}
+
+function openNotifPanel(){
+  refreshNotifCache(function(){
+    var overlay=el('notif-overlay'),panel=el('notif-panel'),list=el('notif-list'),empty=el('notif-empty');
+    if(!overlay||!panel)return;
+    overlay.style.display='block';panel.style.display='block';
+    var notifs=buildNotifs();
+    var read=JSON.parse(localStorage.getItem('stash_notif_read')||'{}');
+    if(!notifs.length){
+      if(list)list.innerHTML='';
+      if(empty)empty.style.display='block';
+      return;
+    }
+    if(empty)empty.style.display='none';
+    var html='';
+    for(var i=0;i<notifs.length;i++){
+      var n=notifs[i];
+      var isUnread=!read[n.id];
+      var bg=isUnread?'background:var(--accent-dim);':'';
+      var t=n.ts?timeSince(n.ts):'';
+      html+='<div class="notif-item" style="'+bg+'" onclick="notifClick(\''+n.dest+'\')">';
+      html+='<div class="notif-item-icon">'+n.icon+'</div>';
+      html+='<div class="notif-item-body"><div class="notif-item-text">'+n.text+'</div><div class="notif-item-time">'+t+'</div></div>';
+      html+='</div>';
+    }
+    if(list)list.innerHTML=html;
+  });
+}
+
+function closeNotifPanel(){
+  var overlay=el('notif-overlay'),panel=el('notif-panel');
+  if(overlay)overlay.style.display='none';
+  if(panel)panel.style.display='none';
+}
+
+function notifClick(dest){closeNotifPanel();go(dest);}
+
+function markAllRead(){
+  var notifs=buildNotifs();
+  var read=JSON.parse(localStorage.getItem('stash_notif_read')||'{}');
+  for(var i=0;i<notifs.length;i++)read[notifs[i].id]=true;
+  localStorage.setItem('stash_notif_read',JSON.stringify(read));
+  var badge=el('bell-badge');if(badge)badge.style.display='none';
 }
 
 function drawAmici() {

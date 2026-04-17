@@ -59,7 +59,6 @@ Altre: `s-settings` · `s-deposit` · `s-withdraw`
 4. Hard reload: Cmd+Shift+R
 
 ## Bug noti / pendenti
-- `global-notif` element non esiste nell'HTML — `updateGlobalNotif()` fallisce silenziosamente
 - Sfida "current" è una sola globale — limite architetturale accettabile per beta
 - Password in chiaro nel DB — da migliorare in futuro con hashing
 

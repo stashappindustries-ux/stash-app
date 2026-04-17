@@ -621,6 +621,15 @@ document.getElementById('signup-btn').onclick = function() {
     <div class="info-box info-gray" style="margin-top:10px;font-size:12px">Il tuo credito demo: <strong id="bal-display" style="color:var(--accent)">€100</strong></div>
   </div>
   <div class="form-sec">
+    <label class="form-lbl">Tipo di sfida 🎮</label>
+    <div class="chips" id="type-chips">
+      <div class="chip sel" data-t="1v1" onclick="selType(this)">1 vs 1</div>
+      <div class="chip" data-t="1vall" onclick="selType(this)">1 vs tutti</div>
+      <div class="chip" data-t="allvall" onclick="selType(this)">tutti vs tutti</div>
+    </div>
+    <div id="ch-type-desc" class="info-box info-gray" style="margin-top:8px;font-size:12px">Entrambi bloccate lo stesso importo. Il vincitore prende tutto.</div>
+  </div>
+  <div class="form-sec">
     <label class="form-lbl">Chi sfidi? 🎯</label>
     <div id="ch-members-list" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:4px 14px">
       <div class="muted" style="padding:12px 0;font-size:13px">Caricamento utenti...</div>
@@ -758,7 +767,6 @@ document.getElementById('signup-btn').onclick = function() {
   <div id="vg-already-voted" style="display:none">
     <div class="info-box info-gray" style="margin-bottom:16px">Hai già votato per questa sfida.</div>
   </div>
-  <button class="btn-secondary" onclick="simulateGroupVote()" style="margin-top:16px">Simula: tutti hanno votato →</button>
   <div style="height:36px"></div>
 </div>
 
@@ -1328,6 +1336,35 @@ function authTab(tab) {
 var SEL_CHALLENGED = null;
 var SELECTED_UIDS = {};
 var CH_TIMEOUT = 3600;
+var CH_TYPE = '1v1';
+
+function getChMeta(){try{return JSON.parse(localStorage.getItem('stash_ch_meta')||'{}');}catch(e){return {};}}
+function getChType(){return getChMeta().type||'1v1';}
+function getChN(){return getChMeta().n||1;}
+
+function isParticipant(ch){
+  if(!ch)return false;
+  if(ch.challengerUid===MY_UID)return true;
+  if(!ch.challengedUid)return false;
+  var parts=ch.challengedUid.split(',');
+  for(var i=0;i<parts.length;i++){if(parts[i].trim()===MY_UID)return true;}
+  return false;
+}
+
+function selType(item){
+  var chips=document.querySelectorAll('#type-chips .chip');
+  for(var i=0;i<chips.length;i++) chips[i].classList.remove('sel');
+  item.classList.add('sel');
+  CH_TYPE=item.getAttribute('data-t');
+  SEL_CHALLENGED=null; SELECTED_UIDS={};
+  var desc=el('ch-type-desc');
+  if(desc){
+    if(CH_TYPE==='1v1') desc.textContent='Entrambi bloccate lo stesso importo. Il vincitore prende tutto.';
+    else if(CH_TYPE==='1vall') desc.textContent='Tu blocchi X€. Ogni sfidato blocca X/N€. Il vincitore prende il pot totale.';
+    else desc.textContent='Tutti bloccano X€ ciascuno. Il vincitore prende il pot totale.';
+  }
+  drawChallengeUsers(); checkChallenge();
+}
 var MY_DECLARED = false;
 var PIZZA_SEC = 47*60+23;
 var PIZZA_INT = null;
@@ -1355,7 +1392,7 @@ function go(id) {
   if (id==='s-settings')         drawSettings();
   if (id==='s-history')          drawHistory();
   if (id==='s-amici')            drawAmici();
-  if (id==='s-create-challenge') { SELECTED_UIDS={}; SEL_CHALLENGED=null; drawChallengeUsers(); updateBal(); }
+  if (id==='s-create-challenge') { SELECTED_UIDS={}; SEL_CHALLENGED=null; CH_TYPE='1v1'; var tc=document.querySelectorAll('#type-chips .chip'); for(var ti=0;ti<tc.length;ti++){tc[ti].classList.remove('sel');if(tc[ti].getAttribute('data-t')==='1v1')tc[ti].classList.add('sel');} var td=el('ch-type-desc'); if(td) td.textContent='Entrambi bloccate lo stesso importo. Il vincitore prende tutto.'; drawChallengeUsers(); updateBal(); }
   if (id==='s-create-group')     { SELECTED_UIDS={}; drawGroupUsers(); }
   if (id==='s-group-custom')     drawCustomGroup();
   if (id==='s-vote1v1')          initVote1v1();
@@ -1379,7 +1416,7 @@ function onStateChange() {
   if (id==='s-create-group')     drawGroupUsers();
   if (id==='s-group-custom')     drawCustomGroup();
   var ch = STATE.challenge;
-  if (ch && ch.status==='resolved' && ch.winner && (id==='s-vote1v1'||id==='s-vote-group')) {
+  if (ch && ch.status==='resolved' && ch.winner && isParticipant(ch) && (id==='s-vote1v1'||id==='s-vote-group')) {
     drawWinnerScreen(ch);
     go('s-winner');
   }
@@ -1403,7 +1440,7 @@ function updateGlobalNotif() {
         setTimeout(function(){ go('s-accept'); }, 800);
       }
     }
-  } else if (ch && ch.status==='accepted' && (ch.challengerUid===MY_UID||ch.challengedUid===MY_UID)) {
+  } else if (ch && ch.status==='accepted' && isParticipant(ch)) {
     gn.style.display = 'flex';
     setText('gn-icon', '🔴');
     setText('gn-text', 'Sfida live - ' + ch.title.substr(0,25) + '... - dichiara il tuo esito');
@@ -1421,7 +1458,7 @@ function handleGlobalNotif() {
     fillAcceptScreen(ch);
     go('s-accept');
   } else if (ch.status==='accepted') {
-    go('s-vote1v1');
+    go(getChType()!=='1v1'?'s-vote-group':'s-vote1v1');
   }
 }
 
@@ -1469,7 +1506,7 @@ function drawHome() {
   setText('home-escrow-label', esc>0 ? '€'+esc+' in escrow' : '€'+bal.toFixed(0)+' disponibili');
   var ch = STATE.challenge;
   var liveEl = el('live-challenge');
-  if (ch && (ch.status==='pending'||ch.status==='accepted') && (ch.challengerUid===MY_UID||ch.challengedUid===MY_UID)) {
+  if (ch && (ch.status==='pending'||ch.status==='accepted') && isParticipant(ch)) {
     if (liveEl) { liveEl.innerHTML=''; liveEl.appendChild(liveChallengeHTML(ch)); liveEl.style.display='block'; }
   } else {
     if (liveEl) liveEl.style.display='none';
@@ -1482,7 +1519,8 @@ function drawHome() {
     fillAcceptScreen(ch);
   } else if (ch && ch.status==='accepted' && (ch.challengerUid===MY_UID||ch.challengedUid===MY_UID)) {
     banner.style.display='block';
-    banner.innerHTML = '<div class="notif-banner" style="cursor:default"><div>&#x1F534;</div><div class="notif-text">Sfida live &mdash; &euro;'+ch.amount+' in palio</div><div class="notif-cta" onclick="go(\'s-vote1v1\')">Dichiara &rarr;</div></div>';
+    var vDest=getChType()!=='1v1'?'s-vote-group':'s-vote1v1';
+    banner.innerHTML = '<div class="notif-banner" style="cursor:default"><div>&#x1F534;</div><div class="notif-text">Sfida live &mdash; &euro;'+ch.amount+' in palio</div><div class="notif-cta" onclick="go(\''+vDest+'\')">Dichiara &rarr;</div></div>';
   } else {
     banner.style.display='none';
   }
@@ -1568,11 +1606,13 @@ function drawWallet() {
     var rows='<div class="tx-row"><div class="tx-icon" style="background:var(--bg3)">💸</div><div class="tx-info"><div class="tx-title">Credito demo</div><div class="tx-meta">Alla registrazione</div></div><div class="tx-amt tx-pos">+€100</div></div>';
     for(var i=0;i<Math.min(items.length,5);i++){
       var it=items[i],isW=it.winnerUid===MY_UID,isL=it.status==='accepted'||it.status==='pending';
-      var ic=isL?'🔒':isW?'✅':'❌';
-      var bg=isL?'var(--amber-dim)':isW?'var(--accent-dim)':'var(--red-dim)';
-      var amt=isL?'€'+it.amount+' bloccati':isW?'+€'+it.amount:'-€'+it.amount;
-      var cls=isL?'tx-neu':isW?'tx-pos':'tx-neg';
+      var isLoss=!isW&&!isL&&!!it.winnerUid;
+      var ic=isL?'🔒':isW?'✅':isLoss?'❌':'↩️';
+      var bg=isL?'var(--amber-dim)':isW?'var(--accent-dim)':isLoss?'var(--red-dim)':'var(--bg3)';
+      var amt=isL?'€'+it.amount+' bloccati':isW?'+€'+it.amount:isLoss?'-€'+it.amount:'annullata';
+      var cls=isL?'tx-neu':isW?'tx-pos':isLoss?'tx-neg':'tx-neu';
       var vs=it.challengerUid===MY_UID?it.challengedName:it.challengerName;
+      if(vs&&vs.indexOf(',')!==-1) vs=vs.split(',')[0]+'...';
       rows+='<div class="tx-row"><div class="tx-icon" style="background:'+bg+'">'+ic+'</div><div class="tx-info"><div class="tx-title">'+it.title.substr(0,25)+'</div><div class="tx-meta">vs '+vs+'</div></div><div class="tx-amt '+cls+'">'+amt+'</div></div>';
     }
     txEl.innerHTML=rows;
@@ -1605,12 +1645,16 @@ function drawHistory() {
     var html='';
     for(var i=0;i<items.length;i++){
       var it=items[i],isW=it.winnerUid===MY_UID,isL=it.status==='accepted'||it.status==='pending';
-      if(isW){wins++;net+=it.amount;}else if(!isL&&it.winnerUid)net-=it.amount;
-      var ic=isL?'🔒':isW?'✅':'❌',bg=isL?'var(--amber-dim)':isW?'var(--accent-dim)':'var(--red-dim)';
-      var amt=isL?'€'+it.amount+' bloccati':isW?'+€'+it.amount:'-€'+it.amount;
-      var cls=isL?'tx-neu':isW?'tx-pos':'tx-neg';
+      var isLoss=!isW&&!isL&&!!it.winnerUid;
+      if(isW){wins++;net+=it.amount;}else if(isLoss)net-=it.amount;
+      var ic=isL?'🔒':isW?'✅':isLoss?'❌':'↩️';
+      var bg=isL?'var(--amber-dim)':isW?'var(--accent-dim)':isLoss?'var(--red-dim)':'var(--bg3)';
+      var amt=isL?'€'+it.amount+' bloccati':isW?'+€'+it.amount:isLoss?'-€'+it.amount:'annullata';
+      var cls=isL?'tx-neu':isW?'tx-pos':isLoss?'tx-neg':'tx-neu';
+      var fType=isL?'live':isW?'win':isLoss?'lose':'lose';
       var vs=it.challengerUid===MY_UID?it.challengedName:it.challengerName;
-      html+='<div class="hcard" data-f="'+(isL?'live':isW?'win':'lose')+'"><div class="hcard-ic" style="background:'+bg+'">'+ic+'</div><div class="hcard-info"><div class="hcard-title">"'+it.title+'"</div><div class="hcard-meta">vs '+vs+'</div></div><div class="hcard-amt '+cls+'">'+amt+'</div></div>';
+      if(vs&&vs.indexOf(',')!==-1) vs=vs.split(',')[0]+'...';
+      html+='<div class="hcard" data-f="'+fType+'"><div class="hcard-ic" style="background:'+bg+'">'+ic+'</div><div class="hcard-info"><div class="hcard-title">"'+it.title+'"</div><div class="hcard-meta">vs '+vs+'</div></div><div class="hcard-amt '+cls+'">'+amt+'</div></div>';
     }
     list.innerHTML=html;
     var tot=items.length,wr=tot>0?Math.round(wins/tot*100):0;
@@ -1921,14 +1965,22 @@ function drawChallengeUsers(){
   if(!others.length){ list.innerHTML='<div class="muted" style="padding:12px 0;font-size:13px">Nessun altro utente disponibile.</div>'; return; }
   var html='';
   for(var i=0;i<others.length;i++){
-    var uid=others[i], u=STATE.users[uid], sel=SEL_CHALLENGED&&SEL_CHALLENGED.uid===uid;
+    var uid=others[i], u=STATE.users[uid];
     var uLabel=u.username?'@'+u.username:u.name;
-    html+='<div class="member-row" onclick="selChallengee(\''+uid+'\',\''+u.name.replace(/\'/g,"\\'")+'\')" style="cursor:pointer;padding:10px 4px;border-radius:var(--rs);'+(sel?'background:var(--accent-dim)':'')+'"><div class="av av-sm" style="background:var(--purple);color:#fff">'+initial(u.name)+'</div><div class="member-name" style="flex:1">'+uLabel+'<div style="font-size:11px;color:var(--text3)">€'+getBal(uid).toFixed(0)+' disponibili</div></div>'+(sel?'<div style="color:var(--accent);font-weight:700;font-size:12px">✓</div>':'')+'</div>';
+    var sel;
+    if(CH_TYPE==='1v1'){
+      sel=SEL_CHALLENGED&&SEL_CHALLENGED.uid===uid;
+      html+='<div class="member-row" onclick="selChallengee(\''+uid+'\',\''+u.name.replace(/\'/g,"\\'")+'\')" style="cursor:pointer;padding:10px 4px;border-radius:var(--rs);'+(sel?'background:var(--accent-dim)':'')+'"><div class="av av-sm" style="background:var(--purple);color:#fff">'+initial(u.name)+'</div><div class="member-name" style="flex:1">'+uLabel+'<div style="font-size:11px;color:var(--text3)">€'+getBal(uid).toFixed(0)+' disponibili</div></div>'+(sel?'<div style="color:var(--accent);font-weight:700;font-size:12px">✓</div>':'')+'</div>';
+    }else{
+      sel=!!SELECTED_UIDS[uid];
+      html+='<div class="member-row" onclick="toggleMultiChallengee(\''+uid+'\',\''+u.name.replace(/\'/g,"\\'")+'\')" style="cursor:pointer;padding:10px 4px;border-radius:var(--rs);'+(sel?'background:var(--accent-dim)':'')+'"><div class="av av-sm" style="background:var(--purple);color:#fff">'+initial(u.name)+'</div><div class="member-name" style="flex:1">'+uLabel+'<div style="font-size:11px;color:var(--text3)">€'+getBal(uid).toFixed(0)+' disponibili</div></div>'+(sel?'<div style="color:var(--accent);font-weight:700;font-size:12px">✓</div>':'<div style="color:var(--text3)">+</div>')+'</div>';
+    }
   }
   list.innerHTML=html; checkChallenge();
 }
 
 function selChallengee(uid,name){ SEL_CHALLENGED={uid:uid,name:name}; drawChallengeUsers(); }
+function toggleMultiChallengee(uid,name){ if(SELECTED_UIDS[uid]) delete SELECTED_UIDS[uid]; else SELECTED_UIDS[uid]=name; drawChallengeUsers(); }
 function updateCounter(){ var t=el('ch-text'),c=el('ch-count'); if(t&&c) c.textContent=t.value.length; }
 function clearChallengeErr(){}
 function setAmt(v) { var inp=el('ch-amount'); if(inp){inp.value=v; syncChips(v); checkChallenge();} }
@@ -1954,38 +2006,89 @@ function selTimeout(item){
 
 function checkChallenge(){
   var txt=((el('ch-text')||{}).value||'').trim(), amt=parseFloat((el('ch-amount')||{}).value)||0, bal=myBal();
-  var ok=txt.length>=3&&amt>=1&&amt<=bal&&SEL_CHALLENGED;
+  var hasOpponent = CH_TYPE==='1v1' ? !!SEL_CHALLENGED : Object.keys(SELECTED_UIDS).length>0;
+  var ok=txt.length>=3&&amt>=1&&amt<=bal&&hasOpponent;
   var btn=el('ch-btn'), summary=el('ch-summary'), info=el('ch-mode-info');
   if(btn) btn.disabled=!ok;
   if(!ok){
     if(summary) summary.style.display='none';
-    if(info){ if(!SEL_CHALLENGED) info.textContent='Seleziona almeno un avversario'; else if(amt<1) info.textContent='Inserisci un importo'; else if(amt>bal) info.textContent='Saldo insufficiente (€'+bal.toFixed(0)+' disponibili)'; else info.textContent='Scrivi la sfida (min. 3 caratteri)'; }
+    if(info){ if(!hasOpponent) info.textContent='Seleziona almeno un avversario'; else if(amt<1) info.textContent='Inserisci un importo'; else if(amt>bal) info.textContent='Saldo insufficiente (€'+bal.toFixed(0)+' disponibili)'; else info.textContent='Scrivi la sfida (min. 3 caratteri)'; }
     return;
   }
   if(summary) summary.style.display='block';
   var tLabel=CH_TIMEOUT>=86400?'24 ore':CH_TIMEOUT>=43200?'12 ore':'1 ora';
-  setText('sum-you','€'+amt.toFixed(0)); setText('sum-them','€'+amt.toFixed(0));
-  setText('sum-timeout',tLabel); setText('sum-total','€'+(amt*2).toFixed(0));
-  setText('sum-them-lbl',(SEL_CHALLENGED?SEL_CHALLENGED.name:'Avversario')+' blocca');
-  if(info) info.textContent='Sfida 1vs1 con '+SEL_CHALLENGED.name;
+  var N = CH_TYPE==='1v1' ? 1 : Object.keys(SELECTED_UIDS).length;
+  if(CH_TYPE==='1v1'){
+    setText('sum-you','€'+amt.toFixed(0)); setText('sum-them','€'+amt.toFixed(0));
+    setText('sum-timeout',tLabel); setText('sum-total','€'+(amt*2).toFixed(0));
+    setText('sum-them-lbl',(SEL_CHALLENGED?SEL_CHALLENGED.name:'Avversario')+' blocca');
+    if(info) info.textContent='Sfida 1vs1 con '+SEL_CHALLENGED.name;
+  }else if(CH_TYPE==='1vall'){
+    var each=Math.round(amt/N*100)/100;
+    setText('sum-you','€'+amt.toFixed(0));
+    setText('sum-them','€'+each.toFixed(0)+' × '+N);
+    setText('sum-timeout',tLabel); setText('sum-total','€'+(amt*2).toFixed(0));
+    setText('sum-them-lbl',N+' sfidati bloccano');
+    if(info) info.textContent='1 vs tutti — '+N+' sfidati × €'+each.toFixed(0);
+  }else{
+    var total=amt*(N+1);
+    setText('sum-you','€'+amt.toFixed(0));
+    setText('sum-them','€'+amt.toFixed(0)+' × '+N);
+    setText('sum-timeout',tLabel); setText('sum-total','€'+total.toFixed(0));
+    setText('sum-them-lbl',N+' giocatori bloccano');
+    if(info) info.textContent='Tutti vs tutti — '+(N+1)+' giocatori × €'+amt.toFixed(0);
+  }
 }
 
 function launchChallenge(){
   var txt=((el('ch-text')||{}).value||'').trim(), amt=parseFloat((el('ch-amount')||{}).value)||0;
-  if(!SEL_CHALLENGED)return;
   if(txt.length<3)return;
   if(amt<1)return;
   if(hasBlocked(txt)){alert('Contenuto non consentito.');return;}
   var bal=myBal();
   if(amt>bal){alert('Saldo insufficiente (€'+bal+' disponibili).');return;}
 
-  setBal(MY_UID,bal-amt); setEsc(MY_UID,myEsc()+amt);
+  supaDelete('challenge_votes','challenge_id=eq.current');
 
-  supaUpsert('challenges',{id:'current',title:txt,amount:amt,challenger_uid:MY_UID,challenger_name:MY_NAME,challenged_uid:SEL_CHALLENGED.uid,challenged_name:SEL_CHALLENGED.name,status:'pending',timer_start:Date.now(),timeout:CH_TIMEOUT,created_at:Date.now(),winner_uid:null});
+  var timerStart=Date.now();
+  var uids=Object.keys(SELECTED_UIDS);
 
-  var tLabel=CH_TIMEOUT>=86400?'24 ore':CH_TIMEOUT>=43200?'12 ore':'1 ora';
-  setText('suc-other',SEL_CHALLENGED.name); setText('suc-other2',SEL_CHALLENGED.name);
-  setText('suc-amount','€'+amt); setText('suc-timeout',tLabel);
+  if(CH_TYPE==='1v1'){
+    if(!SEL_CHALLENGED)return;
+    setBal(MY_UID,bal-amt); setEsc(MY_UID,myEsc()+amt);
+    localStorage.setItem('stash_ch_meta',JSON.stringify({type:'1v1',n:1}));
+    supaUpsert('challenges',{id:'current',title:txt,amount:amt,challenger_uid:MY_UID,challenger_name:MY_NAME,challenged_uid:SEL_CHALLENGED.uid,challenged_name:SEL_CHALLENGED.name,status:'pending',timer_start:timerStart,timeout:CH_TIMEOUT,created_at:timerStart,winner_uid:null});
+    var tLabel=CH_TIMEOUT>=86400?'24 ore':CH_TIMEOUT>=43200?'12 ore':'1 ora';
+    setText('suc-other',SEL_CHALLENGED.name); setText('suc-other2',SEL_CHALLENGED.name);
+    setText('suc-amount','€'+amt); setText('suc-timeout',tLabel);
+
+  }else{
+    if(!uids.length)return;
+    var N=uids.length;
+    var names=[];
+    for(var i=0;i<uids.length;i++) names.push(SELECTED_UIDS[uids[i]]);
+    var challengedUidStr=uids.join(',');
+    var challengedNameStr=names.join(', ');
+    setBal(MY_UID,bal-amt); setEsc(MY_UID,myEsc()+amt);
+    if(CH_TYPE==='1vall'){
+      var each=Math.round(amt/N*100)/100;
+      for(var j=0;j<uids.length;j++){
+        var u2=uids[j];
+        setBal(u2,getBal(u2)-each); setEsc(u2,(STATE.users[u2]?STATE.users[u2].escrow:0)+each);
+      }
+    }else{
+      for(var j=0;j<uids.length;j++){
+        var u2=uids[j];
+        setBal(u2,getBal(u2)-amt); setEsc(u2,(STATE.users[u2]?STATE.users[u2].escrow:0)+amt);
+      }
+    }
+    localStorage.setItem('stash_ch_meta',JSON.stringify({type:CH_TYPE,n:N}));
+    supaUpsert('challenges',{id:'current',title:txt,amount:amt,challenger_uid:MY_UID,challenger_name:MY_NAME,challenged_uid:challengedUidStr,challenged_name:challengedNameStr,status:'accepted',timer_start:timerStart,timeout:CH_TIMEOUT,created_at:timerStart,winner_uid:null});
+    var tLabel='';
+    setText('suc-other',challengedNameStr); setText('suc-other2',challengedNameStr);
+    setText('suc-amount','€'+amt); setText('suc-timeout',tLabel);
+  }
+
   go('s-success');
 }
 
@@ -2070,35 +2173,60 @@ function checkMajority(){
 
 function resolveWinner(winnerUid){
   var ch=STATE.challenge; if(!ch) return;
-  var loserUid=winnerUid===ch.challengerUid?ch.challengedUid:ch.challengerUid, prize=ch.amount;
-  setBal(winnerUid,getBal(winnerUid)+prize*2);
-  setEsc(winnerUid,Math.max(0,(STATE.users[winnerUid]&&STATE.users[winnerUid].escrow||0)-prize));
-  setEsc(loserUid,Math.max(0,(STATE.users[loserUid]&&STATE.users[loserUid].escrow||0)-prize));
+  var meta=getChMeta();
+  var chType=meta.type||'1v1';
+  var N=meta.n||1;
+  var prize=ch.amount;
+  var totalPot = chType==='allvall' ? prize*(N+1) : prize*2;
+
+  setBal(winnerUid,getBal(winnerUid)+totalPot);
+  setEsc(winnerUid,0);
+
+  if(chType==='1v1'){
+    var loserUid=winnerUid===ch.challengerUid?ch.challengedUid:ch.challengerUid;
+    setEsc(loserUid,0);
+  }else{
+    var allUids=ch.challengedUid?ch.challengedUid.split(','):[];
+    allUids.push(ch.challengerUid);
+    for(var i=0;i<allUids.length;i++){
+      var u=allUids[i].trim();
+      if(u&&u!==winnerUid) setEsc(u,0);
+    }
+  }
+
   supaPatch('challenges','id=eq.current',{status:'resolved',winner_uid:winnerUid});
   supaUpsert('history',{id:'h'+Date.now(),title:ch.title,amount:prize,challenger_uid:ch.challengerUid,challenger_name:ch.challengerName,challenged_uid:ch.challengedUid,challenged_name:ch.challengedName,winner_uid:winnerUid,status:'resolved',created_at:Date.now()});
-  drawWinnerScreen({title:ch.title,amount:prize,challengerUid:ch.challengerUid,challengerName:ch.challengerName,challengedUid:ch.challengedUid,challengedName:ch.challengedName,winner:winnerUid});
+  drawWinnerScreen({title:ch.title,amount:totalPot/2,challengerUid:ch.challengerUid,challengerName:ch.challengerName,challengedUid:ch.challengedUid,challengedName:ch.challengedName,winner:winnerUid,totalPot:totalPot});
   go('s-winner');
 }
 
 function drawWinnerScreen(ch){
   if(!ch) return;
   var winnerUid=ch.winner||ch.winnerUid;
-  var winnerName=winnerUid===ch.challengerUid?ch.challengerName:ch.challengedName;
+  var winnerName=winnerUid===ch.challengerUid?ch.challengerName:(ch.challengedName||'');
+  if(winnerName.indexOf(',')!==-1) winnerName=winnerName.split(',')[0];
   var loserName=winnerUid===ch.challengerUid?ch.challengedName:ch.challengerName;
+  if(loserName && loserName.indexOf(',')!==-1) loserName=loserName.split(',')[0];
   var isMe=winnerUid===MY_UID;
+  var pot=ch.totalPot||ch.amount*2;
   setText('w-emoji',isMe?'🏆':'😔'); setText('w-title',isMe?'Hai vinto!':winnerName+' ha vinto');
   setText('w-sub',isMe?'I fondi sono stati trasferiti a te.':'Meglio la prossima volta.');
-  setText('w-amount','€'+(ch.amount*2)); setText('w-lbl',isMe?'trasferiti a te':'trasferiti a '+winnerName);
+  setText('w-amount','€'+pot); setText('w-lbl',isMe?'trasferiti a te':'trasferiti a '+winnerName);
   var wav=el('w-winner-av'); if(wav) wav.textContent=initial(winnerName);
-  var lav=el('w-loser-av'); if(lav) lav.textContent=initial(loserName);
-  setText('w-winner-name',winnerName); setText('w-loser-name',loserName);
+  var lav=el('w-loser-av'); if(lav) lav.textContent=initial(loserName||'?');
+  setText('w-winner-name',winnerName); setText('w-loser-name',loserName||'altri');
 }
 
 function liveChallengeHTML(ch){
   var div=document.createElement('div'); div.className='card'; div.style.marginBottom='12px';
   var isC=ch.challengerUid===MY_UID, otherName=isC?ch.challengedName:ch.challengerName;
   var isPending=ch.status==='pending', statusCol=isPending?'var(--amber)':'var(--accent)';
-  div.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="font-size:12px;font-weight:700;color:'+statusCol+'">● '+(isPending?'In attesa di accettazione':'Sfida in corso')+'</div><div style="font-size:12px;color:var(--text2)">€'+ch.amount+' in palio</div></div><div style="font-size:14px;font-weight:600;margin-bottom:8px">"'+ch.title.substr(0,50)+'"</div><div style="font-size:12px;color:var(--text2);margin-bottom:12px">vs '+otherName+'</div><button onclick="go(\''+(isPending&&!isC?'s-accept':'s-vote1v1')+'\')" style="width:100%;background:var(--accent);color:#110D0A;border:none;border-radius:var(--rs);padding:10px;font-weight:900;font-size:13px;cursor:pointer">'+(isPending&&!isC?'Accetta sfida →':'Dichiara esito →')+'</button>';
+  var chType=getChType();
+  var isMulti=chType!=='1v1';
+  var voteScreen=isMulti?'s-vote-group':'s-vote1v1';
+  var dest=isPending&&!isC&&!isMulti?'s-accept':voteScreen;
+  var btnTxt=isPending&&!isC&&!isMulti?'Accetta sfida →':'Dichiara esito →';
+  div.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="font-size:12px;font-weight:700;color:'+statusCol+'">● '+(isPending?'In attesa di accettazione':'Sfida in corso')+'</div><div style="font-size:12px;color:var(--text2)">€'+ch.amount+' in palio</div></div><div style="font-size:14px;font-weight:600;margin-bottom:8px">"'+ch.title.substr(0,50)+'"</div><div style="font-size:12px;color:var(--text2);margin-bottom:12px">vs '+otherName+'</div><button onclick="go(\''+dest+'\')" style="width:100%;background:var(--accent);color:#110D0A;border:none;border-radius:var(--rs);padding:10px;font-weight:900;font-size:13px;cursor:pointer">'+btnTxt+'</button>';
   return div;
 }
 

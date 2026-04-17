@@ -61,7 +61,7 @@ Altre: `s-settings` · `s-deposit` · `s-withdraw`
 ## Bug noti / pendenti
 - Sfida "current" è una sola globale — limite architetturale accettabile per beta
 - Password in chiaro nel DB — da migliorare in futuro con hashing
-- Tipo sfida (1vstutti/tuttivstutti) salvato solo in localStorage — altri dispositivi non vedono il tipo, ma il flusso di voto funziona comunque
+- ⚠️ Colonna `type` su `challenges` va aggiunta manualmente in Supabase SQL editor: `ALTER TABLE challenges ADD COLUMN IF NOT EXISTS type TEXT DEFAULT '1v1';`
 
 ## Plugin installati
 

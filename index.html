@@ -989,7 +989,9 @@ document.getElementById('signup-btn').onclick = function() {
     <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:22px">Amici</div>
     <button class="share-btn" onclick="shareLink()">🔥 Invita</button>
   </div>
-  <div class="muted" style="margin-bottom:20px;font-size:13px">Persone con cui hai giocato o che hai invitato su stash.</div>
+  <div class="muted" style="margin-bottom:16px;font-size:13px">Persone con cui hai giocato o che hai invitato su stash.</div>
+  <input id="amici-search" type="text" placeholder="Cerca username o nome..." oninput="searchAmici(this.value)" style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--rs);padding:11px 14px;font-size:14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:12px" />
+  <div id="amici-search-results" style="display:none;margin-bottom:16px"></div>
   <div id="amici-list">
     <div class="info-box info-gray" style="text-align:center">
       Nessun amico ancora.<br>Condividi il link per invitarli!
@@ -1228,7 +1230,8 @@ function pollSupabase(){
       status:r.status,
       winner:r.winner_uid,
       timerStart:r.timer_start,
-      timeout:r.timeout
+      timeout:r.timeout,
+      type:r.type||'1v1'
     };
     supaGet('challenge_votes','challenge_id=eq.current').then(function(vrows){
       ch.votes={};
@@ -1458,7 +1461,7 @@ function handleGlobalNotif() {
     fillAcceptScreen(ch);
     go('s-accept');
   } else if (ch.status==='accepted') {
-    go(getChType()!=='1v1'?'s-vote-group':'s-vote1v1');
+    go(ch.type&&ch.type!=='1v1'?'s-vote-group':'s-vote1v1');
   }
 }
 
@@ -1519,7 +1522,7 @@ function drawHome() {
     fillAcceptScreen(ch);
   } else if (ch && ch.status==='accepted' && (ch.challengerUid===MY_UID||ch.challengedUid===MY_UID)) {
     banner.style.display='block';
-    var vDest=getChType()!=='1v1'?'s-vote-group':'s-vote1v1';
+    var vDest=ch.type&&ch.type!=='1v1'?'s-vote-group':'s-vote1v1';
     banner.innerHTML = '<div class="notif-banner" style="cursor:default"><div>&#x1F534;</div><div class="notif-text">Sfida live &mdash; &euro;'+ch.amount+' in palio</div><div class="notif-cta" onclick="go(\''+vDest+'\')">Dichiara &rarr;</div></div>';
   } else {
     banner.style.display='none';
@@ -1721,6 +1724,40 @@ function removeAmico(uid){
   var RF=JSON.parse(localStorage.getItem('stash_removed')||'{}');
   RF[uid]=true;localStorage.setItem('stash_removed',JSON.stringify(RF));
   drawAmici();
+}
+
+function searchAmici(q){
+  var res=el('amici-search-results'); if(!res) return;
+  q=(q||'').trim().toLowerCase();
+  if(!q){res.style.display='none';res.innerHTML='';return;}
+  var RF=JSON.parse(localStorage.getItem('stash_removed')||'{}');
+  var html='<div class="sl">Risultati ricerca</div>';
+  var found=0;
+  for(var uid in STATE.users){
+    if(uid===MY_UID) continue;
+    var u=STATE.users[uid];
+    var nm=(u.name||'').toLowerCase(), us=(u.username||'').toLowerCase();
+    if(nm.indexOf(q)===-1&&us.indexOf(q)===-1) continue;
+    found++;
+    var uLabel=u.username?'@'+u.username:u.name;
+    var isRem=RF[uid];
+    var btnStyle=isRem?'background:var(--accent);color:#110D0A;border:none;border-radius:var(--rs);padding:7px 12px;font-weight:900;font-size:12px;cursor:pointer':'background:none;color:var(--text2);border:1px solid var(--border);border-radius:var(--rs);padding:7px 12px;font-size:12px;cursor:not-allowed';
+    var btnTxt=isRem?'Aggiungi':'Amico';
+    var btnAttr=isRem?'onclick="addAmico(\''+uid+'\')"':'disabled';
+    html+='<div style="display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px">';
+    html+='<div class="av" style="width:44px;height:44px;font-size:16px;background:var(--purple);color:#fff;flex-shrink:0">'+initial(u.name)+'</div>';
+    html+='<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14px">'+u.name+'</div><div style="font-size:12px;color:var(--text2)">'+uLabel+'</div></div>';
+    html+='<button style="'+btnStyle+'" '+btnAttr+'>'+btnTxt+'</button>';
+    html+='</div>';
+  }
+  if(!found) html+='<div style="font-size:13px;color:var(--text2);text-align:center;padding:12px">Nessun risultato.</div>';
+  res.innerHTML=html; res.style.display='block';
+}
+
+function addAmico(uid){
+  var RF=JSON.parse(localStorage.getItem('stash_removed')||'{}');
+  delete RF[uid]; localStorage.setItem('stash_removed',JSON.stringify(RF));
+  var q=el('amici-search'); searchAmici(q?q.value:''); drawAmici();
 }
 
 function sfidaDiretto(uid,name){SEL_CHALLENGED={uid:uid,name:name};go('s-create-challenge');}
@@ -2057,7 +2094,7 @@ function launchChallenge(){
     if(!SEL_CHALLENGED)return;
     setBal(MY_UID,bal-amt); setEsc(MY_UID,myEsc()+amt);
     localStorage.setItem('stash_ch_meta',JSON.stringify({type:'1v1',n:1}));
-    supaUpsert('challenges',{id:'current',title:txt,amount:amt,challenger_uid:MY_UID,challenger_name:MY_NAME,challenged_uid:SEL_CHALLENGED.uid,challenged_name:SEL_CHALLENGED.name,status:'pending',timer_start:timerStart,timeout:CH_TIMEOUT,created_at:timerStart,winner_uid:null});
+    supaUpsert('challenges',{id:'current',title:txt,amount:amt,challenger_uid:MY_UID,challenger_name:MY_NAME,challenged_uid:SEL_CHALLENGED.uid,challenged_name:SEL_CHALLENGED.name,status:'pending',timer_start:timerStart,timeout:CH_TIMEOUT,created_at:timerStart,winner_uid:null,type:'1v1'});
     var tLabel=CH_TIMEOUT>=86400?'24 ore':CH_TIMEOUT>=43200?'12 ore':'1 ora';
     setText('suc-other',SEL_CHALLENGED.name); setText('suc-other2',SEL_CHALLENGED.name);
     setText('suc-amount','€'+amt); setText('suc-timeout',tLabel);
@@ -2083,7 +2120,7 @@ function launchChallenge(){
       }
     }
     localStorage.setItem('stash_ch_meta',JSON.stringify({type:CH_TYPE,n:N}));
-    supaUpsert('challenges',{id:'current',title:txt,amount:amt,challenger_uid:MY_UID,challenger_name:MY_NAME,challenged_uid:challengedUidStr,challenged_name:challengedNameStr,status:'accepted',timer_start:timerStart,timeout:CH_TIMEOUT,created_at:timerStart,winner_uid:null});
+    supaUpsert('challenges',{id:'current',title:txt,amount:amt,challenger_uid:MY_UID,challenger_name:MY_NAME,challenged_uid:challengedUidStr,challenged_name:challengedNameStr,status:'accepted',timer_start:timerStart,timeout:CH_TIMEOUT,created_at:timerStart,winner_uid:null,type:CH_TYPE});
     var tLabel='';
     setText('suc-other',challengedNameStr); setText('suc-other2',challengedNameStr);
     setText('suc-amount','€'+amt); setText('suc-timeout',tLabel);
@@ -2173,9 +2210,8 @@ function checkMajority(){
 
 function resolveWinner(winnerUid){
   var ch=STATE.challenge; if(!ch) return;
-  var meta=getChMeta();
-  var chType=meta.type||'1v1';
-  var N=meta.n||1;
+  var chType=ch.type||'1v1';
+  var N=ch.challengedUid?ch.challengedUid.split(',').length:1;
   var prize=ch.amount;
   var totalPot = chType==='allvall' ? prize*(N+1) : prize*2;
 
@@ -2221,7 +2257,7 @@ function liveChallengeHTML(ch){
   var div=document.createElement('div'); div.className='card'; div.style.marginBottom='12px';
   var isC=ch.challengerUid===MY_UID, otherName=isC?ch.challengedName:ch.challengerName;
   var isPending=ch.status==='pending', statusCol=isPending?'var(--amber)':'var(--accent)';
-  var chType=getChType();
+  var chType=ch.type||'1v1';
   var isMulti=chType!=='1v1';
   var voteScreen=isMulti?'s-vote-group':'s-vote1v1';
   var dest=isPending&&!isC&&!isMulti?'s-accept':voteScreen;

@@ -293,11 +293,16 @@ textarea.form-input{resize:none;height:88px}
 .modal-link-url{font-size:12px;color:var(--accent);word-break:break-all;line-height:1.6;display:block;margin-bottom:8px}
 .modal-close{display:block;width:100%;background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;margin-top:14px;font-family:inherit;padding:6px}
 .tag-demo{font-size:10px;font-weight:700;background:rgba(232,80,26,0.12);color:var(--accent);padding:2px 8px;border-radius:6px;display:inline-flex;align-items:center;gap:4px}
+#global-notif{display:none;position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:390px;z-index:999;background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 18px;align-items:center;gap:10px;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.4)}
+#gn-icon{font-size:18px;flex-shrink:0}
+#gn-text{flex:1;font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 </head>
 <body>
 
 <div class="phone" id="app">
+
+<div id="global-notif" onclick="handleGlobalNotif()"><span id="gn-icon"></span><span id="gn-text"></span></div>
 
 <!-- ===== WELCOME / AUTH ===== -->
 <div class="screen active" id="s-welcome">
@@ -369,7 +374,8 @@ function authHeaders() {
 function authFetch(table, filter, method, body, cb) {
   var url = SUPA_URL_AUTH + '/rest/v1/' + table + (filter ? '?' + filter : '');
   var opts = {method: method||'GET', headers: authHeaders()};
-  if(method==='POST'||method==='PATCH') opts.headers['Prefer']='resolution=merge-duplicates,return=representation';
+  if(method==='POST') opts.headers['Prefer']='resolution=merge-duplicates,return=representation';
+  if(method==='PATCH') opts.headers['Prefer']='return=representation';
   if(body) opts.body = JSON.stringify(body);
   var done = false;
   var timer = setTimeout(function(){ if(!done){done=true; if(cb)cb('timeout',null);} }, 8000);
@@ -1319,51 +1325,6 @@ function authTab(tab) {
   }
 }
 
-function doLogin() {
-  var user=((el('login-user')||{}).value||'').trim().toLowerCase();
-  var pass=(el('login-pass')||{}).value||'';
-  var errEl=el('login-err');
-  if(!user||!pass){if(errEl)errEl.textContent='Compila tutti i campi.';return;}
-  initFirebase(function(){
-    fbGet('usernames/'+user, function(snap){
-      var data=snap.val();
-      if(!data){if(errEl)errEl.textContent='Username non trovato.';return;}
-      if(data.password!==pass){if(errEl)errEl.textContent='Password errata.';return;}
-      MY_UID=data.uid; MY_NAME=data.name;
-      localStorage.setItem('stash_uid_v3',MY_UID);
-      localStorage.setItem('stash_name_v3',MY_NAME);
-      localStorage.setItem('stash_user_v3',user);
-      fbSet('users/'+MY_UID+'/lastSeen',Date.now());
-      setupHome();
-      go(localStorage.getItem('stash_terms_v3')?'s-home':'s-terms');
-    });
-  });
-}
-
-function doSignup() {
-  var name=((el('su-name')||{}).value||'').trim();
-  var user=((el('su-user')||{}).value||'').trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
-  var pass=(el('su-pass')||{}).value||'';
-  var errEl=el('su-err');
-  if(!name||name.length<2){if(errEl)errEl.textContent='Nome troppo corto.';return;}
-  if(!user||user.length<3){if(errEl)errEl.textContent='Username min. 3 caratteri.';return;}
-  if(!pass||pass.length<6){if(errEl)errEl.textContent='Password min. 6 caratteri.';return;}
-  initFirebase(function(){
-    fbGet('usernames/'+user, function(snap){
-      if(snap.val()){if(errEl)errEl.textContent='Username già in uso.';return;}
-      var uid='u'+Math.random().toString(36).substr(2,8);
-      MY_UID=uid; MY_NAME=name;
-      localStorage.setItem('stash_uid_v3',uid);
-      localStorage.setItem('stash_name_v3',name);
-      localStorage.setItem('stash_user_v3',user);
-      fbSet('users/'+uid,{name:name,username:user,balance:100,escrow:0,lastSeen:Date.now()});
-      fbSet('usernames/'+user,{uid:uid,name:name,password:pass});
-      setupHome();
-      go('s-terms');
-    });
-  });
-}
-
 var SEL_CHALLENGED = null;
 var SELECTED_UIDS = {};
 var CH_TIMEOUT = 3600;
@@ -1664,10 +1625,12 @@ function drawHistory() {
 function drawAmici() {
   var list=el('amici-list');if(!list)return;
   var ch=STATE.challenge;
+  var RF=JSON.parse(localStorage.getItem('stash_removed')||'{}');
   list.innerHTML='';
   var count=0;
   for(var uid in STATE.users){
     if(uid===MY_UID)continue;
+    if(RF[uid])continue;
     count++;
     var u=STATE.users[uid];
     var card=document.createElement('div');

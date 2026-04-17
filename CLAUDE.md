@@ -62,6 +62,7 @@ Altre: `s-settings` · `s-deposit` · `s-withdraw`
 - Sfida "current" è una sola globale — limite architetturale accettabile per beta
 - Password in chiaro nel DB — da migliorare in futuro con hashing
 - ⚠️ Colonna `type` su `challenges` va aggiunta manualmente in Supabase SQL editor: `ALTER TABLE challenges ADD COLUMN IF NOT EXISTS type TEXT DEFAULT '1v1';`
+- Notifiche campanella: cache history 30s, su altri dispositivi il badge potrebbe essere in ritardo di max 30s
 
 ## Plugin installati
 

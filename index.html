@@ -1234,7 +1234,9 @@ function pollSupabase(){
     }
     var users={};
     rows.forEach(function(r){
-      users[r.uid]={name:r.name,username:r.username||'',balance:r.balance,escrow:r.escrow,lastSeen:r.last_seen};
+      var bal=(_balanceOverride[r.uid]!==undefined)?_balanceOverride[r.uid]:r.balance;
+      var esc=(_escrowOverride[r.uid]!==undefined)?_escrowOverride[r.uid]:r.escrow;
+      users[r.uid]={name:r.name,username:r.username||'',balance:bal,escrow:esc,lastSeen:r.last_seen};
       if(r.uid===MY_UID && r.username){
         MY_USERNAME=r.username;
         localStorage.setItem('stash_user_v3',r.username);
@@ -1373,6 +1375,8 @@ var CH_TIMEOUT = 3600;
 var CH_TYPE = '1v1';
 var NOTIF_HIST_CACHE = [];
 var NOTIF_CACHE_TS = 0;
+var _balanceOverride = {};
+var _escrowOverride = {};
 
 function getChMeta(){try{return JSON.parse(localStorage.getItem('stash_ch_meta')||'{}');}catch(e){return {};}}
 function getChType(){return getChMeta().type||'1v1';}
@@ -1410,8 +1414,16 @@ var BLOCKED = ['morte','morire','muori','ammazzati','uccidi','cazzo','fanculo','
 function countKeys(obj){var n=0;for(var k in obj){if(obj.hasOwnProperty(k))n++;}return n;}
 function myBal() { var u=STATE.users[MY_UID]; return (u&&u.balance!==undefined)?u.balance:100; }
 function myEsc() { var u=STATE.users[MY_UID]; return (u&&u.escrow!==undefined)?u.escrow:0; }
-function setBal(uid,v) { supaPatch('users','uid=eq.'+uid,{balance:v}); if(STATE.users[uid])STATE.users[uid].balance=v; }
-function setEsc(uid,v) { supaPatch('users','uid=eq.'+uid,{escrow:v}); if(STATE.users[uid])STATE.users[uid].escrow=v; }
+function setBal(uid,v){
+  _balanceOverride[uid]=v;
+  if(STATE.users[uid])STATE.users[uid].balance=v;
+  supaPatch('users','uid=eq.'+uid,{balance:v}).then(function(){delete _balanceOverride[uid];}).catch(function(){delete _balanceOverride[uid];});
+}
+function setEsc(uid,v){
+  _escrowOverride[uid]=v;
+  if(STATE.users[uid])STATE.users[uid].escrow=v;
+  supaPatch('users','uid=eq.'+uid,{escrow:v}).then(function(){delete _escrowOverride[uid];}).catch(function(){delete _escrowOverride[uid];});
+}
 function getBal(uid)   { var u=STATE.users[uid]; return (u&&u.balance!==undefined)?u.balance:100; }
 function updateBal()   { setText('bal-display','€'+myBal().toFixed(2)); }
 
@@ -1460,9 +1472,9 @@ function onStateChange() {
 }
 
 var _lastChStatus = null;
-var _lastHistoryHash = null;
-var _lastWalletHash = null;
-var _lastAmiciHash = null;
+var _lastHistoryHash = '';
+var _lastWalletHash = '';
+var _lastAmiciHash = '';
 function updateGlobalNotif() {
   var gn = el('global-notif');
   if (!gn) return;
@@ -1679,13 +1691,13 @@ function drawProfile() {
 
 function drawHistory() {
   var list=el('hist-list');if(!list)return;
-  if(_lastHistoryHash===null) list.innerHTML='<div class="muted" style="text-align:center;padding:12px 0;font-size:13px">Caricamento...</div>';
+  if(!_lastHistoryHash) list.innerHTML='<div class="muted" style="text-align:center;padding:12px 0;font-size:13px">Caricamento...</div>';
   fbGet('history',function(snap){
     var data=snap.val()||{},items=[],wins=0,net=0;
     for(var k in data){if(data[k]&&(data[k].challengerUid===MY_UID||data[k].challengedUid===MY_UID))items.push(data[k]);}
     items.sort(function(a,b){return(b.ts||0)-(a.ts||0);});
-    var hHash=items.length+'_'+(items[0]?String(items[0].ts||0):'none');
-    if(hHash===_lastHistoryHash)return;
+    var hHash=MY_UID+'-'+Object.keys(STATE.users).length+'-'+(STATE.challenge?STATE.challenge.status:'')+'-'+items.length+'_'+(items[0]?String(items[0].ts||0):'none');
+    if(hHash===_lastHistoryHash&&list.children.length>1)return;
     _lastHistoryHash=hHash;
     if(!items.length){list.innerHTML='<div class="muted" style="text-align:center;padding:12px 0;font-size:13px">Nessuna sfida ancora.</div>';return;}
     var html='';
@@ -1705,9 +1717,9 @@ function drawHistory() {
     list.innerHTML=html;
     var tot=items.length,wr=tot>0?Math.round(wins/tot*100):0;
     setText('stat-total',tot);setText('stat-wins',wins);setText('stat-wr',wr+'%');
-    setHTML('stat-net',(net>=0?'+':'')+'€'+Math.abs(net));
+    setHTML('stat-net',net>=0?'<span style="font-size:14px;vertical-align:2px">+</span>\u20ac'+Math.abs(net):'-\u20ac'+Math.abs(net));
     setText('prof-stat-total',tot);setText('prof-stat-wins',wins);setText('prof-stat-wr',wr+'%');
-    setHTML('prof-stat-net',(net>=0?'+':'')+'€'+Math.abs(net));
+    setHTML('prof-stat-net',net>=0?'<span style="font-size:14px;vertical-align:2px">+</span>\u20ac'+Math.abs(net):'-\u20ac'+Math.abs(net));
     setText('prof-sfide-count',tot+' →');
     var activeChip=document.querySelector('#hist-filter .chip.sel');
     if(activeChip&&activeChip.getAttribute('data-f')!=='all') filterHist(activeChip);

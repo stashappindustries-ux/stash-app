@@ -1457,6 +1457,9 @@ function onStateChange() {
 }
 
 var _lastChStatus = null;
+var _lastHistoryHash = null;
+var _lastWalletHash = null;
+var _lastAmiciHash = null;
 function updateGlobalNotif() {
   var gn = el('global-notif');
   if (!gn) return;
@@ -1637,6 +1640,9 @@ function drawWallet() {
     var data=snap.val()||{},items=[];
     for(var k in data){if(data[k]&&(data[k].challengerUid===MY_UID||data[k].challengedUid===MY_UID))items.push(data[k]);}
     items.sort(function(a,b){return(b.ts||0)-(a.ts||0);});
+    var wHash=items.length+'_'+(items[0]?String(items[0].ts||0):'none')+'_'+myBal()+'_'+myEsc();
+    if(wHash===_lastWalletHash)return;
+    _lastWalletHash=wHash;
     var rows='<div class="tx-row"><div class="tx-icon" style="background:var(--bg3)">💸</div><div class="tx-info"><div class="tx-title">Credito demo</div><div class="tx-meta">Alla registrazione</div></div><div class="tx-amt tx-pos">+€100</div></div>';
     for(var i=0;i<Math.min(items.length,5);i++){
       var it=items[i],isW=it.winnerUid===MY_UID,isL=it.status==='accepted'||it.status==='pending';
@@ -1670,11 +1676,14 @@ function drawProfile() {
 
 function drawHistory() {
   var list=el('hist-list');if(!list)return;
-  list.innerHTML='<div class="muted" style="text-align:center;padding:12px 0;font-size:13px">Caricamento...</div>';
+  if(_lastHistoryHash===null) list.innerHTML='<div class="muted" style="text-align:center;padding:12px 0;font-size:13px">Caricamento...</div>';
   fbGet('history',function(snap){
     var data=snap.val()||{},items=[],wins=0,net=0;
     for(var k in data){if(data[k]&&(data[k].challengerUid===MY_UID||data[k].challengedUid===MY_UID))items.push(data[k]);}
     items.sort(function(a,b){return(b.ts||0)-(a.ts||0);});
+    var hHash=items.length+'_'+(items[0]?String(items[0].ts||0):'none');
+    if(hHash===_lastHistoryHash)return;
+    _lastHistoryHash=hHash;
     if(!items.length){list.innerHTML='<div class="muted" style="text-align:center;padding:12px 0;font-size:13px">Nessuna sfida ancora.</div>';return;}
     var html='';
     for(var i=0;i<items.length;i++){
@@ -1801,6 +1810,11 @@ function drawAmici() {
   var list=el('amici-list');if(!list)return;
   var ch=STATE.challenge;
   var RF=JSON.parse(localStorage.getItem('stash_removed')||'{}');
+  var aUids=[];
+  for(var aUid in STATE.users){if(aUid!==MY_UID&&!RF[aUid])aUids.push(aUid);}
+  var aHash=aUids.sort().join(',')+'_'+(ch?ch.status:'none');
+  if(aHash===_lastAmiciHash)return;
+  _lastAmiciHash=aHash;
   list.innerHTML='';
   var count=0;
   for(var uid in STATE.users){

@@ -202,9 +202,9 @@ textarea.form-input{resize:none;height:88px}
 
 /* STATS BAR */
 .stats-bar{display:flex;gap:8px;margin-bottom:18px}
-.stat-item{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:12px 8px;text-align:center}
-.stat-val{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:22px;color:var(--accent);line-height:1;margin-bottom:4px}
-.stat-lbl{font-size:10px;color:var(--text3);font-family:'Syne',sans-serif;font-weight:600;letter-spacing:1.5px;text-transform:uppercase}
+.stat-item{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px 12px;text-align:center;border-bottom:2px solid var(--accent)}
+.stat-val{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:22px;color:var(--accent);line-height:1;margin-bottom:6px}
+.stat-lbl{font-size:12px;color:rgba(240,230,208,0.70);font-family:'Syne',sans-serif;font-weight:600;letter-spacing:1px;text-transform:uppercase}
 
 /* HISTORY CARD */
 .hcard{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
@@ -217,7 +217,7 @@ textarea.form-input{resize:none;height:88px}
 
 /* PROFILE */
 .profile-header{text-align:center;padding:24px 0 20px}
-.profile-name{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;margin:12px 0 4px;letter-spacing:-.3px}
+.profile-name{font-family:'Syne',sans-serif;font-weight:700;font-size:22px;margin:12px 0 4px;letter-spacing:-.2px}
 .profile-user{font-size:12px;color:var(--text3);font-family:'Syne',sans-serif;letter-spacing:1.5px}
 .profile-opt{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:color .2s}
 .profile-opt:last-child{border-bottom:none}
@@ -237,7 +237,7 @@ textarea.form-input{resize:none;height:88px}
 .ob-slide{display:none;flex-direction:column;align-items:center;animation:fadeInUp .3s ease}
 .ob-slide.active{display:flex}
 .ob-icon{font-size:60px;margin-bottom:24px;animation:pop .4s ease}
-.ob-title{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;margin-bottom:12px;line-height:1.2;letter-spacing:-.3px}
+.ob-title{font-family:'Syne',sans-serif;font-weight:700;font-size:26px;margin-bottom:12px;line-height:1.2;letter-spacing:-.3px}
 .ob-sub{font-size:15px;color:var(--text2);line-height:1.65;max-width:280px;font-family:'Syne',sans-serif}
 .ob-dots{display:flex;gap:6px;margin:28px auto}
 .ob-dot{width:6px;height:6px;border-radius:50%;background:var(--bg4);transition:all .3s}
@@ -248,7 +248,7 @@ textarea.form-input{resize:none;height:88px}
 /* SUCCESS SCREEN */
 .success-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 0}
 .success-icon{width:72px;height:72px;background:var(--accent);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 24px;animation:pop .4s ease}
-.success-title{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;margin-bottom:10px;letter-spacing:-.3px}
+.success-title{font-family:'Syne',sans-serif;font-weight:700;font-size:26px;margin-bottom:10px;letter-spacing:-.3px}
 .success-sub{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:24px;font-family:'Syne',sans-serif}
 .escrow-hero{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:20px;margin-bottom:24px;width:100%}
 .escrow-hero-label{font-size:10px;color:var(--text3);margin-bottom:8px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase}
@@ -258,7 +258,7 @@ textarea.form-input{resize:none;height:88px}
 /* WINNER SCREEN */
 .winner-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 0}
 .winner-emoji{font-size:64px;margin-bottom:18px;animation:pop .4s ease}
-.winner-title{font-family:'Syne',sans-serif;font-weight:800;font-size:30px;margin-bottom:8px;letter-spacing:-.5px}
+.winner-title{font-family:'Syne',sans-serif;font-weight:700;font-size:30px;margin-bottom:8px;letter-spacing:-.5px}
 .winner-sub{font-size:14px;color:var(--text2);line-height:1.5;margin-bottom:24px;font-family:'Syne',sans-serif}
 .winner-amount{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:72px;color:var(--accent);margin-bottom:4px;letter-spacing:-3px}
 .winner-lbl{font-size:11px;color:var(--text3);margin-bottom:24px;font-family:'Syne',sans-serif;letter-spacing:1.5px;text-transform:uppercase}
@@ -290,7 +290,7 @@ textarea.form-input{resize:none;height:88px}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:100;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease}
 .modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;padding:24px 20px 36px;width:100%;max-width:390px}
 .modal-handle{width:36px;height:4px;background:#2E2016;border-radius:2px;margin:0 auto 20px}
-.modal-title{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:18px;margin-bottom:6px}
+.modal-title{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:6px}
 .modal-sub{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.5}
 .modal-link-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:12px 14px;margin-bottom:14px}
 .modal-link-url{font-size:12px;color:var(--accent);word-break:break-all;line-height:1.6;display:block;margin-bottom:8px}
@@ -304,7 +304,7 @@ textarea.form-input{resize:none;height:88px}
 .notif-overlay{display:none;position:fixed;inset:0;z-index:199;background:rgba(0,0,0,0.45)}
 .notif-panel{display:none;position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:390px;z-index:200;background:var(--bg2);border-bottom-left-radius:20px;border-bottom-right-radius:20px;padding:52px 0 0;box-shadow:0 8px 32px rgba(0,0,0,0.5);max-height:80vh;overflow-y:auto}
 .notif-panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--border)}
-.notif-panel-title{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:16px}
+.notif-panel-title{font-family:'Syne',sans-serif;font-weight:700;font-size:16px}
 .notif-item{display:flex;align-items:flex-start;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
 .notif-item:hover{background:var(--bg3)}
 .notif-item-icon{font-size:18px;flex-shrink:0;margin-top:2px}

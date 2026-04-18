@@ -4,27 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>stash — Are you in?</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#110D0A;--bg2:#1C1510;--bg3:#241912;--bg4:#2E2016;
-  --accent:#E8501A;--accent-dim:rgba(232,80,26,0.10);--accent-mid:rgba(232,80,26,0.22);
+  --bg:#0E0B08;--bg2:#161210;--bg3:#1E1714;--bg4:#272019;
+  --accent:#FF4D00;--accent-dim:rgba(255,77,0,0.10);--accent-mid:rgba(255,77,0,0.22);
   --purple:#8B5CF6;--purple-dim:rgba(139,92,246,0.12);
-  --text:#F5ECD7;--text2:rgba(245,236,215,0.50);--text3:rgba(245,236,215,0.28);
+  --text:#F0E6D0;--text2:rgba(240,230,208,0.52);--text3:rgba(240,230,208,0.28);
   --red:#FF4B4B;--red-dim:rgba(255,75,75,0.12);
   --amber:#FFB347;--amber-dim:rgba(255,179,71,0.12);
-  --blue:#5B8EF0;--border:rgba(245,236,215,0.07);--brace:#8B3A1A;--sand:#F5ECD7;
-  --r:16px;--rs:10px;
+  --blue:#5B8EF0;--border:rgba(240,230,208,0.08);--brace:#CC3D00;--sand:#F0E6D0;
+  --r:4px;--rs:3px;
 }
-html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:0}
+html,body{background:var(--bg);background-image:radial-gradient(ellipse 70% 55% at 15% 8%,rgba(255,77,0,0.07) 0%,transparent 65%),radial-gradient(ellipse 50% 45% at 82% 88%,rgba(255,77,0,0.05) 0%,transparent 60%);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:0}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.025) 3px,rgba(0,0,0,0.025) 4px);pointer-events:none;z-index:9998}
 .phone{width:100%;max-width:390px;min-height:100vh;position:relative;overflow-x:hidden;margin:0 auto}
 
 /* SCREENS */
 .screen{display:none;flex-direction:column;min-height:100vh;padding:0 18px 90px;max-width:600px;margin:0 auto}
-.screen.active{display:flex}
-@keyframes fadeIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.screen.active{display:flex;animation:screenIn .22s cubic-bezier(.22,1,.36,1) both}
+@keyframes screenIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pop{0%{transform:scale(.85);opacity:0}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
 @keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
@@ -41,12 +43,12 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;border:1.5px solid var(--border)}
 .av-sm{width:28px;height:28px;font-size:11px}
 .av-lg{width:72px;height:72px;font-size:26px;font-weight:800}
-.av-marco{background:var(--accent);color:#110D0A;border-color:rgba(232,80,26,0.4)}
+.av-marco{background:var(--accent);color:#0E0B08;border-color:rgba(255,77,0,0.4)}
 .av-alex{background:var(--purple);color:#fff}
 .av-gray{background:var(--bg3);color:var(--text2)}
 
 /* SECTION LABEL */
-.sl{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;margin-top:6px}
+.sl{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;margin-top:6px}
 
 /* CARDS */
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;transition:border-color .2s,background .2s}
@@ -61,7 +63,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .gc-info{flex:1;min-width:0}
 .gc-name{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:15px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gc-meta{font-size:12px;color:var(--text2)}
-.gc-badge{background:var(--accent);color:#110D0A;font-size:11px;font-weight:700;border-radius:20px;padding:3px 10px;white-space:nowrap}
+.gc-badge{background:var(--accent);color:#0E0B08;font-size:11px;font-weight:700;border-radius:20px;padding:3px 10px;white-space:nowrap}
 .gc-bot{display:flex;align-items:center;justify-content:space-between}
 .av-stack{display:flex;align-items:center}
 .av-stack .av{margin-right:-8px;border:2px solid var(--bg2)}
@@ -93,40 +95,40 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .timer-crit{color:var(--red);animation:pulse 1s ease-in-out infinite}
 
 /* BUTTONS */
-.btn-primary{width:100%;background:var(--accent);color:#110D0A;border:none;border-radius:var(--r);padding:16px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:16px;cursor:pointer;transition:opacity .2s,transform .1s;letter-spacing:.3px}
+.btn-primary{width:100%;background:var(--accent);color:#0E0B08;border:none;border-radius:4px;padding:17px 16px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;cursor:pointer;transition:background .15s,transform .1s;letter-spacing:1.2px;text-transform:uppercase}
 .btn-primary:hover{background:var(--brace)}
 .btn-primary:active{transform:scale(.98)}
 .btn-primary:disabled{opacity:.28;cursor:not-allowed;transform:none}
-.btn-secondary{width:100%;background:none;color:var(--text2);border:1.5px solid var(--border);border-radius:var(--r);padding:14px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:border-color .2s,color .2s;margin-top:10px}
+.btn-secondary{width:100%;background:none;color:var(--text2);border:1.5px solid var(--border);border-radius:4px;padding:14px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:border-color .2s,color .2s;margin-top:10px;letter-spacing:.8px;text-transform:uppercase}
 .btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
-.btn-danger{width:100%;background:none;color:var(--red);border:1.5px solid var(--red-dim);border-radius:var(--r);padding:14px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:15px;cursor:pointer;margin-top:10px}
+.btn-danger{width:100%;background:none;color:var(--red);border:1.5px solid var(--red-dim);border-radius:4px;padding:14px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;margin-top:10px;letter-spacing:.8px;text-transform:uppercase}
 .btn-icon{display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-half{width:calc(50% - 5px);padding:13px;border-radius:var(--rs);border:1.5px solid var(--border);background:none;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text)}
+.btn-half{width:calc(50% - 5px);padding:14px 10px;border-radius:4px;border:1.5px solid var(--border);background:none;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text);letter-spacing:.4px}
 .btn-half:hover{border-color:var(--accent);background:var(--accent-dim)}
 .btn-half.sel{border-color:var(--accent);background:var(--accent-dim);color:var(--accent)}
-.btn-half.win-btn{border-color:var(--accent);background:var(--accent);color:#110D0A}
+.btn-half.win-btn{border-color:var(--accent);background:var(--accent);color:#0E0B08}
 .btn-half.lose-btn{opacity:.35}
-.btn-half-sub{font-size:11px;color:var(--text2);font-weight:400}
+.btn-half-sub{font-size:11px;color:var(--text2);font-weight:400;letter-spacing:0}
 .btn-half.sel .btn-half-sub,.btn-half.win-btn .btn-half-sub{color:inherit;opacity:.75}
 .btn-row{display:flex;gap:10px}
 
 /* DASHED NEW BTN */
-.btn-new{border:1.5px dashed var(--border);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;color:var(--text2);font-size:14px;background:none;width:100%;font-family:inherit;transition:border-color .2s,color .2s;margin-bottom:12px}
+.btn-new{border:1.5px dashed rgba(240,230,208,0.14);border-radius:4px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;color:var(--text2);font-size:13px;font-family:'Syne',sans-serif;font-weight:600;background:none;width:100%;transition:border-color .2s,color .2s;margin-bottom:12px;letter-spacing:.3px}
 .btn-new:hover{border-color:var(--accent);color:var(--accent)}
-.btn-new-ic{width:44px;height:44px;border-radius:12px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.btn-new-ic{width:44px;height:44px;border-radius:4px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
 
 /* FORM */
 .form-sec{margin-bottom:20px}
-.form-lbl{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;display:block;letter-spacing:.3px}
-.form-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:14px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.form-lbl{font-size:11px;font-weight:700;color:var(--text3);margin-bottom:8px;display:block;letter-spacing:2px;text-transform:uppercase;font-family:'Syne',sans-serif}
+.form-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:14px 16px;color:var(--text);font-family:'Syne',sans-serif;font-size:15px;outline:none;transition:border-color .2s;-webkit-appearance:none}
 .form-input:focus{border-color:var(--accent)}
 .form-input::placeholder{color:var(--text3)}
 textarea.form-input{resize:none;height:88px}
 .amt-wrap{position:relative}
 .amt-pre{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;color:var(--accent);font-size:20px;pointer-events:none}
-.amt-wrap .form-input{padding-left:36px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:26px}
+.amt-wrap .form-input{padding-left:36px;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:28px}
 .chips{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-.chip{flex:1;min-width:60px;padding:9px 6px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:13px;cursor:pointer;text-align:center;transition:all .2s;white-space:nowrap}
+.chip{flex:1;min-width:60px;padding:9px 6px;border-radius:3px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;text-align:center;transition:all .2s;white-space:nowrap;letter-spacing:.5px;text-transform:uppercase}
 .chip:hover{border-color:var(--accent);color:var(--accent)}
 .chip.sel{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
 .char-count{font-size:11px;color:var(--text3);text-align:right;margin-top:4px}
@@ -134,7 +136,7 @@ textarea.form-input{resize:none;height:88px}
 .member-row:last-child{border-bottom:none}
 .member-name{font-size:14px;flex:1}
 .check{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;font-size:12px;color:transparent}
-.check.on{background:var(--accent);border-color:var(--accent);color:#110D0A;font-weight:800}
+.check.on{background:var(--accent);border-color:var(--accent);color:#0E0B08;font-weight:800}
 
 /* INFO BOX */
 .info-box{border-radius:var(--rs);padding:12px 14px;margin-top:10px;font-size:13px;line-height:1.6}
@@ -155,8 +157,8 @@ textarea.form-input{resize:none;height:88px}
 .prog-bar{background:var(--accent);border-radius:20px;height:6px;transition:width .5s ease}
 
 /* BOTTOM NAV */
-.bnav{display:flex;border-top:1px solid var(--border);padding:10px 0 env(safe-area-inset-bottom,16px);background:var(--bg);position:fixed;bottom:0;left:0;right:0;z-index:100;max-width:600px;margin:0 auto}
-.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--text3);font-size:9px;font-weight:600;letter-spacing:.2px;text-transform:uppercase;transition:color .2s;padding:4px 2px}
+.bnav{display:flex;border-top:1px solid var(--border);padding:10px 0 env(safe-area-inset-bottom,16px);background:rgba(14,11,8,0.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);position:fixed;bottom:0;left:0;right:0;z-index:100;max-width:600px;margin:0 auto}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--text3);font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;transition:color .2s;padding:4px 2px;font-family:'Syne',sans-serif}
 .bnav-item.on{color:var(--accent)}
 .bnav-icon{font-size:20px;line-height:1}
 .bnav-disabled{opacity:.3;cursor:default}
@@ -169,7 +171,7 @@ textarea.form-input{resize:none;height:88px}
 
 /* SHARE BTN */
 .share-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.share-btn{font-size:12px;color:var(--text2);background:none;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:5px}
+.share-btn{font-size:10px;color:var(--text2);background:none;border:1px solid var(--border);border-radius:3px;padding:6px 12px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all .2s;display:flex;align-items:center;gap:5px}
 .share-btn:hover{border-color:var(--accent);color:var(--accent)}
 .share-btn.copied{color:var(--accent);border-color:var(--accent)}
 
@@ -177,12 +179,13 @@ textarea.form-input{resize:none;height:88px}
 .demo-badge{background:var(--amber-dim);color:var(--amber);font-size:10px;font-weight:700;border-radius:6px;padding:2px 7px;letter-spacing:.5px;vertical-align:middle;margin-left:6px}
 
 /* WALLET CARD */
-.wallet-hero{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px;text-align:center}
-.wallet-label{font-size:12px;color:var(--text2);margin-bottom:8px}
-.wallet-amount{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:44px;color:var(--accent);line-height:1}
-.wallet-locked{font-size:12px;color:var(--text3);margin-top:6px}
+.wallet-hero{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:22px 14px 18px;margin-bottom:12px;text-align:center;position:relative;overflow:hidden}
+.wallet-hero::after{content:'';position:absolute;bottom:-20px;right:-20px;width:100px;height:100px;background:radial-gradient(circle,rgba(255,77,0,0.12) 0%,transparent 70%);pointer-events:none}
+.wallet-label{font-size:10px;color:var(--text3);margin-bottom:10px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:2.5px;text-transform:uppercase}
+.wallet-amount{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:64px;color:var(--accent);line-height:1;letter-spacing:-2px}
+.wallet-locked{font-size:11px;color:var(--text3);margin-top:8px;font-family:'Syne',sans-serif;letter-spacing:.5px}
 .wallet-actions{display:flex;gap:10px;margin-bottom:12px}
-.wallet-act-btn{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:14px;cursor:pointer;font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:14px;color:var(--text);transition:all .2s;text-align:center}
+.wallet-act-btn{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:14px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:var(--text);transition:all .2s;text-align:center;letter-spacing:.8px;text-transform:uppercase}
 .wallet-act-btn:hover{border-color:var(--accent);color:var(--accent)}
 
 /* TX ROW */
@@ -199,9 +202,9 @@ textarea.form-input{resize:none;height:88px}
 
 /* STATS BAR */
 .stats-bar{display:flex;gap:8px;margin-bottom:18px}
-.stat-item{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:12px 8px;text-align:center}
-.stat-val{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:20px;color:var(--accent);line-height:1;margin-bottom:4px}
-.stat-lbl{font-size:11px;color:var(--text2)}
+.stat-item{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:12px 8px;text-align:center}
+.stat-val{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:22px;color:var(--accent);line-height:1;margin-bottom:4px}
+.stat-lbl{font-size:10px;color:var(--text3);font-family:'Syne',sans-serif;font-weight:600;letter-spacing:1.5px;text-transform:uppercase}
 
 /* HISTORY CARD */
 .hcard{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
@@ -214,8 +217,8 @@ textarea.form-input{resize:none;height:88px}
 
 /* PROFILE */
 .profile-header{text-align:center;padding:24px 0 20px}
-.profile-name{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:20px;margin:12px 0 4px}
-.profile-user{font-size:13px;color:var(--text2)}
+.profile-name{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;margin:12px 0 4px;letter-spacing:-.3px}
+.profile-user{font-size:12px;color:var(--text3);font-family:'Syne',sans-serif;letter-spacing:1.5px}
 .profile-opt{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:color .2s}
 .profile-opt:last-child{border-bottom:none}
 .profile-opt:hover .profile-opt-label{color:var(--accent)}
@@ -233,37 +236,37 @@ textarea.form-input{resize:none;height:88px}
 .ob-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 0;text-align:center}
 .ob-slide{display:none;flex-direction:column;align-items:center;animation:fadeInUp .3s ease}
 .ob-slide.active{display:flex}
-.ob-icon{font-size:64px;margin-bottom:24px;animation:pop .4s ease}
-.ob-title{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:26px;margin-bottom:12px;line-height:1.2}
-.ob-sub{font-size:16px;color:var(--text2);line-height:1.6;max-width:280px}
-.ob-dots{display:flex;gap:8px;margin:28px auto}
-.ob-dot{width:8px;height:8px;border-radius:50%;background:#2E2016;transition:all .3s}
-.ob-dot.on{background:var(--accent);width:24px;border-radius:4px}
+.ob-icon{font-size:60px;margin-bottom:24px;animation:pop .4s ease}
+.ob-title{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;margin-bottom:12px;line-height:1.2;letter-spacing:-.3px}
+.ob-sub{font-size:15px;color:var(--text2);line-height:1.65;max-width:280px;font-family:'Syne',sans-serif}
+.ob-dots{display:flex;gap:6px;margin:28px auto}
+.ob-dot{width:6px;height:6px;border-radius:50%;background:var(--bg4);transition:all .3s}
+.ob-dot.on{background:var(--accent);width:20px;border-radius:3px}
 .ob-logo{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:26px;color:var(--accent);margin-bottom:28px}
 .ob-logo span{color:var(--text)}
 
 /* SUCCESS SCREEN */
 .success-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 0}
-.success-icon{width:80px;height:80px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 24px;animation:pop .4s ease}
-.success-title{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:26px;margin-bottom:10px}
-.success-sub{font-size:15px;color:var(--text2);line-height:1.6;margin-bottom:24px}
-.escrow-hero{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:24px;width:100%}
-.escrow-hero-label{font-size:12px;color:var(--text2);margin-bottom:6px}
-.escrow-hero-amount{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:38px;color:var(--accent)}
-.escrow-hero-sub{font-size:12px;color:var(--text3);margin-top:4px}
+.success-icon{width:72px;height:72px;background:var(--accent);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 24px;animation:pop .4s ease}
+.success-title{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;margin-bottom:10px;letter-spacing:-.3px}
+.success-sub{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:24px;font-family:'Syne',sans-serif}
+.escrow-hero{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:20px;margin-bottom:24px;width:100%}
+.escrow-hero-label{font-size:10px;color:var(--text3);margin-bottom:8px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.escrow-hero-amount{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:44px;color:var(--accent);letter-spacing:-1.5px}
+.escrow-hero-sub{font-size:11px;color:var(--text3);margin-top:4px;font-family:'Syne',sans-serif}
 
 /* WINNER SCREEN */
 .winner-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 0}
 .winner-emoji{font-size:64px;margin-bottom:18px;animation:pop .4s ease}
-.winner-title{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:28px;margin-bottom:8px}
-.winner-sub{font-size:15px;color:var(--text2);line-height:1.5;margin-bottom:24px}
-.winner-amount{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:54px;color:var(--accent);margin-bottom:4px}
-.winner-lbl{font-size:13px;color:var(--text2);margin-bottom:24px}
+.winner-title{font-family:'Syne',sans-serif;font-weight:800;font-size:30px;margin-bottom:8px;letter-spacing:-.5px}
+.winner-sub{font-size:14px;color:var(--text2);line-height:1.5;margin-bottom:24px;font-family:'Syne',sans-serif}
+.winner-amount{font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:72px;color:var(--accent);margin-bottom:4px;letter-spacing:-3px}
+.winner-lbl{font-size:11px;color:var(--text3);margin-bottom:24px;font-family:'Syne',sans-serif;letter-spacing:1.5px;text-transform:uppercase}
 .vote-result-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;width:100%;margin-bottom:28px}
 .vr-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
 .vr-left{display:flex;align-items:center;gap:10px}
 .vr-badge{font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px}
-.vr-win{background:var(--accent);color:#110D0A}
+.vr-win{background:var(--accent);color:#0E0B08}
 .vr-lose{background:var(--bg3);color:var(--text2)}
 
 /* DECLARATION BOXES */
@@ -279,7 +282,7 @@ textarea.form-input{resize:none;height:88px}
 .divider{height:1px;background:var(--border);margin:8px 0 18px}
 .center{text-align:center}
 .row{display:flex;align-items:center;justify-content:space-between}
-.muted{color:var(--text2);font-size:13px}
+.muted{color:var(--text2);font-size:13px;font-family:'Syne',sans-serif}
 .emoji-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
 .emoji-item{aspect-ratio:1;background:var(--bg3);border:2px solid var(--border);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;transition:all .2s}
 .emoji-item:hover,.emoji-item.sel{border-color:var(--accent);background:var(--accent-dim)}
@@ -319,13 +322,13 @@ textarea.form-input{resize:none;height:88px}
 <!-- ===== WELCOME / AUTH ===== -->
 <div class="screen active" id="s-welcome">
   <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 18px">
-    <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:52px;letter-spacing:-3px;line-height:1;margin-bottom:8px;display:flex;align-items:baseline;justify-content:center">
-      <span style="color:transparent;-webkit-text-stroke:2.5px #E8501A">s</span><span style="color:#F5ECD7">tas</span><span style="color:#E8501A">h</span>
+    <div style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:56px;letter-spacing:-3px;line-height:1;margin-bottom:8px;display:flex;align-items:baseline;justify-content:center">
+      <span style="color:transparent;-webkit-text-stroke:2.5px #FF4D00">s</span><span style="color:#F0E6D0">tas</span><span style="color:#FF4D00">h</span>
     </div>
-    <div style="font-size:15px;font-style:italic;color:rgba(245,236,215,0.4);letter-spacing:0.08em;margin-bottom:32px">Are you in?</div>
-    <div style="display:flex;width:100%;max-width:340px;background:var(--bg2);border-radius:12px;padding:4px;margin-bottom:24px">
-      <button id="tab-login" onclick="authTabSwitch('login')" style="flex:1;padding:10px;border:none;border-radius:9px;background:var(--accent);color:#110D0A;font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:14px;cursor:pointer">Accedi</button>
-      <button id="tab-signup" onclick="authTabSwitch('signup')" style="flex:1;padding:10px;border:none;border-radius:9px;background:transparent;color:var(--text2);font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:14px;cursor:pointer">Registrati</button>
+    <div style="font-size:13px;font-style:italic;color:rgba(240,230,208,0.35);letter-spacing:0.15em;margin-bottom:36px;font-family:'Syne',sans-serif;font-weight:500">Are you in?</div>
+    <div style="display:flex;width:100%;max-width:340px;background:var(--bg2);border-radius:4px;padding:3px;margin-bottom:24px;border:1px solid var(--border)">
+      <button id="tab-login" onclick="authTabSwitch('login')" style="flex:1;padding:10px;border:none;border-radius:3px;background:var(--accent);color:#0E0B08;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;letter-spacing:.8px;text-transform:uppercase">Accedi</button>
+      <button id="tab-signup" onclick="authTabSwitch('signup')" style="flex:1;padding:10px;border:none;border-radius:3px;background:transparent;color:var(--text2);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;letter-spacing:.8px;text-transform:uppercase">Registrati</button>
     </div>
     <script>
     function authTabSwitch(tab) {
@@ -336,12 +339,12 @@ textarea.form-input{resize:none;height:88px}
       if(!pl||!ps||!tl||!ts) return;
       if(tab==='login'){
         pl.style.display='block'; ps.style.display='none';
-        tl.style.background='#E8501A'; tl.style.color='#110D0A';
-        ts.style.background='transparent'; ts.style.color='rgba(245,236,215,0.5)';
+        tl.style.background='#FF4D00'; tl.style.color='#0E0B08';
+        ts.style.background='transparent'; ts.style.color='rgba(240,230,208,0.5)';
       } else {
         pl.style.display='none'; ps.style.display='block';
-        ts.style.background='#E8501A'; ts.style.color='#110D0A';
-        tl.style.background='transparent'; tl.style.color='rgba(245,236,215,0.5)';
+        ts.style.background='#FF4D00'; ts.style.color='#0E0B08';
+        tl.style.background='transparent'; tl.style.color='rgba(240,230,208,0.5)';
       }
     }
     </script>
@@ -349,25 +352,25 @@ textarea.form-input{resize:none;height:88px}
       <div id="panel-login">
         <label class="form-lbl">Username</label>
         <input id="login-user" type="text" placeholder="il_tuo_username" maxlength="20"
-          style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-size:16px;outline:none;margin-bottom:12px;-webkit-appearance:none;box-sizing:border-box">
+          style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:14px 16px;color:var(--text);font-size:15px;font-family:'Syne',sans-serif;outline:none;margin-bottom:12px;-webkit-appearance:none;box-sizing:border-box">
         <label class="form-lbl">Password</label>
         <input id="login-pass" type="password" placeholder="password" maxlength="40"
-          style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-size:16px;outline:none;margin-bottom:8px;-webkit-appearance:none;box-sizing:border-box">
-        <div id="login-err" style="color:var(--red);font-size:13px;margin-bottom:12px;min-height:18px"></div>
-        <button id="login-btn" style="width:100%;background:#E8501A;color:#110D0A;border:none;border-radius:14px;padding:16px;font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:16px;cursor:pointer">Accedi</button>
+          style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:14px 16px;color:var(--text);font-size:15px;font-family:'Syne',sans-serif;outline:none;margin-bottom:8px;-webkit-appearance:none;box-sizing:border-box">
+        <div id="login-err" style="color:var(--red);font-size:12px;margin-bottom:12px;min-height:18px;font-family:'Syne',sans-serif"></div>
+        <button id="login-btn" style="width:100%;background:#FF4D00;color:#0E0B08;border:none;border-radius:4px;padding:16px;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;letter-spacing:1.2px;text-transform:uppercase">Accedi</button>
       </div>
       <div id="panel-signup" style="display:none">
         <label class="form-lbl">Il tuo nome</label>
         <input id="su-name" type="text" placeholder="Come ti chiami?" maxlength="20"
-          style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-size:16px;outline:none;margin-bottom:12px;-webkit-appearance:none;box-sizing:border-box">
+          style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:14px 16px;color:var(--text);font-size:15px;font-family:'Syne',sans-serif;outline:none;margin-bottom:12px;-webkit-appearance:none;box-sizing:border-box">
         <label class="form-lbl">Username</label>
         <input id="su-user" type="text" placeholder="es. marco94" maxlength="20"
-          style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-size:16px;outline:none;margin-bottom:12px;-webkit-appearance:none;box-sizing:border-box">
+          style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:14px 16px;color:var(--text);font-size:15px;font-family:'Syne',sans-serif;outline:none;margin-bottom:12px;-webkit-appearance:none;box-sizing:border-box">
         <label class="form-lbl">Password</label>
         <input id="su-pass" type="password" placeholder="min. 6 caratteri" maxlength="40"
-          style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-size:16px;outline:none;margin-bottom:8px;-webkit-appearance:none;box-sizing:border-box">
-        <div id="su-err" style="color:var(--red);font-size:13px;margin-bottom:12px;min-height:18px"></div>
-        <button id="signup-btn" style="width:100%;background:#E8501A;color:#110D0A;border:none;border-radius:14px;padding:16px;font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:16px;cursor:pointer">Crea account — €100 gratis</button>
+          style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:14px 16px;color:var(--text);font-size:15px;font-family:'Syne',sans-serif;outline:none;margin-bottom:8px;-webkit-appearance:none;box-sizing:border-box">
+        <div id="su-err" style="color:var(--red);font-size:12px;margin-bottom:12px;min-height:18px;font-family:'Syne',sans-serif"></div>
+        <button id="signup-btn" style="width:100%;background:#FF4D00;color:#0E0B08;border:none;border-radius:4px;padding:16px;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;letter-spacing:1px;text-transform:uppercase">Crea account — €100 gratis</button>
       </div>
       <div style="font-size:11px;color:rgba(245,236,215,0.25);margin-top:16px;text-align:center">Nessun dato reale. Solo credito demo.</div>
     </div>
@@ -524,7 +527,7 @@ document.getElementById('signup-btn').onclick = function() {
     function inlineAcceptTerms() {
       var ch = document.getElementById('terms-check');
       if (!ch.classList.contains('on')) {
-        ch.style.borderColor = '#E8501A';
+        ch.style.borderColor = '#FF4D00';
         return;
       }
       localStorage.setItem('stash_terms_v3', '1');
@@ -544,7 +547,7 @@ document.getElementById('signup-btn').onclick = function() {
 <div class="screen" id="s-home">
   <div class="header">
     <div class="logo" style="font-family:'Arial Black','Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:22px;letter-spacing:-1.5px;line-height:1;display:inline-flex;align-items:baseline">
-      <span style="color:transparent;-webkit-text-stroke:1.8px #E8501A">s</span><span style="color:#F5ECD7">tas</span><span style="color:#E8501A">h</span>
+      <span style="color:transparent;-webkit-text-stroke:1.8px #FF4D00">s</span><span style="color:#F0E6D0">tas</span><span style="color:#FF4D00">h</span>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
       <div class="bell-wrap" onclick="openNotifPanel()">
@@ -868,7 +871,7 @@ document.getElementById('signup-btn').onclick = function() {
       <div id="pay-card-row" style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;cursor:pointer" onclick="selectPayment(this,'card')">
         <span style="font-size:18px">💳</span>
         <div style="flex:1"><div style="font-size:14px;font-weight:500">Carta di credito/debito</div><div style="font-size:12px;color:var(--text2)">Visa •••• 4242</div></div>
-        <div id="pay-card-check" style="width:16px;height:16px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;color:#110D0A;font-weight:800">✓</div>
+        <div id="pay-card-check" style="width:16px;height:16px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;color:#0E0B08;font-weight:800">✓</div>
       </div>
       <div style="padding:14px 16px;display:flex;align-items:center;gap:10px;opacity:.5">
         <span style="font-size:18px">🏦</span>
@@ -943,7 +946,7 @@ document.getElementById('signup-btn').onclick = function() {
     <span style="font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:22px">Profilo</span>
   </div>
   <div class="profile-header">
-    <div class="av av-lg" id="prof-av" style="margin:0 auto;background:var(--accent);color:#110D0A"></div>
+    <div class="av av-lg" id="prof-av" style="margin:0 auto;background:var(--accent);color:#0E0B08"></div>
     <div class="profile-name" id="prof-name">-</div>
     <div class="profile-user" id="prof-user">stash beta</div>
   </div>
@@ -960,7 +963,7 @@ document.getElementById('signup-btn').onclick = function() {
     <div class="profile-opt" onclick="toggleNotif()"><div class="profile-opt-icon">🔔</div><div class="profile-opt-label">Notifiche</div><div class="tog on" id="notif-tog"><div class="tog-knob"></div></div></div>
     <div class="profile-opt" onclick="go('s-settings')"><div class="profile-opt-icon">⚙️</div><div class="profile-opt-label">Impostazioni</div><div class="profile-opt-val">Username · Password →</div></div>
   </div>
-  <button onclick="doLogout()" style="width:100%;background:none;border:1px solid var(--border);border-radius:var(--r);padding:14px;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:15px;cursor:pointer;margin-bottom:12px">Esci dall'account</button>
+  <button onclick="doLogout()" style="width:100%;background:none;border:1px solid var(--border);border-radius:var(--r);padding:14px;color:var(--text2);font-family:'Syne',sans-serif;font-size:13px;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;margin-bottom:12px">Esci dall'account</button>
   <div class="center muted" style="font-size:12px;padding-bottom:24px">stash · Beta · 2026<br><span style="color:var(--text3)">"Metti qualcosa in palio." · Mangopay 🔒</span></div>
   <div class="bnav">
     <div class="bnav-item" onclick="go('s-home')"><div class="bnav-icon">👥</div>Gruppi</div>
@@ -1355,11 +1358,11 @@ function authTab(tab) {
   var tl=el('tab-login'),ts=el('tab-signup');
   if(tab==='login'){
     pl.style.display='block';ps.style.display='none';
-    tl.style.background='var(--accent)';tl.style.color='#110D0A';
+    tl.style.background='var(--accent)';tl.style.color='#0E0B08';
     ts.style.background='transparent';ts.style.color='var(--text2)';
   } else {
     pl.style.display='none';ps.style.display='block';
-    ts.style.background='var(--accent)';ts.style.color='#110D0A';
+    ts.style.background='var(--accent)';ts.style.color='#0E0B08';
     tl.style.background='transparent';tl.style.color='var(--text2)';
   }
 }
@@ -1835,7 +1838,7 @@ function drawAmici() {
     topRow.appendChild(info);
     var btns=document.createElement('div');btns.style.cssText='display:flex;flex-direction:column;gap:6px';
     var sfBtn=document.createElement('button');
-    sfBtn.style.cssText='background:var(--accent);color:#110D0A;border:none;border-radius:var(--rs);padding:7px 12px;font-weight:900;font-size:12px;cursor:pointer';
+    sfBtn.style.cssText='background:var(--accent);color:#0E0B08;border:none;border-radius:var(--rs);padding:7px 12px;font-weight:900;font-size:12px;cursor:pointer';
     sfBtn.textContent='Sfida';
     sfBtn.setAttribute('data-sf-uid',uid);sfBtn.setAttribute('data-sf-name',u.name);
     sfBtn.onclick=function(){sfidaDiretto(this.getAttribute('data-sf-uid'),this.getAttribute('data-sf-name'));};
@@ -1883,7 +1886,7 @@ function searchAmici(q){
     found++;
     var uLabel=u.username?'@'+u.username:u.name;
     var isRem=RF[uid];
-    var btnStyle=isRem?'background:var(--accent);color:#110D0A;border:none;border-radius:var(--rs);padding:7px 12px;font-weight:900;font-size:12px;cursor:pointer':'background:none;color:var(--text2);border:1px solid var(--border);border-radius:var(--rs);padding:7px 12px;font-size:12px;cursor:not-allowed';
+    var btnStyle=isRem?'background:var(--accent);color:#0E0B08;border:none;border-radius:var(--rs);padding:7px 12px;font-weight:900;font-size:12px;cursor:pointer':'background:none;color:var(--text2);border:1px solid var(--border);border-radius:var(--rs);padding:7px 12px;font-size:12px;cursor:not-allowed';
     var btnTxt=isRem?'Aggiungi':'Amico';
     var btnAttr=isRem?'onclick="addAmico(\''+uid+'\')"':'disabled';
     html+='<div style="display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px">';
@@ -2409,7 +2412,7 @@ function liveChallengeHTML(ch){
   var voteScreen=isMulti?'s-vote-group':'s-vote1v1';
   var dest=isPending&&!isC&&!isMulti?'s-accept':voteScreen;
   var btnTxt=isPending&&!isC&&!isMulti?'Accetta sfida →':'Dichiara esito →';
-  div.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="font-size:12px;font-weight:700;color:'+statusCol+'">● '+(isPending?'In attesa di accettazione':'Sfida in corso')+'</div><div style="font-size:12px;color:var(--text2)">€'+ch.amount+' in palio</div></div><div style="font-size:14px;font-weight:600;margin-bottom:8px">"'+ch.title.substr(0,50)+'"</div><div style="font-size:12px;color:var(--text2);margin-bottom:12px">vs '+otherName+'</div><button onclick="go(\''+dest+'\')" style="width:100%;background:var(--accent);color:#110D0A;border:none;border-radius:var(--rs);padding:10px;font-weight:900;font-size:13px;cursor:pointer">'+btnTxt+'</button>';
+  div.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="font-size:12px;font-weight:700;color:'+statusCol+'">● '+(isPending?'In attesa di accettazione':'Sfida in corso')+'</div><div style="font-size:12px;color:var(--text2)">€'+ch.amount+' in palio</div></div><div style="font-size:14px;font-weight:600;margin-bottom:8px">"'+ch.title.substr(0,50)+'"</div><div style="font-size:12px;color:var(--text2);margin-bottom:12px">vs '+otherName+'</div><button onclick="go(\''+dest+'\')" style="width:100%;background:var(--accent);color:#0E0B08;border:none;border-radius:var(--rs);padding:10px;font-weight:900;font-size:13px;cursor:pointer">'+btnTxt+'</button>';
   return div;
 }
 
